@@ -12,7 +12,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Tap tempo from recent taps
 - Audible one- and two-bar count-in
 - Common meters, custom grouping foundation, subdivisions, and accents
-- Clave and bossa groove template foundation
+- Full son, rumba, and bossa clave template set
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved pattern switching, duplication, and groove template creation
 - Protected saved-pattern deletion

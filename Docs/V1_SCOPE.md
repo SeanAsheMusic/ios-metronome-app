@@ -15,7 +15,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Subdivisions: quarter, eighth, triplet, and sixteenth.
 - Accent levels: strong, normal, ghost, and muted.
 - Explicit per-beat accent and mute editing.
-- Clave and bossa groove templates backed by a 16-step pattern foundation.
+- Full son, rumba, and bossa clave templates backed by a 16-step pattern foundation.
 - Pattern defaults for 4/4, 6/8, and 7/8.
 - Stable identifiers for patterns, beats, setlists, and setlist items.
 - Ordered setlists with move support.
@@ -52,4 +52,4 @@ No active source-level V1.1 candidates remain beyond device/accessibility valida
 
 ## Later Candidates
 
-- Full clave mode, subdivision/lane-level pattern gestures, jazz 2 and 4, swing, gap click, random silence, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Subdivision/lane-level pattern gestures, jazz 2 and 4, swing, gap click, random silence, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.

@@ -113,21 +113,25 @@ public enum GrooveTemplate: String, CaseIterable, Codable, Hashable, Sendable {
     case sonClave32
     case sonClave23
     case rumbaClave32
+    case rumbaClave23
     case bossaClave
+    case bossaClave23
 
     public var displayName: String {
         switch self {
         case .sonClave32: "Son Clave 3:2"
         case .sonClave23: "Son Clave 2:3"
         case .rumbaClave32: "Rumba Clave 3:2"
-        case .bossaClave: "Bossa Clave"
+        case .rumbaClave23: "Rumba Clave 2:3"
+        case .bossaClave: "Bossa Clave 3:2"
+        case .bossaClave23: "Bossa Clave 2:3"
         }
     }
 
     public var defaultBPM: Int {
         switch self {
-        case .sonClave32, .sonClave23, .rumbaClave32: 96
-        case .bossaClave: 132
+        case .sonClave32, .sonClave23, .rumbaClave32, .rumbaClave23: 96
+        case .bossaClave, .bossaClave23: 132
         }
     }
 
@@ -140,7 +144,9 @@ public enum GrooveTemplate: String, CaseIterable, Codable, Hashable, Sendable {
         case .sonClave32: [0, 3, 6, 10, 12]
         case .sonClave23: [0, 2, 6, 9, 12]
         case .rumbaClave32: [0, 3, 7, 10, 12]
+        case .rumbaClave23: [0, 2, 6, 9, 13]
         case .bossaClave: [0, 3, 6, 10, 13]
+        case .bossaClave23: [0, 3, 7, 10, 13]
         }
     }
 }

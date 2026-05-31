@@ -84,6 +84,22 @@ final class RhythmModelTests: XCTestCase {
         )
     }
 
+    func testClaveTemplatesCoverDirectionsAndFamilies() {
+        let expectedSteps: [GrooveTemplate: [Int]] = [
+            .sonClave32: [0, 3, 6, 10, 12],
+            .sonClave23: [0, 2, 6, 9, 12],
+            .rumbaClave32: [0, 3, 7, 10, 12],
+            .rumbaClave23: [0, 2, 6, 9, 13],
+            .bossaClave: [0, 3, 6, 10, 13],
+            .bossaClave23: [0, 3, 7, 10, 13]
+        ]
+
+        XCTAssertEqual(GrooveTemplate.allCases.count, expectedSteps.count)
+        for (template, steps) in expectedSteps {
+            XCTAssertEqual(Pattern.groove(template).beats.filter { $0.soundRole != .muted }.map(\.index), steps)
+        }
+    }
+
     func testPatternEditingClearsGrooveTemplateMarker() {
         var pattern = Pattern.groove(.bossaClave)
 

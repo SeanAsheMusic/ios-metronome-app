@@ -14,7 +14,7 @@
 - Latest local snapshot restore.
 - Sound family picker with synthesized presets.
 - Exportable click-render verification assets.
-- Clave and bossa groove template foundation.
+- Full son, rumba, and bossa clave template set.
 - Background audio app mode.
 - Fullscreen visual pulse mode.
 - Audible count-in.
@@ -25,7 +25,6 @@
 ## V1.1
 
 - Device VoiceOver and Accessibility Inspector audit.
-- Full clave mode.
 
 ## Later
 
