@@ -49,6 +49,7 @@ add_source(persistence_tests_group, persistence_tests_target, 'Tests/Persistence
 
 audio_target.add_dependency(rhythm_target)
 persistence_target.add_dependency(rhythm_target)
+persistence_target.add_dependency(audio_target)
 app_target.add_dependency(rhythm_target)
 app_target.add_dependency(audio_target)
 app_target.add_dependency(persistence_target)
@@ -56,6 +57,7 @@ rhythm_tests_target.add_dependency(rhythm_target)
 audio_tests_target.add_dependency(rhythm_target)
 audio_tests_target.add_dependency(audio_target)
 persistence_tests_target.add_dependency(rhythm_target)
+persistence_tests_target.add_dependency(audio_target)
 persistence_tests_target.add_dependency(persistence_target)
 
 app_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
@@ -63,10 +65,12 @@ app_target.frameworks_build_phase.add_file_reference(audio_target.product_refere
 app_target.frameworks_build_phase.add_file_reference(persistence_target.product_reference)
 audio_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
 persistence_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
+persistence_target.frameworks_build_phase.add_file_reference(audio_target.product_reference)
 rhythm_tests_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
 audio_tests_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
 audio_tests_target.frameworks_build_phase.add_file_reference(audio_target.product_reference)
 persistence_tests_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
+persistence_tests_target.frameworks_build_phase.add_file_reference(audio_target.product_reference)
 persistence_tests_target.frameworks_build_phase.add_file_reference(persistence_target.product_reference)
 
 embed_frameworks_phase = app_target.new_copy_files_build_phase('Embed Frameworks')

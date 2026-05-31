@@ -32,6 +32,38 @@ public struct BeatSchedule: Equatable, Sendable {
     }
 }
 
+public enum ClickSoundPreset: String, CaseIterable, Codable, Equatable, Sendable {
+    case classic
+    case wood
+    case bell
+    case mechanical
+
+    public var displayName: String {
+        switch self {
+        case .classic: "Classic"
+        case .wood: "Wood"
+        case .bell: "Bell"
+        case .mechanical: "Mechanical"
+        }
+    }
+}
+
+public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
+    public var soundPreset: ClickSoundPreset
+    public var masterGain: Double
+    public var accentBoost: Double
+
+    public init(
+        soundPreset: ClickSoundPreset = .classic,
+        masterGain: Double = 0.8,
+        accentBoost: Double = 1.0
+    ) {
+        self.soundPreset = soundPreset
+        self.masterGain = min(1.0, max(0.0, masterGain))
+        self.accentBoost = min(1.5, max(0.5, accentBoost))
+    }
+}
+
 public struct MetronomeScheduler: Sendable {
     public init() {}
 
@@ -69,6 +101,7 @@ public protocol MetronomeAudioEngine: Sendable {
     func start() async throws
     func stop() async
     func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async
+    func updateSettings(_ settings: MetronomeAudioSettings) async throws
 }
 
 public actor AudioEngineStub: MetronomeAudioEngine {
@@ -104,6 +137,8 @@ public actor AudioEngineStub: MetronomeAudioEngine {
     public func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async {
         eventHandler = handler
     }
+
+    public func updateSettings(_: MetronomeAudioSettings) async throws {}
 }
 
 public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
@@ -117,6 +152,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     private var playbackTask: Task<Void, Never>?
     private var clickBuffers: [ClickSoundRole: AVAudioPCMBuffer] = [:]
     private var isGraphConfigured = false
+    private var settings = MetronomeAudioSettings()
 
     public init() {}
 
@@ -124,7 +160,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         preparedPattern = pattern
 
         if clickBuffers.isEmpty {
-            clickBuffers = try makeClickBuffers()
+            clickBuffers = try makeClickBuffers(settings: settings)
         }
 
         if !isGraphConfigured {
@@ -141,7 +177,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         }
 
         if clickBuffers.isEmpty {
-            clickBuffers = try makeClickBuffers()
+            clickBuffers = try makeClickBuffers(settings: settings)
         }
 
         try configureSession()
@@ -171,6 +207,11 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 
     public func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async {
         eventHandler = handler
+    }
+
+    public func updateSettings(_ settings: MetronomeAudioSettings) async throws {
+        self.settings = settings
+        clickBuffers = try makeClickBuffers(settings: settings)
     }
 
     private func runPlaybackLoop() async {
@@ -237,15 +278,18 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 #endif
     }
 
-    private func makeClickBuffers() throws -> [ClickSoundRole: AVAudioPCMBuffer] {
+    private func makeClickBuffers(settings: MetronomeAudioSettings) throws -> [ClickSoundRole: AVAudioPCMBuffer] {
         let sampleRate = 48_000.0
         let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!
+        let profile = ClickProfile.profile(for: settings.soundPreset)
+        let masterGain = Float(settings.masterGain)
+        let accentBoost = Float(settings.accentBoost)
 
         return [
-            .downbeat: try makeClickBuffer(format: format, frequency: 1_600, duration: 0.035, gain: 0.85),
-            .beat: try makeClickBuffer(format: format, frequency: 1_050, duration: 0.028, gain: 0.62),
-            .subdivision: try makeClickBuffer(format: format, frequency: 820, duration: 0.018, gain: 0.42),
-            .cue: try makeClickBuffer(format: format, frequency: 1_300, duration: 0.05, gain: 0.7),
+            .downbeat: try makeClickBuffer(format: format, frequency: profile.downbeatFrequency, duration: profile.downbeatDuration, gain: min(1.0, profile.downbeatGain * masterGain * accentBoost), decayPower: profile.decayPower),
+            .beat: try makeClickBuffer(format: format, frequency: profile.beatFrequency, duration: profile.beatDuration, gain: profile.beatGain * masterGain, decayPower: profile.decayPower),
+            .subdivision: try makeClickBuffer(format: format, frequency: profile.subdivisionFrequency, duration: profile.subdivisionDuration, gain: profile.subdivisionGain * masterGain, decayPower: profile.decayPower),
+            .cue: try makeClickBuffer(format: format, frequency: profile.cueFrequency, duration: profile.cueDuration, gain: profile.cueGain * masterGain, decayPower: profile.decayPower),
             .muted: try makeClickBuffer(format: format, frequency: 200, duration: 0.004, gain: 0.0)
         ]
     }
@@ -254,7 +298,8 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         format: AVAudioFormat,
         frequency: Double,
         duration: Double,
-        gain: Float
+        gain: Float,
+        decayPower: Double = 4.0
     ) throws -> AVAudioPCMBuffer {
         let frameCount = AVAudioFrameCount(format.sampleRate * duration)
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
@@ -268,7 +313,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 
         for frame in 0..<Int(frameCount) {
             let progress = Double(frame) / Double(frameCount)
-            let envelope = Float(pow(1.0 - progress, 4.0))
+            let envelope = Float(pow(1.0 - progress, decayPower))
             let sample = sin((Double(frame) / format.sampleRate) * frequency * 2.0 * Double.pi)
             channel[frame] = Float(sample) * gain * envelope
         }
@@ -279,4 +324,89 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 
 public enum AudioEngineError: Error, Equatable {
     case bufferCreationFailed
+}
+
+private struct ClickProfile {
+    let downbeatFrequency: Double
+    let beatFrequency: Double
+    let subdivisionFrequency: Double
+    let cueFrequency: Double
+    let downbeatDuration: Double
+    let beatDuration: Double
+    let subdivisionDuration: Double
+    let cueDuration: Double
+    let downbeatGain: Float
+    let beatGain: Float
+    let subdivisionGain: Float
+    let cueGain: Float
+    let decayPower: Double
+
+    static func profile(for preset: ClickSoundPreset) -> ClickProfile {
+        switch preset {
+        case .classic:
+            ClickProfile(
+                downbeatFrequency: 1_600,
+                beatFrequency: 1_050,
+                subdivisionFrequency: 820,
+                cueFrequency: 1_300,
+                downbeatDuration: 0.035,
+                beatDuration: 0.028,
+                subdivisionDuration: 0.018,
+                cueDuration: 0.05,
+                downbeatGain: 0.85,
+                beatGain: 0.62,
+                subdivisionGain: 0.42,
+                cueGain: 0.7,
+                decayPower: 4.0
+            )
+        case .wood:
+            ClickProfile(
+                downbeatFrequency: 720,
+                beatFrequency: 560,
+                subdivisionFrequency: 440,
+                cueFrequency: 660,
+                downbeatDuration: 0.032,
+                beatDuration: 0.026,
+                subdivisionDuration: 0.018,
+                cueDuration: 0.04,
+                downbeatGain: 0.8,
+                beatGain: 0.58,
+                subdivisionGain: 0.36,
+                cueGain: 0.62,
+                decayPower: 5.0
+            )
+        case .bell:
+            ClickProfile(
+                downbeatFrequency: 2_100,
+                beatFrequency: 1_420,
+                subdivisionFrequency: 1_080,
+                cueFrequency: 1_800,
+                downbeatDuration: 0.055,
+                beatDuration: 0.04,
+                subdivisionDuration: 0.024,
+                cueDuration: 0.06,
+                downbeatGain: 0.78,
+                beatGain: 0.52,
+                subdivisionGain: 0.34,
+                cueGain: 0.64,
+                decayPower: 2.8
+            )
+        case .mechanical:
+            ClickProfile(
+                downbeatFrequency: 1_250,
+                beatFrequency: 920,
+                subdivisionFrequency: 700,
+                cueFrequency: 1_100,
+                downbeatDuration: 0.022,
+                beatDuration: 0.018,
+                subdivisionDuration: 0.012,
+                cueDuration: 0.03,
+                downbeatGain: 0.9,
+                beatGain: 0.66,
+                subdivisionGain: 0.4,
+                cueGain: 0.72,
+                decayPower: 7.0
+            )
+        }
+    }
 }

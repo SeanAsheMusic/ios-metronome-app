@@ -27,6 +27,11 @@ struct MainMetronomeView: View {
                 .tabItem {
                     Label("Setlist", systemImage: "list.bullet.rectangle")
                 }
+
+            settingsTab
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
         }
         .preferredColorScheme(.dark)
         .task {
@@ -78,6 +83,66 @@ struct MainMetronomeView: View {
             VStack(spacing: 20) {
                 header
                 setlistPanel
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(.systemBackground))
+    }
+
+    private var settingsTab: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                header
+
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Sound")
+                        .font(.headline)
+
+                    Picker("Click Sound", selection: Binding(
+                        get: { viewModel.audioSettings.soundPreset },
+                        set: { preset in
+                            Task {
+                                await viewModel.updateSoundPreset(preset)
+                            }
+                        }
+                    )) {
+                        ForEach(ClickSoundPreset.allCases, id: \.self) { preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityLabel("Click sound")
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Volume")
+                            .font(.subheadline.weight(.semibold))
+                        Slider(value: Binding(
+                            get: { viewModel.audioSettings.masterGain },
+                            set: { value in
+                                Task {
+                                    await viewModel.updateMasterGain(value)
+                                }
+                            }
+                        ), in: 0...1)
+                        .accessibilityLabel("Master volume")
+                    }
+
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Accent")
+                            .font(.subheadline.weight(.semibold))
+                        Slider(value: Binding(
+                            get: { viewModel.audioSettings.accentBoost },
+                            set: { value in
+                                Task {
+                                    await viewModel.updateAccentBoost(value)
+                                }
+                            }
+                        ), in: 0.5...1.5)
+                        .accessibilityLabel("Accent boost")
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(24)
             .frame(maxWidth: .infinity)
@@ -479,6 +544,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var patternNameDraft = Pattern.defaultFourFour().name
     @Published var patterns: [Pattern] = MetronomeLibrary.defaultLibrary().patterns
     @Published var activeSetlist = MetronomeLibrary.defaultLibrary().activeSetlist
+    @Published var audioSettings = MetronomeAudioSettings()
     @Published var isPlaying = false
     @Published var pulseIsActive = false
 
@@ -565,6 +631,7 @@ final class MainMetronomeViewModel: ObservableObject {
             patternNameDraft = pattern.name
             patterns = library.patterns
             activeSetlist = library.activeSetlist
+            audioSettings = library.audioSettings
             return
         }
 
@@ -575,14 +642,17 @@ final class MainMetronomeViewModel: ObservableObject {
             patternNameDraft = pattern.name
             patterns = loadedLibrary.patterns
             activeSetlist = loadedLibrary.activeSetlist
+            audioSettings = loadedLibrary.audioSettings
         } catch {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
             patterns = library.patterns
             activeSetlist = library.activeSetlist
+            audioSettings = library.audioSettings
             try? await libraryStore.save(library)
         }
+        try? await audioEngine.updateSettings(audioSettings)
     }
 
     private func saveSelectedPattern() {
@@ -685,6 +755,39 @@ final class MainMetronomeViewModel: ObservableObject {
             return "Missing pattern"
         }
         return "\(pattern.bpm) BPM · \(pattern.meter.displayName)"
+    }
+
+    func updateSoundPreset(_ preset: ClickSoundPreset) async {
+        var settings = audioSettings
+        settings.soundPreset = preset
+        await updateAudioSettings(settings)
+    }
+
+    func updateMasterGain(_ value: Double) async {
+        var settings = audioSettings
+        settings.masterGain = value
+        await updateAudioSettings(MetronomeAudioSettings(
+            soundPreset: settings.soundPreset,
+            masterGain: settings.masterGain,
+            accentBoost: settings.accentBoost
+        ))
+    }
+
+    func updateAccentBoost(_ value: Double) async {
+        var settings = audioSettings
+        settings.accentBoost = value
+        await updateAudioSettings(MetronomeAudioSettings(
+            soundPreset: settings.soundPreset,
+            masterGain: settings.masterGain,
+            accentBoost: settings.accentBoost
+        ))
+    }
+
+    private func updateAudioSettings(_ settings: MetronomeAudioSettings) async {
+        audioSettings = settings
+        library.updateAudioSettings(settings)
+        try? await audioEngine.updateSettings(settings)
+        await saveLibrarySnapshot()
     }
 
     var selectedMeterOption: MeterOption {

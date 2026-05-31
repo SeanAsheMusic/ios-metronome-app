@@ -20,7 +20,7 @@ The audio engine should own transport time. UI state, visual pulse, haptics, and
 
 Research recommends synthesized or pre-rendered in-repo click assets. Vendor DAW and system sounds are references only. Every shipped asset should have a provenance manifest with generator commit, parameters, sample rate, bit depth, render mode, and hash.
 
-Initial click families should be classic, dry click, wood, pitched bell, and mechanical. Accent sounds should be generated from explicit parameter changes, not copied from vendor files.
+Initial click families include classic, wood, bell, and mechanical synthesized presets. Accent sounds are generated from explicit parameter changes, not copied from vendor files.
 
 ## Jitter And Drift Risks
 

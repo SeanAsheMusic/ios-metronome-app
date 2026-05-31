@@ -16,6 +16,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Pattern name, meter, subdivision, and beat accent editing
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
 - Tabbed Play, Edit, Patterns, and Setlist app layout
+- Settings tab for synthesized click preset, volume, and accent boost
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
 - Synthesized click engine foundation using AVFoundation

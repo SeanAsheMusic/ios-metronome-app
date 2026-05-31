@@ -12,7 +12,7 @@ let package = Package(
     targets: [
         .target(name: "RhythmModel"),
         .target(name: "AudioEngine", dependencies: ["RhythmModel"]),
-        .target(name: "Persistence", dependencies: ["RhythmModel"]),
+        .target(name: "Persistence", dependencies: ["AudioEngine", "RhythmModel"]),
         .testTarget(name: "RhythmModelTests", dependencies: ["RhythmModel"]),
         .testTarget(name: "AudioEngineTests", dependencies: ["AudioEngine", "RhythmModel"]),
         .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "RhythmModel"])

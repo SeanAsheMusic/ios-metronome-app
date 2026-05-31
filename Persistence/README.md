@@ -8,8 +8,9 @@ The current implementation lives in `Sources/Persistence` and stores:
 - Selected pattern.
 - Pattern library.
 - Setlists.
+- Audio settings.
 
-The play screen loads the selected pattern on launch, saves tempo changes back to disk, switches between saved patterns, duplicates the active pattern, and persists active setlist edits.
+The app loads the selected pattern on launch, saves tempo changes back to disk, switches between saved patterns, duplicates the active pattern, persists active setlist edits, and persists sound settings.
 
 Future storage work still includes preferences, snapshots, export/import bundles, and migrations.
 

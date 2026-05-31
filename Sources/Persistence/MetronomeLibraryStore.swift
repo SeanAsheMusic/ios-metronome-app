@@ -1,4 +1,5 @@
 import Foundation
+import AudioEngine
 import RhythmModel
 
 public struct MetronomeLibrary: Codable, Equatable, Sendable {
@@ -8,17 +9,20 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
     public var selectedPatternID: Pattern.ID
     public var patterns: [Pattern]
     public var setlists: [Setlist]
+    public var audioSettings: MetronomeAudioSettings
 
     public init(
         schemaVersion: Int = MetronomeLibrary.currentSchemaVersion,
         selectedPatternID: Pattern.ID,
         patterns: [Pattern],
-        setlists: [Setlist]
+        setlists: [Setlist],
+        audioSettings: MetronomeAudioSettings = MetronomeAudioSettings()
     ) {
         self.schemaVersion = schemaVersion
         self.selectedPatternID = selectedPatternID
         self.patterns = patterns
         self.setlists = setlists
+        self.audioSettings = audioSettings
     }
 
     public var selectedPattern: Pattern {
@@ -106,6 +110,10 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         selectPattern(id: item.patternID)
     }
 
+    public mutating func updateAudioSettings(_ settings: MetronomeAudioSettings) {
+        audioSettings = settings
+    }
+
     public static func defaultLibrary() -> MetronomeLibrary {
         let defaultPattern = Pattern.defaultFourFour()
         var starterSetlist = Setlist(name: "Practice")
@@ -118,7 +126,8 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
                 Pattern.defaultSixEight(),
                 Pattern.defaultSevenEight()
             ],
-            setlists: [starterSetlist]
+            setlists: [starterSetlist],
+            audioSettings: MetronomeAudioSettings()
         )
     }
 

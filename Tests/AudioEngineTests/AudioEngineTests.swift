@@ -18,6 +18,20 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertThrowsError(try scheduler.beatIntervalNanoseconds(for: 301))
     }
 
+    func testAudioSettingsClampValues() {
+        let settings = MetronomeAudioSettings(masterGain: 2.0, accentBoost: 0.1)
+
+        XCTAssertEqual(settings.masterGain, 1.0)
+        XCTAssertEqual(settings.accentBoost, 0.5)
+    }
+
+    func testClickSoundPresetDisplayNames() {
+        XCTAssertEqual(ClickSoundPreset.classic.displayName, "Classic")
+        XCTAssertEqual(ClickSoundPreset.wood.displayName, "Wood")
+        XCTAssertEqual(ClickSoundPreset.bell.displayName, "Bell")
+        XCTAssertEqual(ClickSoundPreset.mechanical.displayName, "Mechanical")
+    }
+
     func testScheduleWrapsPatternBeats() throws {
         let pattern = Pattern.defaultSevenEight(id: UUID(uuidString: "A87F4C4B-806A-4B6C-B371-7F0D1C1D7D7F")!)
         let scheduler = MetronomeScheduler()

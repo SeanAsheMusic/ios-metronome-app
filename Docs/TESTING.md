@@ -22,6 +22,7 @@ The Swift package includes XCTest coverage for:
 - Pattern rename, meter update, subdivision update, and beat accent cycling.
 - Pattern deletion and setlist-reference cleanup.
 - Setlist item add, select, move, and remove operations.
+- Audio settings clamping and persistence.
 
 Run with:
 

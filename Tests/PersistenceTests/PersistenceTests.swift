@@ -1,4 +1,5 @@
 import XCTest
+@testable import AudioEngine
 @testable import Persistence
 @testable import RhythmModel
 
@@ -10,6 +11,7 @@ final class PersistenceTests: XCTestCase {
         XCTAssertFalse(library.patterns.isEmpty)
         XCTAssertEqual(library.selectedPattern.id, library.selectedPatternID)
         XCTAssertEqual(library.setlists.first?.items.first?.patternID, library.selectedPatternID)
+        XCTAssertEqual(library.audioSettings, MetronomeAudioSettings())
     }
 
     func testLibraryUpdatesSelectedPatternInPlace() {
@@ -135,6 +137,15 @@ final class PersistenceTests: XCTestCase {
         library.selectPatternFromActiveSetlist(itemID: itemID)
 
         XCTAssertEqual(library.selectedPatternID, nextPattern.id)
+    }
+
+    func testLibraryUpdatesAudioSettings() {
+        var library = MetronomeLibrary.defaultLibrary()
+        let settings = MetronomeAudioSettings(soundPreset: .wood, masterGain: 0.35, accentBoost: 1.25)
+
+        library.updateAudioSettings(settings)
+
+        XCTAssertEqual(library.audioSettings, settings)
     }
 
     func testStoreCreatesDefaultLibraryWhenFileIsMissing() async throws {
