@@ -55,7 +55,7 @@ The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, `
 ## Current Source Audits
 
 - `Docs/ACCESSIBILITY_AUDIT.md` covers Play, Stage Pulse, Edit, Patterns, Setlist, Settings, Reduce Motion, touch targets, and manual verification gaps.
-- The production AV engine observes audio-session interruptions and route changes, with device validation still required.
+- The production AV engine observes audio-session interruptions, route changes, and media-service resets, with device validation still required.
 
 ## Future Test Layers
 

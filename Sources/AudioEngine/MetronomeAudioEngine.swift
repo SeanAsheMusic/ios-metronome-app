@@ -314,8 +314,8 @@ public actor AudioEngineStub: MetronomeAudioEngine {
 public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     public private(set) var isRunning = false
 
-    private let audioEngine = AVAudioEngine()
-    private let player = AVAudioPlayerNode()
+    private var audioEngine = AVAudioEngine()
+    private var player = AVAudioPlayerNode()
     private let scheduler = MetronomeScheduler()
     private var preparedPattern: Pattern?
     private var eventHandler: (@Sendable (ScheduledBeatEvent) async -> Void)?
@@ -514,7 +514,17 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             }
         }
 
-        sessionObserverTokens = [interruptionToken, routeChangeToken]
+        let mediaServicesResetToken = center.addObserver(
+            forName: AVAudioSession.mediaServicesWereResetNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: nil
+        ) { [weak self] _ in
+            Task {
+                await self?.handleMediaServicesReset()
+            }
+        }
+
+        sessionObserverTokens = [interruptionToken, routeChangeToken, mediaServicesResetToken]
 #endif
     }
 
@@ -554,6 +564,33 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             }
         } catch {
             await stop()
+        }
+    }
+
+    private func handleMediaServicesReset() async {
+        let wasRunning = isRunning
+        isRunning = false
+        playbackTask?.cancel()
+        playbackTask = nil
+        player.stop()
+        audioEngine.stop()
+        audioEngine.reset()
+        audioEngine = AVAudioEngine()
+        player = AVAudioPlayerNode()
+        clickBuffers = [:]
+        isGraphConfigured = false
+
+        guard let preparedPattern else {
+            return
+        }
+
+        do {
+            try await prepare(pattern: preparedPattern)
+            if wasRunning {
+                try await start()
+            }
+        } catch {
+            shouldResumeAfterInterruption = false
         }
     }
 

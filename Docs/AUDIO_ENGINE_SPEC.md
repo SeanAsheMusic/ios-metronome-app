@@ -33,9 +33,9 @@ Count-in uses one-shot downbeat and cue roles before continuous playback starts.
 
 ## Interruption Handling
 
-The AVFoundation engine observes audio-session interruptions and route changes. On interruption start it stops playback work while preserving whether the transport was running. On interruption end it resumes only when iOS marks the session resumable. On route change it refreshes the audio session and restarts the engine/player if playback was active.
+The AVFoundation engine observes audio-session interruptions, route changes, and media-service resets. On interruption start it stops playback work while preserving whether the transport was running. On interruption end it resumes only when iOS marks the session resumable. On route change it refreshes the audio session and restarts the engine/player if playback was active. On media-service reset it rebuilds the AV engine graph, regenerates click buffers, and resumes only if playback was active before the reset.
 
-Phone calls, Siri, headphones disconnecting, and route changes still need physical-device validation before release claims. Media-service reset handling remains a follow-up.
+Phone calls, Siri, headphones disconnecting, route changes, and media-service resets still need physical-device validation before release claims.
 
 ## Bluetooth And AirPlay
 
