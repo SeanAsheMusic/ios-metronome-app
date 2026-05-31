@@ -6,6 +6,7 @@ import RhythmModel
 
 struct MainMetronomeView: View {
     @StateObject private var viewModel = MainMetronomeViewModel()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var exportDocument = LibraryExportDocument(data: Data())
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
@@ -713,10 +714,10 @@ struct MainMetronomeView: View {
         Circle()
             .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
             .frame(width: 112, height: 112)
-            .scaleEffect(viewModel.pulseIsActive ? 1.0 : 0.82)
-            .animation(.snappy(duration: 0.18), value: viewModel.pulseIsActive)
+            .scaleEffect(reduceMotion ? 1.0 : (viewModel.pulseIsActive ? 1.0 : 0.82))
+            .animation(reduceMotion ? nil : .snappy(duration: 0.18), value: viewModel.pulseIsActive)
             .accessibilityLabel("Visual pulse")
-            .accessibilityValue(viewModel.pulseIsActive ? "Active" : "Inactive")
+            .accessibilityValue(viewModel.pulseIsActive ? "Active" : (reduceMotion ? "Inactive, reduced motion" : "Inactive"))
     }
 }
 
