@@ -931,6 +931,31 @@ struct MainMetronomeView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Polyrhythm")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(PolyrhythmTemplate.allCases, id: \.self) { template in
+                            Button {
+                                Task {
+                                    await viewModel.addPolyrhythmTemplate(template)
+                                }
+                            } label: {
+                                Text(template.displayName)
+                                    .font(.caption.weight(.semibold))
+                                    .lineLimit(1)
+                                    .frame(width: 118, height: 44)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Add \(template.displayName) polyrhythm pattern")
+                        }
+                    }
+                }
+            }
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(viewModel.patterns) { pattern in
@@ -1468,6 +1493,20 @@ final class MainMetronomeViewModel: ObservableObject {
         let swingPattern = Pattern.swing(template)
         library.appendPattern(swingPattern)
         pattern = swingPattern
+        patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    func addPolyrhythmTemplate(_ template: PolyrhythmTemplate) async {
+        let polyrhythmPattern = Pattern.polyrhythm(template)
+        library.appendPattern(polyrhythmPattern)
+        pattern = polyrhythmPattern
         patternNameDraft = pattern.name
         bpmEntryDraft = "\(pattern.bpm)"
         bpmEntryMessage = nil

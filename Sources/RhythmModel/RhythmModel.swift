@@ -321,6 +321,52 @@ public enum SwingTemplate: String, CaseIterable, Codable, Hashable, Sendable {
     }
 }
 
+public enum PolyrhythmTemplate: String, CaseIterable, Codable, Hashable, Sendable {
+    case threeOverTwo
+    case threeOverFour
+    case fourOverThree
+    case fiveOverFour
+    case fiveOverThree
+    case sevenOverFour
+
+    public var displayName: String {
+        switch self {
+        case .threeOverTwo: "3 over 2"
+        case .threeOverFour: "3 over 4"
+        case .fourOverThree: "4 over 3"
+        case .fiveOverFour: "5 over 4"
+        case .fiveOverThree: "5 over 3"
+        case .sevenOverFour: "7 over 4"
+        }
+    }
+
+    public var primaryPulseCount: Int {
+        switch self {
+        case .threeOverTwo: 2
+        case .threeOverFour, .fiveOverFour, .sevenOverFour: 4
+        case .fourOverThree, .fiveOverThree: 3
+        }
+    }
+
+    public var crossPulseCount: Int {
+        switch self {
+        case .threeOverTwo, .threeOverFour: 3
+        case .fourOverThree: 4
+        case .fiveOverFour, .fiveOverThree: 5
+        case .sevenOverFour: 7
+        }
+    }
+
+    public var defaultBPM: Int {
+        switch self {
+        case .threeOverTwo: 96
+        case .threeOverFour, .fourOverThree: 88
+        case .fiveOverFour, .fiveOverThree: 76
+        case .sevenOverFour: 64
+        }
+    }
+}
+
 public struct Beat: Identifiable, Codable, Equatable, Hashable, Sendable {
     public let id: UUID
     public let index: Int
@@ -354,6 +400,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public var claveModeTemplate: ClaveModeTemplate?
     public var grooveMixerPreset: GrooveMixerPreset?
     public var swingTemplate: SwingTemplate?
+    public var polyrhythmTemplate: PolyrhythmTemplate?
     public var perBeatSubdivisions: [Subdivision]?
     public var stepDurationsInMeterBeats: [Double]?
 
@@ -368,6 +415,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         claveModeTemplate: ClaveModeTemplate? = nil,
         grooveMixerPreset: GrooveMixerPreset? = nil,
         swingTemplate: SwingTemplate? = nil,
+        polyrhythmTemplate: PolyrhythmTemplate? = nil,
         perBeatSubdivisions: [Subdivision]? = nil,
         stepDurationsInMeterBeats: [Double]? = nil
     ) throws {
@@ -383,6 +431,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.claveModeTemplate = claveModeTemplate
         self.grooveMixerPreset = grooveMixerPreset
         self.swingTemplate = swingTemplate
+        self.polyrhythmTemplate = polyrhythmTemplate
         self.perBeatSubdivisions = perBeatSubdivisions
         self.stepDurationsInMeterBeats = stepDurationsInMeterBeats
     }
@@ -580,6 +629,69 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         }
     }
 
+    public static func polyrhythm(_ template: PolyrhythmTemplate, id: UUID = UUID()) -> Pattern {
+        let generated = Pattern.generatePolyrhythmBeats(for: template)
+        try! Pattern(
+            id: id,
+            name: template.displayName,
+            bpm: template.defaultBPM,
+            meter: .fourFour,
+            subdivision: .quarter,
+            beats: generated.beats,
+            polyrhythmTemplate: template,
+            stepDurationsInMeterBeats: generated.stepDurationsInMeterBeats
+        )
+    }
+
+    public static func generatePolyrhythmBeats(for template: PolyrhythmTemplate) -> (beats: [Beat], stepDurationsInMeterBeats: [Double]) {
+        let primary = template.primaryPulseCount
+        let cross = template.crossPulseCount
+        let stepCount = leastCommonMultiple(primary, cross)
+        let primaryInterval = stepCount / primary
+        let crossInterval = stepCount / cross
+        let stepDuration = Double(primary) / Double(stepCount)
+
+        let beats = (0..<stepCount).map { index in
+            let hasPrimary = index.isMultiple(of: primaryInterval)
+            let hasCross = index.isMultiple(of: crossInterval)
+
+            let accent: AccentLevel
+            let role: ClickSoundRole
+            if index == 0 {
+                accent = .strong
+                role = .downbeat
+            } else if hasPrimary {
+                accent = .normal
+                role = .beat
+            } else if hasCross {
+                accent = .ghost
+                role = .subdivision
+            } else {
+                accent = .muted
+                role = .muted
+            }
+
+            return Beat(index: index, accent: accent, soundRole: role)
+        }
+
+        return (beats, Array(repeating: stepDuration, count: stepCount))
+    }
+
+    private static func leastCommonMultiple(_ first: Int, _ second: Int) -> Int {
+        abs(first * second) / greatestCommonDivisor(first, second)
+    }
+
+    private static func greatestCommonDivisor(_ first: Int, _ second: Int) -> Int {
+        var a = abs(first)
+        var b = abs(second)
+        while b != 0 {
+            let remainder = a % b
+            a = b
+            b = remainder
+        }
+        return max(a, 1)
+    }
+
     public static func generateGrooveBeats(for template: GrooveTemplate) -> [Beat] {
         (0..<template.stepCount).map { index in
             let isActive = template.activeStepIndexes.contains(index)
@@ -668,6 +780,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         claveModeTemplate = nil
         grooveMixerPreset = nil
         swingTemplate = nil
+        polyrhythmTemplate = nil
         perBeatSubdivisions = nil
         stepDurationsInMeterBeats = nil
     }
@@ -679,6 +792,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         claveModeTemplate = nil
         grooveMixerPreset = nil
         swingTemplate = nil
+        polyrhythmTemplate = nil
         perBeatSubdivisions = nil
         stepDurationsInMeterBeats = nil
     }
@@ -699,6 +813,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         claveModeTemplate = nil
         grooveMixerPreset = nil
         swingTemplate = nil
+        polyrhythmTemplate = nil
     }
 
     public mutating func cycleAccent(at index: Int) throws {

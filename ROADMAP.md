@@ -26,6 +26,7 @@
 - Human Feel timing simulation.
 - Mixed per-beat subdivision editing with tuplets.
 - Jazz 2 and 4 and swing templates.
+- Flattened polyrhythm templates.
 
 ## V1.1
 

@@ -73,6 +73,7 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
             claveModeTemplate: source.claveModeTemplate,
             grooveMixerPreset: source.grooveMixerPreset,
             swingTemplate: source.swingTemplate,
+            polyrhythmTemplate: source.polyrhythmTemplate,
             perBeatSubdivisions: source.perBeatSubdivisions,
             stepDurationsInMeterBeats: source.stepDurationsInMeterBeats
         )
@@ -134,7 +135,9 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
                 Pattern.groove(.sonClave32),
                 Pattern.groove(.bossaClave),
                 Pattern.swing(.jazzTwoAndFour),
-                Pattern.swing(.swingEighths)
+                Pattern.swing(.swingEighths),
+                Pattern.polyrhythm(.threeOverTwo),
+                Pattern.polyrhythm(.fiveOverFour)
             ],
             setlists: [starterSetlist],
             audioSettings: MetronomeAudioSettings()

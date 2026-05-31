@@ -154,6 +154,22 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(Pattern.swing(.halfTimeShuffle).beats.filter { $0.soundRole != .muted }.map(\.index), [0, 2, 5, 6, 8, 11])
     }
 
+    func testPolyrhythmTemplatesFlattenPrimaryAndCrossPulses() {
+        XCTAssertEqual(PolyrhythmTemplate.allCases.count, 6)
+
+        let threeOverTwo = Pattern.polyrhythm(.threeOverTwo)
+        XCTAssertEqual(threeOverTwo.beats.count, 6)
+        XCTAssertEqual(threeOverTwo.polyrhythmTemplate, .threeOverTwo)
+        XCTAssertEqual(threeOverTwo.stepDurationsInMeterBeats, Array(repeating: 1.0 / 3.0, count: 6))
+        XCTAssertEqual(threeOverTwo.beats.filter { $0.soundRole == .beat }.map(\.index), [3])
+        XCTAssertEqual(threeOverTwo.beats.filter { $0.soundRole == .subdivision }.map(\.index), [2, 4])
+
+        let fiveOverFour = Pattern.polyrhythm(.fiveOverFour)
+        XCTAssertEqual(fiveOverFour.beats.count, 20)
+        XCTAssertEqual(fiveOverFour.beats.filter { $0.soundRole == .beat }.map(\.index), [5, 10, 15])
+        XCTAssertEqual(fiveOverFour.beats.filter { $0.soundRole == .subdivision }.map(\.index), [4, 8, 12, 16])
+    }
+
     func testPatternEditingClearsGrooveTemplateMarker() {
         var pattern = Pattern.groove(.bossaClave)
 
@@ -163,6 +179,7 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertNil(pattern.claveModeTemplate)
         XCTAssertNil(pattern.grooveMixerPreset)
         XCTAssertNil(pattern.swingTemplate)
+        XCTAssertNil(pattern.polyrhythmTemplate)
         XCTAssertEqual(pattern.beats.count, 7)
     }
 

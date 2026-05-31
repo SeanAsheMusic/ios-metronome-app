@@ -24,6 +24,7 @@
 | `RhythmModel.GrooveTemplate` | Built-in 16-step son, rumba, and bossa clave templates. |
 | `RhythmModel.ClaveModeTemplate` | Traditional clave, odd-meter clave-feel templates, and flattened local mixer presets for clave, metronome click, and subdivisions. |
 | `RhythmModel.SwingTemplate` | Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle patterns backed by variable step durations. |
+| `RhythmModel.PolyrhythmTemplate` | Flattened single-pattern polyrhythms for common cross-rhythm practice without independent lane faders. |
 | `Accessibility` | Accessibility helpers and audit notes. |
 | `DesignSystem` | Semantic spacing, typography, and control conventions. |
 
@@ -38,6 +39,8 @@ Rhythm Trainer and Human Feel live in audio settings so playback can mute or nud
 Microphone accuracy checking is architecturally possible with an input tap, onset detector, and scheduled-click comparison window, but it should not ship until the app has microphone permission text, input-latency calibration, false-positive handling, and device validation.
 
 Clave Mode currently renders mixer choices into a single playable pattern so the existing audio source of truth remains intact. Independent per-lane audio faders should be added only after the audio engine supports simultaneous lane events without compromising timing.
+
+Polyrhythm templates follow the same v1 approach: they flatten primary and cross pulses into one scheduled pattern, with primary pulse hits mapped to beat sounds and cross-pulse-only hits mapped to subdivision sounds. True lane-specific volume and sound selection remains a later audio-engine feature.
 
 ## Persistence Direction
 
