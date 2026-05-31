@@ -16,7 +16,7 @@
 | Practice timer | Yes | Coach modes | Strong | Trainer | Quiet/local only | V1 |
 | Clave/groove modes | Limited | Limited | Limited | Limited | Traditional, bell, odd-meter, and mixer template foundation | V1 |
 | Sound mixing | Presets | Strong | Strong | Basic | Role-level downbeat, beat, subdivision, and cue levels | V1 |
-| Gap/random silence | Limited | Coach | Assistant | Trainer | Fixed and random silent-bar Rhythm Trainer | V1 |
+| Gap/random silence | Limited | Coach | Assistant | Trainer | Fixed/random silent bars, random beat dropout, and guide-tone/dropout Rhythm Trainer modes | V1 |
 | MIDI/Link | No/varies | No/varies | No/varies | Link | Defer | Later |
 
 ## Complaint Opportunities

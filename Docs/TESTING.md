@@ -25,7 +25,7 @@ The Swift package includes XCTest coverage for:
 - Setlist item add, select, move, and remove operations.
 - Song-form setlist section bar counts.
 - Audio settings clamping and persistence.
-- Rhythm Trainer fixed/random mute behavior and Human Feel warning thresholds.
+- Rhythm Trainer fixed-bar, random-bar, random-beat, guide-tone, and dropout mute behavior plus Human Feel warning thresholds.
 - Portable library export/import and raw-library recovery import.
 - Bounded local snapshots before library overwrites and imports.
 - Latest local snapshot restore.

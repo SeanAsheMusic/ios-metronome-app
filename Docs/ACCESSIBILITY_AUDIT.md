@@ -34,7 +34,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 - Count-in selection is a segmented picker labeled "Count-in length"; remaining count-in beats are announced when visible.
 - Practice timer controls expose duration, start/pause, reset, and remaining time.
 - Tempo ladder controls expose target BPM, step size, bars per step, and start/stop state.
-- Rhythm Trainer exposes mode, fixed bar counts, and random silent-bar chance.
+- Rhythm Trainer exposes mode, fixed bar counts, random silent-bar chance, random beat-dropout chance, and guide-tone/dropout modes.
 - Visual pulse exposes active/inactive state and reduced-motion state.
 
 ### Stage Pulse

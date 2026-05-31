@@ -148,6 +148,43 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(noneSilent.soundRole(for: .beat, patternID: patternID, barIndex: 0), .beat)
     }
 
+    func testRhythmTrainerRandomBeatsCanMuteAllOrNone() {
+        let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!
+        let allSilent = RhythmTrainerSettings(mode: .randomBeats, randomSilenceProbability: 1.0)
+        let noneSilent = RhythmTrainerSettings(mode: .randomBeats, randomSilenceProbability: 0.0)
+
+        XCTAssertEqual(
+            allSilent.soundRole(for: .beat, patternID: patternID, barIndex: 0, eventIndexInBar: 2, mainBeatIndexInBar: 2),
+            .muted
+        )
+        XCTAssertEqual(
+            noneSilent.soundRole(for: .beat, patternID: patternID, barIndex: 0, eventIndexInBar: 2, mainBeatIndexInBar: 2),
+            .beat
+        )
+    }
+
+    func testRhythmTrainerGuideTwoAndFourOnlyLeavesBackbeats() {
+        let settings = RhythmTrainerSettings(mode: .guideTwoAndFour)
+        let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!
+
+        XCTAssertEqual(settings.soundRole(for: .downbeat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 0), .muted)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 1), .beat)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 2), .muted)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 3), .beat)
+        XCTAssertEqual(settings.soundRole(for: .subdivision, patternID: patternID, barIndex: 0), .muted)
+    }
+
+    func testRhythmTrainerDropOneAndThreeKeepsOtherPulses() {
+        let settings = RhythmTrainerSettings(mode: .dropOneAndThree)
+        let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!
+
+        XCTAssertEqual(settings.soundRole(for: .downbeat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 0), .muted)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 1), .beat)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 2), .muted)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0, mainBeatIndexInBar: 3), .beat)
+        XCTAssertEqual(settings.soundRole(for: .subdivision, patternID: patternID, barIndex: 0), .subdivision)
+    }
+
     func testClickSoundPresetDisplayNames() {
         XCTAssertEqual(ClickSoundPreset.classic.displayName, "Classic")
         XCTAssertEqual(ClickSoundPreset.wood.displayName, "Wood")

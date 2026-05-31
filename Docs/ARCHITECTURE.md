@@ -34,7 +34,7 @@ SwiftUI views should read observable app state, mutate domain models through foc
 
 Pattern subdivision changes regenerate editable step grids in the domain model. For simple meters, eighth, triplet, quintuplet, sixteenth, and septuplet subdivisions expand each meter beat. For compound eighth-note meters, eighth remains the meter beat and sixteenth creates two steps per meter beat. Mixed per-beat subdivision patterns carry per-step duration metadata so the audio scheduler can handle non-uniform beat divisions without forcing everything onto a fake uniform grid.
 
-Rhythm Trainer, Human Feel, and role-level mixer controls live in audio settings so playback can mute, nudge, or rebalance scheduled events without rewriting the user's saved pattern. Human Feel must remain at zero for measurement and precision claims.
+Rhythm Trainer, Human Feel, and role-level mixer controls live in audio settings so playback can mute bars, drop individual beat events, run guide-tone modes, nudge timing, or rebalance scheduled events without rewriting the user's saved pattern. Human Feel must remain at zero for measurement and precision claims.
 
 Microphone accuracy checking is architecturally possible with an input tap, onset detector, and scheduled-click comparison window, but it should not ship until the app has microphone permission text, input-latency calibration, false-positive handling, and device validation.
 

@@ -11,7 +11,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Direct numeric BPM entry
 - Tap tempo from recent taps
 - Audible one- and two-bar count-in
-- Rhythm Trainer with fixed or random silent bars
+- Rhythm Trainer with fixed silent bars, random silent bars, random beat dropout, 2-and-4 guide, and 1-and-3 dropout modes
 - Human Feel timing simulation with a high-humanization warning
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Editable subdivision-step grids for syncopation and beat silencing

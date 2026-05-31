@@ -40,7 +40,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Polyrhythm templates | 3:2, 3:4, 4:3, 5:4, 5:3, and 7:4 patterns expose the primary and cross pulses clearly. | Device note. |
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
 | Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
-| Rhythm Trainer | Fixed silent bars and random silent bars mute whole bars while keeping the transport running. | Device note. |
+| Rhythm Trainer | Fixed silent bars, random silent bars, random beat dropout, 2-and-4 guide, and 1-and-3 dropout modes mute the intended events while keeping the transport running. | Device note. |
 | Human Feel | Zero percent remains steady; high values audibly drift and show the inaccuracy warning. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
 | Click fixtures | `SoundLibrary/RenderedVerification` WAVs match `SHA256SUMS` and are useful for preset listening review. | Checksum output plus notes. |

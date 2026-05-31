@@ -207,12 +207,18 @@ public enum RhythmTrainerMode: String, CaseIterable, Codable, Equatable, Sendabl
     case off
     case fixedBars
     case randomBars
+    case randomBeats
+    case guideTwoAndFour
+    case dropOneAndThree
 
     public var displayName: String {
         switch self {
         case .off: "Off"
         case .fixedBars: "Fixed Gaps"
         case .randomBars: "Random Gaps"
+        case .randomBeats: "Random Beats"
+        case .guideTwoAndFour: "2 & 4 Guide"
+        case .dropOneAndThree: "Drop 1 & 3"
         }
     }
 }
@@ -250,13 +256,21 @@ public struct RhythmTrainerSettings: Codable, Equatable, Sendable {
             "\(audibleBars) on, \(silentBars) silent"
         case .randomBars:
             "\(Int((randomSilenceProbability * 100).rounded()))% random silent bars"
+        case .randomBeats:
+            "\(Int((randomSilenceProbability * 100).rounded()))% random beat dropout"
+        case .guideTwoAndFour:
+            "Only beats 2 and 4"
+        case .dropOneAndThree:
+            "Mute beats 1 and 3"
         }
     }
 
     public func soundRole(
         for originalRole: ClickSoundRole,
         patternID: UUID,
-        barIndex: Int
+        barIndex: Int,
+        eventIndexInBar: Int = 0,
+        mainBeatIndexInBar: Int? = nil
     ) -> ClickSoundRole {
         guard originalRole != .muted else {
             return originalRole
@@ -271,13 +285,32 @@ public struct RhythmTrainerSettings: Codable, Equatable, Sendable {
             return barInCycle >= audibleBars ? .muted : originalRole
         case .randomBars:
             return Self.randomUnit(patternID: patternID, barIndex: barIndex) < randomSilenceProbability ? .muted : originalRole
+        case .randomBeats:
+            return Self.randomUnit(patternID: patternID, barIndex: barIndex, eventIndexInBar: eventIndexInBar) < randomSilenceProbability ? .muted : originalRole
+        case .guideTwoAndFour:
+            guard Self.isMainPulse(originalRole), let mainBeatIndexInBar else {
+                return .muted
+            }
+            return mainBeatIndexInBar == 1 || mainBeatIndexInBar == 3 ? originalRole : .muted
+        case .dropOneAndThree:
+            guard Self.isMainPulse(originalRole), let mainBeatIndexInBar else {
+                return originalRole
+            }
+            return mainBeatIndexInBar == 0 || mainBeatIndexInBar == 2 ? .muted : originalRole
         }
     }
 
-    private static func randomUnit(patternID: UUID, barIndex: Int) -> Double {
+    private static func isMainPulse(_ role: ClickSoundRole) -> Bool {
+        role == .downbeat || role == .beat
+    }
+
+    private static func randomUnit(patternID: UUID, barIndex: Int, eventIndexInBar: Int? = nil) -> Double {
         var hasher = Hasher()
         hasher.combine(patternID)
         hasher.combine(barIndex)
+        if let eventIndexInBar {
+            hasher.combine(eventIndexInBar)
+        }
         let value = abs(hasher.finalize() % 10_000)
         return Double(value) / 10_000.0
     }
@@ -783,12 +816,15 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
                 break
             }
 
-            let beat = pattern.beats[beatOffset % pattern.beats.count]
+            let eventIndexInBar = beatOffset % pattern.beats.count
+            let beat = pattern.beats[eventIndexInBar]
             let barIndex = beatOffset / max(1, pattern.beats.count)
             let soundRole = settings.rhythmTrainer.soundRole(
                 for: beat.soundRole,
                 patternID: pattern.id,
-                barIndex: barIndex
+                barIndex: barIndex,
+                eventIndexInBar: eventIndexInBar,
+                mainBeatIndexInBar: mainBeatIndex(in: pattern, eventIndexInBar: eventIndexInBar)
             )
             let event = ScheduledBeatEvent(
                 patternID: pattern.id,
@@ -836,6 +872,22 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             return hostTime - min(hostTime, UInt64(abs(randomOffset).rounded()))
         }
         return hostTime + UInt64(randomOffset.rounded())
+    }
+
+    private func mainBeatIndex(in pattern: MetronomePattern, eventIndexInBar: Int) -> Int? {
+        guard eventIndexInBar >= 0, eventIndexInBar < pattern.beats.count else {
+            return nil
+        }
+
+        let role = pattern.beats[eventIndexInBar].soundRole
+        guard role == .downbeat || role == .beat else {
+            return nil
+        }
+
+        let mainPulseCount = pattern.beats.prefix(eventIndexInBar + 1).filter { beat in
+            beat.soundRole == .downbeat || beat.soundRole == .beat
+        }.count
+        return mainPulseCount - 1
     }
 
     private func play(event: ScheduledBeatEvent) {

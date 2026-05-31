@@ -11,7 +11,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Play/stop UI skeleton.
 - Tap tempo entry point.
 - Audible one- and two-bar count-in.
-- Rhythm Trainer with fixed and random silent-bar modes.
+- Rhythm Trainer with fixed silent bars, random silent bars, random beat dropout, 2-and-4 guide, and 1-and-3 dropout modes.
 - Human Feel timing simulation with a warning for intentionally inaccurate high settings.
 - Common meters: 2/4, 3/4, 4/4, 5/4, 5/8, 6/8, 7/8, 9/8, 11/8, and 12/8.
 - Subdivisions: quarter, eighth, triplet, quintuplet, sixteenth, and septuplet.

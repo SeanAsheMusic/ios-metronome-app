@@ -24,7 +24,7 @@
 - Audio timing measurement harness and Settings timing summary controls.
 - Source-level accessibility audit.
 - Local tempo ladder practice tool.
-- Rhythm Trainer fixed/random silent bars.
+- Rhythm Trainer fixed/random silent bars, random beat dropout, 2-and-4 guide, and 1-and-3 dropout modes.
 - Human Feel timing simulation.
 - Mixed per-beat subdivision editing with tuplets.
 - Jazz 2 and 4 and swing templates.

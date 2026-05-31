@@ -764,10 +764,12 @@ struct MainMetronomeView: View {
                     } increment: {
                         Task { await viewModel.updateRhythmTrainerSilentBars(by: 1) }
                     }
-                } else if viewModel.audioSettings.rhythmTrainer.mode == .randomBars {
+                } else if viewModel.audioSettings.rhythmTrainer.mode == .randomBars
+                    || viewModel.audioSettings.rhythmTrainer.mode == .randomBeats {
+                    let usesBeatDropout = viewModel.audioSettings.rhythmTrainer.mode == .randomBeats
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("Silent Chance")
+                            Text(usesBeatDropout ? "Beat Dropout" : "Silent Chance")
                                 .font(.caption.weight(.semibold))
                                 .foregroundStyle(.secondary)
                             Spacer()
@@ -783,7 +785,7 @@ struct MainMetronomeView: View {
                                 }
                             }
                         ), in: 0...1)
-                        .accessibilityLabel("Random silent bar chance")
+                        .accessibilityLabel(usesBeatDropout ? "Random beat dropout chance" : "Random silent bar chance")
                         .accessibilityValue("\(viewModel.rhythmTrainerRandomPercent) percent")
                     }
                 }
