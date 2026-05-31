@@ -26,6 +26,8 @@
 
 V1 target: no data collected, no tracking, no third-party analytics. Confirm before submission based on final dependencies.
 
+The app target includes `PrivacyInfo.xcprivacy` with no tracking, no collected data, no tracking domains, and no required-reason API declarations. Reconfirm this after every dependency or storage change.
+
 ## Required URLs
 
 - Support URL.

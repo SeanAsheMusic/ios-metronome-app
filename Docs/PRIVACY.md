@@ -21,3 +21,7 @@ Patterns, setlists, preferences, and future practice logs should remain on devic
 ## Current Storage
 
 The current app stores the local library as `MetronomeLibrary.json` in the app documents directory. It contains saved patterns, setlists, selected pattern ID, and audio settings. No network transfer is implemented.
+
+## Privacy Manifest
+
+The app target includes `App/PrivacyInfo.xcprivacy` declaring no tracking, no collected data types, no tracking domains, and no required-reason API usage. Re-check this manifest before any dependency, analytics, crash reporting, networking, or export/import feature is added.

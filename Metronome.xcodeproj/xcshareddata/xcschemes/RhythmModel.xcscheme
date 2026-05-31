@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FD350F58D3CE465B2AFC3E84"
+               BlueprintIdentifier = "3E8EA4D5C76BF2C85918C0BE"
                BuildableName = "RhythmModel.framework"
                BlueprintName = "RhythmModel"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7482E22034FEE84910B052FF"
+               BlueprintIdentifier = "569522C04E75CDC75B3D3273"
                BuildableName = "RhythmModelTests.xctest"
                BlueprintName = "RhythmModelTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -46,7 +46,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "7482E22034FEE84910B052FF"
+               BlueprintIdentifier = "569522C04E75CDC75B3D3273"
                BuildableName = "RhythmModelTests.xctest"
                BlueprintName = "RhythmModelTests"
                ReferencedContainer = "container:Metronome.xcodeproj">

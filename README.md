@@ -17,6 +17,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
 - Tabbed Play, Edit, Patterns, and Setlist app layout
 - Settings tab for synthesized click preset, volume, and accent boost
+- App privacy manifest declaring no tracking and no collected data
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
 - Synthesized click engine foundation using AVFoundation
