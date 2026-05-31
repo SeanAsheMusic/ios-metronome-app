@@ -169,11 +169,23 @@ public enum MetronomeLibraryStoreError: Error, Equatable {
 
 public actor MetronomeLibraryStore {
     private let fileURL: URL
+    private let snapshotDirectoryURL: URL
+    private let snapshotLimit: Int
+    private let dateProvider: @Sendable () -> Date
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
 
-    public init(fileURL: URL) {
+    public init(
+        fileURL: URL,
+        snapshotLimit: Int = 5,
+        dateProvider: @escaping @Sendable () -> Date = { Date() }
+    ) {
         self.fileURL = fileURL
+        self.snapshotDirectoryURL = fileURL
+            .deletingLastPathComponent()
+            .appendingPathComponent("MetronomeLibrarySnapshots", isDirectory: true)
+        self.snapshotLimit = max(0, snapshotLimit)
+        self.dateProvider = dateProvider
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -210,6 +222,7 @@ public actor MetronomeLibraryStore {
 
         let directory = fileURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try createSnapshotIfNeeded()
 
         let data = try encoder.encode(library)
         try data.write(to: fileURL, options: [.atomic])
@@ -245,6 +258,22 @@ public actor MetronomeLibraryStore {
         return library
     }
 
+    public func snapshotFileURLs() throws -> [URL] {
+        guard FileManager.default.fileExists(atPath: snapshotDirectoryURL.path) else {
+            return []
+        }
+
+        return try FileManager.default.contentsOfDirectory(
+            at: snapshotDirectoryURL,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles]
+        )
+        .filter { $0.pathExtension == "json" }
+        .sorted { first, second in
+            first.lastPathComponent > second.lastPathComponent
+        }
+    }
+
     private func validate(_ library: MetronomeLibrary) throws {
         guard library.schemaVersion == MetronomeLibrary.currentSchemaVersion else {
             throw MetronomeLibraryStoreError.unsupportedSchemaVersion(library.schemaVersion)
@@ -253,4 +282,33 @@ public actor MetronomeLibraryStore {
             throw MetronomeLibraryStoreError.emptyPatternLibrary
         }
     }
+
+    private func createSnapshotIfNeeded() throws {
+        guard snapshotLimit > 0, FileManager.default.fileExists(atPath: fileURL.path) else {
+            return
+        }
+
+        try FileManager.default.createDirectory(
+            at: snapshotDirectoryURL,
+            withIntermediateDirectories: true
+        )
+
+        let milliseconds = Int(dateProvider().timeIntervalSince1970 * 1_000)
+        let snapshotURL = snapshotDirectoryURL
+            .appendingPathComponent("MetronomeLibrary-\(milliseconds)-\(UUID().uuidString).json")
+        try FileManager.default.copyItem(at: fileURL, to: snapshotURL)
+        try pruneSnapshots()
+    }
+
+    private func pruneSnapshots() throws {
+        let snapshots = try snapshotFileURLs()
+        guard snapshots.count > snapshotLimit else {
+            return
+        }
+
+        for snapshot in snapshots.dropFirst(snapshotLimit) {
+            try FileManager.default.removeItem(at: snapshot)
+        }
+    }
+
 }

@@ -9,6 +9,7 @@
 - Synthesized click prototype.
 - Direct numeric BPM entry.
 - Local export/import bundles.
+- Bounded local library snapshots.
 - Sound family picker with synthesized presets.
 - Clave and bossa groove template foundation.
 - Background audio app mode.

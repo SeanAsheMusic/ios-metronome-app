@@ -18,6 +18,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Stable identifiers for patterns, beats, setlists, and setlist items.
 - Ordered setlists with move support.
 - Local persistence for selected pattern, pattern library, and setlists.
+- Bounded local snapshots before library overwrites and imports.
 - Versioned export/import storage support, Settings data controls, and Codable model support.
 - Simple local practice timer with preset durations.
 - SwiftUI performance play screen foundation.

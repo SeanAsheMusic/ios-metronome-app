@@ -57,7 +57,7 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(duplicate.subdivision, source.subdivision)
         XCTAssertNotEqual(duplicate.id, source.id)
         XCTAssertEqual(library.selectedPatternID, duplicate.id)
-        XCTAssertEqual(library.patterns.count, 4)
+        XCTAssertEqual(library.patterns.count, 6)
     }
 
     func testLibraryDeletesPatternAndMovesSelection() throws {
@@ -68,7 +68,7 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertFalse(library.patterns.contains { $0.id == deletedID })
         XCTAssertNotEqual(library.selectedPatternID, deletedID)
-        XCTAssertEqual(library.patterns.count, 2)
+        XCTAssertEqual(library.patterns.count, 4)
     }
 
     func testLibraryDeletePatternRemovesSetlistReferences() throws {
@@ -173,6 +173,43 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(loadedLibrary.selectedPattern.bpm, 88)
     }
 
+    func testStoreCreatesSnapshotBeforeOverwritingExistingLibrary() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        let originalLibrary = MetronomeLibrary.defaultLibrary()
+        var updatedLibrary = originalLibrary
+        var selectedPattern = updatedLibrary.selectedPattern
+        selectedPattern.bpm = 88
+        updatedLibrary.updateSelectedPattern(selectedPattern)
+
+        try await store.save(originalLibrary)
+        try await store.save(updatedLibrary)
+
+        let snapshots = try await store.snapshotFileURLs()
+        XCTAssertEqual(snapshots.count, 1)
+
+        let snapshotData = try Data(contentsOf: snapshots[0])
+        let snapshotLibrary = try JSONDecoder().decode(MetronomeLibrary.self, from: snapshotData)
+        XCTAssertEqual(snapshotLibrary.selectedPattern.bpm, originalLibrary.selectedPattern.bpm)
+    }
+
+    func testStorePrunesOldSnapshots() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL, snapshotLimit: 2)
+        var library = MetronomeLibrary.defaultLibrary()
+        try await store.save(library)
+
+        for bpm in [88, 92, 96] {
+            var selectedPattern = library.selectedPattern
+            selectedPattern.bpm = bpm
+            library.updateSelectedPattern(selectedPattern)
+            try await store.save(library)
+        }
+
+        let snapshots = try await store.snapshotFileURLs()
+        XCTAssertEqual(snapshots.count, 2)
+    }
+
     func testStoreExportsPortableLibraryDocument() async throws {
         let fileURL = temporaryFileURL()
         let store = MetronomeLibraryStore(fileURL: fileURL)
@@ -205,6 +242,28 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(imported.selectedPattern.name, "Imported")
         XCTAssertEqual(try await store.load(), imported)
+    }
+
+    func testStoreSnapshotsExistingLibraryBeforeImport() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        let originalLibrary = MetronomeLibrary.defaultLibrary()
+        var importedLibrary = originalLibrary
+        var selectedPattern = importedLibrary.selectedPattern
+        selectedPattern.rename(to: "Imported")
+        importedLibrary.updateSelectedPattern(selectedPattern)
+        let exported = MetronomeLibraryExport(library: importedLibrary)
+        let data = try JSONEncoder().encode(exported)
+
+        try await store.save(originalLibrary)
+        _ = try await store.importLibrary(from: data)
+
+        let snapshots = try await store.snapshotFileURLs()
+        XCTAssertEqual(snapshots.count, 1)
+
+        let snapshotData = try Data(contentsOf: snapshots[0])
+        let snapshotLibrary = try JSONDecoder().decode(MetronomeLibrary.self, from: snapshotData)
+        XCTAssertEqual(snapshotLibrary.selectedPattern.name, originalLibrary.selectedPattern.name)
     }
 
     func testStoreImportsRawLibraryForRecovery() async throws {
