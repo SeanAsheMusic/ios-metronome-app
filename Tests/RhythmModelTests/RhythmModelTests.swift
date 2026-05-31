@@ -249,4 +249,38 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(shortTimer.durationSeconds, PracticeTimer.minimumDurationSeconds)
         XCTAssertEqual(longTimer.durationSeconds, PracticeTimer.maximumDurationSeconds)
     }
+
+    func testTempoLadderStepsAfterConfiguredBars() {
+        var ladder = TempoLadder(targetBPM: 132, stepBPM: 4, barsPerStep: 2)
+
+        ladder.setEnabled(true, currentBPM: 120)
+
+        XCTAssertNil(ladder.recordCompletedBar(currentBPM: 120))
+        XCTAssertEqual(ladder.recordCompletedBar(currentBPM: 120), 124)
+    }
+
+    func testTempoLadderDoesNotOvershootTarget() {
+        var ladder = TempoLadder(targetBPM: 125, stepBPM: 10, barsPerStep: 1)
+
+        ladder.setEnabled(true, currentBPM: 120)
+
+        XCTAssertEqual(ladder.recordCompletedBar(currentBPM: 120), 125)
+        XCTAssertFalse(ladder.isEnabled)
+    }
+
+    func testTempoLadderCanStepDown() {
+        var ladder = TempoLadder(targetBPM: 100, stepBPM: 6, barsPerStep: 1)
+
+        ladder.setEnabled(true, currentBPM: 112)
+
+        XCTAssertEqual(ladder.recordCompletedBar(currentBPM: 112), 106)
+    }
+
+    func testTempoLadderClampsSettings() {
+        let ladder = TempoLadder(targetBPM: 999, stepBPM: 99, barsPerStep: 99)
+
+        XCTAssertEqual(ladder.targetBPM, Pattern.maximumBPM)
+        XCTAssertEqual(ladder.stepBPM, TempoLadder.maximumStepBPM)
+        XCTAssertEqual(ladder.barsPerStep, TempoLadder.maximumBarsPerStep)
+    }
 }

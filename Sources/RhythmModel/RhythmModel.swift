@@ -427,3 +427,82 @@ public struct PracticeTimer: Codable, Equatable, Sendable {
         min(maximumDurationSeconds, max(minimumDurationSeconds, seconds))
     }
 }
+
+public struct TempoLadder: Codable, Equatable, Sendable {
+    public static let minimumStepBPM = 1
+    public static let maximumStepBPM = 20
+    public static let minimumBarsPerStep = 1
+    public static let maximumBarsPerStep = 16
+
+    public private(set) var targetBPM: Int
+    public private(set) var stepBPM: Int
+    public private(set) var barsPerStep: Int
+    public private(set) var barsCompleted: Int
+    public private(set) var isEnabled: Bool
+
+    public init(
+        targetBPM: Int = 140,
+        stepBPM: Int = 4,
+        barsPerStep: Int = 4,
+        barsCompleted: Int = 0,
+        isEnabled: Bool = false
+    ) {
+        self.targetBPM = TempoLadder.clampedBPM(targetBPM)
+        self.stepBPM = min(Self.maximumStepBPM, max(Self.minimumStepBPM, stepBPM))
+        self.barsPerStep = min(Self.maximumBarsPerStep, max(Self.minimumBarsPerStep, barsPerStep))
+        self.barsCompleted = min(self.barsPerStep, max(0, barsCompleted))
+        self.isEnabled = isEnabled
+    }
+
+    public mutating func setTargetBPM(_ bpm: Int) {
+        targetBPM = TempoLadder.clampedBPM(bpm)
+        barsCompleted = 0
+    }
+
+    public mutating func setStepBPM(_ bpm: Int) {
+        stepBPM = min(Self.maximumStepBPM, max(Self.minimumStepBPM, bpm))
+        barsCompleted = 0
+    }
+
+    public mutating func setBarsPerStep(_ bars: Int) {
+        barsPerStep = min(Self.maximumBarsPerStep, max(Self.minimumBarsPerStep, bars))
+        barsCompleted = 0
+    }
+
+    public mutating func setEnabled(_ enabled: Bool, currentBPM: Int) {
+        isEnabled = enabled && targetBPM != currentBPM
+        barsCompleted = 0
+    }
+
+    public mutating func recordCompletedBar(currentBPM: Int) -> Int? {
+        guard isEnabled else {
+            return nil
+        }
+
+        guard currentBPM != targetBPM else {
+            isEnabled = false
+            barsCompleted = 0
+            return nil
+        }
+
+        barsCompleted += 1
+        guard barsCompleted >= barsPerStep else {
+            return nil
+        }
+
+        barsCompleted = 0
+        let direction = targetBPM > currentBPM ? 1 : -1
+        let proposedBPM = currentBPM + (direction * stepBPM)
+        let nextBPM = direction > 0 ? min(proposedBPM, targetBPM) : max(proposedBPM, targetBPM)
+
+        if nextBPM == targetBPM {
+            isEnabled = false
+        }
+
+        return nextBPM
+    }
+
+    private static func clampedBPM(_ bpm: Int) -> Int {
+        min(Pattern.maximumBPM, max(Pattern.minimumBPM, bpm))
+    }
+}

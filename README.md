@@ -20,6 +20,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
 - Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
 - Simple local practice timer on the Play screen with 5, 10, and 20 minute presets
+- Local tempo ladder practice tool with target, step, and bars-per-step controls
 - Settings tab for synthesized click preset, volume, and accent boost
 - Runtime synthesized click provenance manifest
 - Audio output status with wireless latency warning
@@ -36,7 +37,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Latest local library snapshot restore
 - Versioned local library export/import support
 - Settings Data controls for library export/import and latest snapshot restore
-- XCTest coverage for model and scheduler behavior
+- XCTest coverage for model, practice ladder, and scheduler behavior
 - Accessibility-first UI and docs
 
 ## Deferred

@@ -12,7 +12,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 | Area | Source status | Notes |
 |---|---|---|
-| Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
+| Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
 | Edit | Implemented in source | Pattern name, meter, subdivision, and beat accent controls are labeled. Beat buttons announce the beat number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, and groove template creation have labels. |
@@ -33,6 +33,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 - Tap tempo has both a label and a hint.
 - Count-in selection is a segmented picker labeled "Count-in length"; remaining count-in beats are announced when visible.
 - Practice timer controls expose duration, start/pause, reset, and remaining time.
+- Tempo ladder controls expose target BPM, step size, bars per step, and start/stop state.
 - Visual pulse exposes active/inactive state and reduced-motion state.
 
 ### Stage Pulse

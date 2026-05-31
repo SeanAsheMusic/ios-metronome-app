@@ -29,6 +29,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Meter/subdivision | Meter and subdivision edits audibly change the click pattern after playback restart or prepare. | Device note. |
 | Beat accents | Strong, normal, ghost, and muted steps are audible or silent as expected. | Device note. |
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
+| Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
 
 ## Audio Timing

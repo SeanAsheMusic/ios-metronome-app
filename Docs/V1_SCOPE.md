@@ -23,6 +23,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Latest local snapshot restore.
 - Versioned export/import storage support, Settings data controls, and Codable model support.
 - Simple local practice timer with preset durations.
+- Local tempo ladder practice tool.
 - SwiftUI performance play screen foundation.
 - Full-screen stage pulse mode.
 - Accessibility labels and large touch targets.
@@ -46,7 +47,6 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 ## V1.1 Candidates
 
 - Extended click renderer provenance for any future pre-rendered assets.
-- Tempo ladders.
 
 ## Later Candidates
 

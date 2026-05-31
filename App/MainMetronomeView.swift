@@ -481,6 +481,55 @@ struct MainMetronomeView: View {
                 practiceDurationButton(minutes: 10)
                 practiceDurationButton(minutes: 20)
             }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Tempo Ladder")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        Text(viewModel.tempoLadderSummary)
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Tempo ladder \(viewModel.tempoLadderAccessibilitySummary)")
+
+                    Button {
+                        viewModel.toggleTempoLadder()
+                    } label: {
+                        Label(viewModel.tempoLadder.isEnabled ? "Stop" : "Start", systemImage: viewModel.tempoLadder.isEnabled ? "pause.fill" : "arrow.up.forward")
+                            .frame(minWidth: 86, minHeight: 44)
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(viewModel.tempoLadder.isEnabled ? .accentColor : .blue)
+                    .accessibilityLabel(viewModel.tempoLadder.isEnabled ? "Stop tempo ladder" : "Start tempo ladder")
+                }
+
+                VStack(spacing: 8) {
+                    ladderStepper(title: "Target", value: "\(viewModel.tempoLadder.targetBPM)", decrementLabel: "Decrease target tempo", incrementLabel: "Increase target tempo") {
+                        viewModel.updateTempoLadderTarget(by: -5)
+                    } increment: {
+                        viewModel.updateTempoLadderTarget(by: 5)
+                    }
+
+                    ladderStepper(title: "Step", value: "\(viewModel.tempoLadder.stepBPM)", decrementLabel: "Decrease ladder step", incrementLabel: "Increase ladder step") {
+                        viewModel.updateTempoLadderStep(by: -1)
+                    } increment: {
+                        viewModel.updateTempoLadderStep(by: 1)
+                    }
+
+                    ladderStepper(title: "Bars", value: "\(viewModel.tempoLadder.barsPerStep)", decrementLabel: "Decrease ladder bars", incrementLabel: "Increase ladder bars") {
+                        viewModel.updateTempoLadderBars(by: -1)
+                    } increment: {
+                        viewModel.updateTempoLadderBars(by: 1)
+                    }
+                }
+            }
         }
         .padding(12)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -494,6 +543,47 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, minHeight: 44)
         .buttonStyle(.bordered)
         .accessibilityLabel("Set practice timer to \(minutes) minutes")
+    }
+
+    private func ladderStepper(
+        title: String,
+        value: String,
+        decrementLabel: String,
+        incrementLabel: String,
+        decrement: @escaping () -> Void,
+        increment: @escaping () -> Void
+    ) -> some View {
+        HStack(spacing: 8) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button {
+                decrement()
+            } label: {
+                Label(decrementLabel, systemImage: "minus")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel(decrementLabel)
+
+            Text(value)
+                .font(.headline.monospacedDigit())
+                .frame(width: 44, height: 44)
+                .accessibilityHidden(true)
+
+            Button {
+                increment()
+            } label: {
+                Label(incrementLabel, systemImage: "plus")
+                    .labelStyle(.iconOnly)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.bordered)
+            .accessibilityLabel(incrementLabel)
+        }
     }
 
     private var patternEditor: some View {
@@ -837,6 +927,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var countInBars = 0
     @Published var isCountingIn = false
     @Published var countInRemainingBeats: Int?
+    @Published var tempoLadder = TempoLadder()
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -1220,6 +1311,33 @@ final class MainMetronomeViewModel: ObservableObject {
         practiceTimer.selectDuration(seconds: minutes * 60)
     }
 
+    var tempoLadderSummary: String {
+        let direction = tempoLadder.targetBPM >= pattern.bpm ? "up" : "down"
+        let state = tempoLadder.isEnabled ? "On" : "Off"
+        return "\(state) · \(direction) to \(tempoLadder.targetBPM) · \(tempoLadder.stepBPM) BPM every \(tempoLadder.barsPerStep) bars"
+    }
+
+    var tempoLadderAccessibilitySummary: String {
+        let state = tempoLadder.isEnabled ? "enabled" : "disabled"
+        return "\(state), target \(tempoLadder.targetBPM) beats per minute, step \(tempoLadder.stepBPM) beats per minute every \(tempoLadder.barsPerStep) bars"
+    }
+
+    func toggleTempoLadder() {
+        tempoLadder.setEnabled(!tempoLadder.isEnabled, currentBPM: pattern.bpm)
+    }
+
+    func updateTempoLadderTarget(by delta: Int) {
+        tempoLadder.setTargetBPM(tempoLadder.targetBPM + delta)
+    }
+
+    func updateTempoLadderStep(by delta: Int) {
+        tempoLadder.setStepBPM(tempoLadder.stepBPM + delta)
+    }
+
+    func updateTempoLadderBars(by delta: Int) {
+        tempoLadder.setBarsPerStep(tempoLadder.barsPerStep + delta)
+    }
+
     private func startPracticeTicker() {
         practiceTickerTask?.cancel()
         practiceTickerTask = Task { [weak self] in
@@ -1455,6 +1573,8 @@ final class MainMetronomeViewModel: ObservableObject {
             return
         }
 
+        applyTempoLadderIfNeeded(for: event)
+
         pulseResetTask?.cancel()
         pulseIsActive = true
 
@@ -1463,6 +1583,23 @@ final class MainMetronomeViewModel: ObservableObject {
             await MainActor.run {
                 self?.pulseIsActive = false
             }
+        }
+    }
+
+    private func applyTempoLadderIfNeeded(for event: ScheduledBeatEvent) {
+        guard isPlaying, event.patternID == pattern.id, event.beatIndex == 0 else {
+            return
+        }
+
+        guard let nextBPM = tempoLadder.recordCompletedBar(currentBPM: pattern.bpm) else {
+            return
+        }
+
+        pattern.bpm = nextBPM
+        bpmEntryMessage = "Tempo ladder set \(nextBPM) BPM."
+        saveSelectedPattern()
+        Task {
+            try? await audioEngine.prepare(pattern: pattern)
         }
     }
 }

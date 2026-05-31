@@ -18,6 +18,7 @@
 - Audible count-in.
 - Audio timing measurement harness.
 - Source-level accessibility audit.
+- Local tempo ladder practice tool.
 
 ## V1.1
 

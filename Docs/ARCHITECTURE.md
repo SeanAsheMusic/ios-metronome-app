@@ -20,7 +20,7 @@
 | `Setlists` | Future setlist library and reorder workflows. |
 | `Persistence` | Local store, migration boundary, snapshots, latest snapshot restore, and export/import. |
 | `SoundLibrary` | Synthesized click preset notes and provenance manifest. |
-| `Practice` | Practice timers, future mute trainers, tempo ladders, and local-only analytics. |
+| `Practice` | Practice timers, tempo ladders, future mute trainers, and local-only analytics. |
 | `RhythmModel.GrooveTemplate` | Built-in 16-step clave and bossa template foundation for future lane-based groove modes. |
 | `Accessibility` | Accessibility helpers and audit notes. |
 | `DesignSystem` | Semantic spacing, typography, and control conventions. |
