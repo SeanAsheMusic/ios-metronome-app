@@ -38,10 +38,12 @@ public struct Meter: Codable, Hashable, Sendable {
         MeterKey(beatsPerBar: 3, beatUnit: 4),
         MeterKey(beatsPerBar: 4, beatUnit: 4),
         MeterKey(beatsPerBar: 5, beatUnit: 4),
+        MeterKey(beatsPerBar: 5, beatUnit: 8),
         MeterKey(beatsPerBar: 6, beatUnit: 8),
         MeterKey(beatsPerBar: 7, beatUnit: 8),
         MeterKey(beatsPerBar: 7, beatUnit: 4),
         MeterKey(beatsPerBar: 9, beatUnit: 8),
+        MeterKey(beatsPerBar: 11, beatUnit: 8),
         MeterKey(beatsPerBar: 12, beatUnit: 8)
     ]
 
@@ -151,6 +153,126 @@ public enum GrooveTemplate: String, CaseIterable, Codable, Hashable, Sendable {
     }
 }
 
+public enum GrooveMixerPreset: String, CaseIterable, Codable, Hashable, Sendable {
+    case claveWithMetronome
+    case claveOnly
+    case metronomeOnly
+    case claveMetronomeSubdivisions
+
+    public var displayName: String {
+        switch self {
+        case .claveWithMetronome: "Clave + Click"
+        case .claveOnly: "Clave Only"
+        case .metronomeOnly: "Click Only"
+        case .claveMetronomeSubdivisions: "Clave + Click + Subdivisions"
+        }
+    }
+
+    public var includesClave: Bool {
+        self != .metronomeOnly
+    }
+
+    public var includesMetronome: Bool {
+        self != .claveOnly
+    }
+
+    public var includesSubdivisions: Bool {
+        self == .claveMetronomeSubdivisions
+    }
+}
+
+public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable {
+    case sonClave32
+    case sonClave23
+    case rumbaClave32
+    case rumbaClave23
+    case bossaClave32
+    case bossaClave23
+    case bembeBell68
+    case fiveEightTwoThree
+    case fiveEightThreeTwo
+    case sevenEightTwoTwoThree
+    case sevenEightThreeTwoTwo
+    case nineEightTwoTwoTwoThree
+    case elevenEightThreeThreeTwoThree
+
+    public var displayName: String {
+        switch self {
+        case .sonClave32: "Son 3:2"
+        case .sonClave23: "Son 2:3"
+        case .rumbaClave32: "Rumba 3:2"
+        case .rumbaClave23: "Rumba 2:3"
+        case .bossaClave32: "Bossa 3:2"
+        case .bossaClave23: "Bossa 2:3"
+        case .bembeBell68: "Bembe 6/8"
+        case .fiveEightTwoThree: "5/8 2-3"
+        case .fiveEightThreeTwo: "5/8 3-2"
+        case .sevenEightTwoTwoThree: "7/8 2-2-3"
+        case .sevenEightThreeTwoTwo: "7/8 3-2-2"
+        case .nineEightTwoTwoTwoThree: "9/8 2-2-2-3"
+        case .elevenEightThreeThreeTwoThree: "11/8 3-3-2-3"
+        }
+    }
+
+    public var defaultBPM: Int {
+        switch self {
+        case .bossaClave32, .bossaClave23: 132
+        case .fiveEightTwoThree, .fiveEightThreeTwo, .sevenEightTwoTwoThree, .sevenEightThreeTwoTwo, .nineEightTwoTwoTwoThree, .elevenEightThreeThreeTwoThree: 108
+        default: 96
+        }
+    }
+
+    public var meter: Meter {
+        switch self {
+        case .sonClave32, .sonClave23, .rumbaClave32, .rumbaClave23, .bossaClave32, .bossaClave23:
+            .fourFour
+        case .bembeBell68:
+            .sixEight
+        case .fiveEightTwoThree:
+            try! Meter(beatsPerBar: 5, beatUnit: 8, grouping: [2, 3])
+        case .fiveEightThreeTwo:
+            try! Meter(beatsPerBar: 5, beatUnit: 8, grouping: [3, 2])
+        case .sevenEightTwoTwoThree:
+            .sevenEight
+        case .sevenEightThreeTwoTwo:
+            try! Meter(beatsPerBar: 7, beatUnit: 8, grouping: [3, 2, 2])
+        case .nineEightTwoTwoTwoThree:
+            try! Meter(beatsPerBar: 9, beatUnit: 8, grouping: [2, 2, 2, 3])
+        case .elevenEightThreeThreeTwoThree:
+            try! Meter(beatsPerBar: 11, beatUnit: 8, grouping: [3, 3, 2, 3])
+        }
+    }
+
+    public var subdivision: Subdivision {
+        .sixteenth
+    }
+
+    public var stepCount: Int {
+        switch meter.beatUnit {
+        case 4: meter.beatsPerBar * 4
+        default: meter.beatsPerBar * 2
+        }
+    }
+
+    public var claveStepIndexes: Set<Int> {
+        switch self {
+        case .sonClave32: [0, 3, 6, 10, 12]
+        case .sonClave23: [0, 2, 6, 9, 12]
+        case .rumbaClave32: [0, 3, 7, 10, 12]
+        case .rumbaClave23: [0, 2, 6, 9, 13]
+        case .bossaClave32: [0, 3, 6, 10, 13]
+        case .bossaClave23: [0, 3, 7, 10, 13]
+        case .bembeBell68: [0, 3, 5, 7, 10]
+        case .fiveEightTwoThree: [0, 3, 6, 8]
+        case .fiveEightThreeTwo: [0, 3, 5, 8]
+        case .sevenEightTwoTwoThree: [0, 3, 6, 8, 11]
+        case .sevenEightThreeTwoTwo: [0, 3, 5, 8, 11]
+        case .nineEightTwoTwoTwoThree: [0, 3, 6, 9, 12, 15]
+        case .elevenEightThreeThreeTwoThree: [0, 3, 6, 10, 13, 16, 19]
+        }
+    }
+}
+
 public struct Beat: Identifiable, Codable, Equatable, Hashable, Sendable {
     public let id: UUID
     public let index: Int
@@ -181,6 +303,8 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public var subdivision: Subdivision
     public var beats: [Beat]
     public var grooveTemplate: GrooveTemplate?
+    public var claveModeTemplate: ClaveModeTemplate?
+    public var grooveMixerPreset: GrooveMixerPreset?
 
     public init(
         id: UUID = UUID(),
@@ -189,7 +313,9 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         meter: Meter,
         subdivision: Subdivision,
         beats: [Beat]? = nil,
-        grooveTemplate: GrooveTemplate? = nil
+        grooveTemplate: GrooveTemplate? = nil,
+        claveModeTemplate: ClaveModeTemplate? = nil,
+        grooveMixerPreset: GrooveMixerPreset? = nil
     ) throws {
         try Pattern.validateBPM(bpm)
 
@@ -200,6 +326,8 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.subdivision = subdivision
         self.beats = beats ?? Pattern.generateBeats(for: meter)
         self.grooveTemplate = grooveTemplate
+        self.claveModeTemplate = claveModeTemplate
+        self.grooveMixerPreset = grooveMixerPreset
     }
 
     public static func validateBPM(_ bpm: Int) throws {
@@ -249,6 +377,23 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         )
     }
 
+    public static func claveMode(
+        _ template: ClaveModeTemplate,
+        mixerPreset: GrooveMixerPreset = .claveWithMetronome,
+        id: UUID = UUID()
+    ) -> Pattern {
+        try! Pattern(
+            id: id,
+            name: "\(template.displayName) \(mixerPreset.displayName)",
+            bpm: template.defaultBPM,
+            meter: template.meter,
+            subdivision: template.subdivision,
+            beats: Pattern.generateClaveModeBeats(for: template, mixerPreset: mixerPreset),
+            claveModeTemplate: template,
+            grooveMixerPreset: mixerPreset
+        )
+    }
+
     public static func generateGrooveBeats(for template: GrooveTemplate) -> [Beat] {
         (0..<template.stepCount).map { index in
             let isActive = template.activeStepIndexes.contains(index)
@@ -256,6 +401,43 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
             let role: ClickSoundRole = index == 0 ? .downbeat : (isActive ? .beat : .muted)
             return Beat(index: index, accent: accent, soundRole: role)
         }
+    }
+
+    public static func generateClaveModeBeats(
+        for template: ClaveModeTemplate,
+        mixerPreset: GrooveMixerPreset
+    ) -> [Beat] {
+        let meter = template.meter
+        let stepsPerBeat = template.stepCount / meter.beatsPerBar
+        let metronomeStepIndexes = metronomeSteps(for: meter, stepsPerBeat: stepsPerBeat)
+
+        return (0..<template.stepCount).map { index in
+            let hasClave = mixerPreset.includesClave && template.claveStepIndexes.contains(index)
+            let hasMetronome = mixerPreset.includesMetronome && metronomeStepIndexes.contains(index)
+            let hasSubdivision = mixerPreset.includesSubdivisions
+
+            let accent: AccentLevel
+            let role: ClickSoundRole
+            if (hasMetronome || hasClave) && index == 0 {
+                accent = .strong
+                role = .downbeat
+            } else if hasClave || hasMetronome {
+                accent = .normal
+                role = .beat
+            } else if hasSubdivision {
+                accent = .ghost
+                role = .subdivision
+            } else {
+                accent = .muted
+                role = .muted
+            }
+
+            return Beat(index: index, accent: accent, soundRole: role)
+        }
+    }
+
+    private static func metronomeSteps(for meter: Meter, stepsPerBeat: Int) -> Set<Int> {
+        Set((0..<meter.beatsPerBar).map { $0 * stepsPerBeat })
     }
 
     public var eventIntervalDivisor: Int {
@@ -277,11 +459,15 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.meter = meter
         beats = Pattern.generateBeats(for: meter)
         grooveTemplate = nil
+        claveModeTemplate = nil
+        grooveMixerPreset = nil
     }
 
     public mutating func updateSubdivision(_ subdivision: Subdivision) {
         self.subdivision = subdivision
         grooveTemplate = nil
+        claveModeTemplate = nil
+        grooveMixerPreset = nil
     }
 
     public mutating func cycleAccent(at index: Int) throws {

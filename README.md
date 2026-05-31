@@ -13,6 +13,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Audible one- and two-bar count-in
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Full son, rumba, and bossa clave template set
+- Clave Mode with clave-only, click-only, clave-plus-click, and subdivision mixer presets
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved pattern switching, duplication, and groove template creation
 - Protected saved-pattern deletion

@@ -15,7 +15,7 @@ final class RhythmModelTests: XCTestCase {
     func testMeterValidationAcceptsCommonMeters() throws {
         let meters = [
             (2, 4), (3, 4), (4, 4), (5, 4),
-            (6, 8), (7, 8), (9, 8), (12, 8)
+            (5, 8), (6, 8), (7, 8), (9, 8), (11, 8), (12, 8)
         ]
 
         for meter in meters {
@@ -100,12 +100,55 @@ final class RhythmModelTests: XCTestCase {
         }
     }
 
+    func testClaveModeTemplateCreatesClaveWithMetronomePattern() {
+        let pattern = Pattern.claveMode(.sonClave32, mixerPreset: .claveWithMetronome)
+
+        XCTAssertEqual(pattern.name, "Son 3:2 Clave + Click")
+        XCTAssertEqual(pattern.meter, .fourFour)
+        XCTAssertEqual(pattern.subdivision, .sixteenth)
+        XCTAssertEqual(pattern.beats.count, 16)
+        XCTAssertEqual(pattern.claveModeTemplate, .sonClave32)
+        XCTAssertEqual(pattern.grooveMixerPreset, .claveWithMetronome)
+        XCTAssertEqual(pattern.eventIntervalDivisor, 4)
+        XCTAssertEqual(pattern.beats.filter { $0.soundRole != .muted }.map(\.index), [0, 3, 4, 6, 8, 10, 12])
+    }
+
+    func testClaveModeMixerCanRenderClaveOnly() {
+        let pattern = Pattern.claveMode(.rumbaClave23, mixerPreset: .claveOnly)
+
+        XCTAssertEqual(pattern.beats.filter { $0.soundRole != .muted }.map(\.index), [0, 2, 6, 9, 13])
+    }
+
+    func testClaveModeMixerCanRenderClickOnly() {
+        let pattern = Pattern.claveMode(.sevenEightTwoTwoThree, mixerPreset: .metronomeOnly)
+
+        XCTAssertEqual(pattern.meter.grouping, [2, 2, 3])
+        XCTAssertEqual(pattern.beats.count, 14)
+        XCTAssertEqual(pattern.beats.filter { $0.soundRole != .muted }.map(\.index), [0, 2, 4, 6, 8, 10, 12])
+    }
+
+    func testClaveModeMixerCanRenderSubdivisions() {
+        let pattern = Pattern.claveMode(.fiveEightTwoThree, mixerPreset: .claveMetronomeSubdivisions)
+
+        XCTAssertEqual(pattern.beats.count, 10)
+        XCTAssertTrue(pattern.beats.contains { $0.soundRole == .subdivision })
+        XCTAssertFalse(pattern.beats.contains { $0.soundRole == .muted })
+    }
+
+    func testClaveModeTemplatesCoverTraditionalAndOddFeels() {
+        XCTAssertEqual(ClaveModeTemplate.allCases.count, 13)
+        XCTAssertEqual(Pattern.claveMode(.bembeBell68).beats.filter { $0.soundRole == .beat }.map(\.index), [2, 3, 4, 5, 6, 7, 8, 10])
+        XCTAssertEqual(Pattern.claveMode(.elevenEightThreeThreeTwoThree, mixerPreset: .claveOnly).beats.filter { $0.soundRole != .muted }.map(\.index), [0, 3, 6, 10, 13, 16, 19])
+    }
+
     func testPatternEditingClearsGrooveTemplateMarker() {
         var pattern = Pattern.groove(.bossaClave)
 
         pattern.updateMeter(.sevenEight)
 
         XCTAssertNil(pattern.grooveTemplate)
+        XCTAssertNil(pattern.claveModeTemplate)
+        XCTAssertNil(pattern.grooveMixerPreset)
         XCTAssertEqual(pattern.beats.count, 7)
     }
 

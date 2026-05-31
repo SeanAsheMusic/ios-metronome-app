@@ -15,7 +15,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 | Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
 | Edit | Implemented in source | Pattern name, meter, subdivision, and explicit beat accent/mute controls are labeled. Beat menus announce the beat number and current accent level. |
-| Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, and groove template creation have labels. |
+| Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, and Clave Mode creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, and remove controls have labels that include the affected item title. |
 | Settings | Implemented in source | Click preset, volume, accent boost, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
 | Dynamic Type | Source likely supports core flow | Most controls use SwiftUI text styles, flexible frames, scroll views, and minimum scale factors. Needs simulator/device verification at largest accessibility sizes. |
@@ -54,7 +54,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 - Saved patterns announce pattern name and BPM.
 - Current pattern state is exposed through the accessibility value "Selected" or "Not selected".
-- Duplicate, delete, and groove template creation controls have explicit action labels.
+- Duplicate, delete, groove template creation, Clave Mode mixer, and Clave Mode template controls have explicit labels.
 
 ### Setlist
 

@@ -723,6 +723,43 @@ struct MainMetronomeView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Clave Mode")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Picker("Clave mixer", selection: $viewModel.selectedGrooveMixerPreset) {
+                        ForEach(GrooveMixerPreset.allCases, id: \.self) { preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityLabel("Clave mixer")
+                }
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(ClaveModeTemplate.allCases, id: \.self) { template in
+                            Button {
+                                Task {
+                                    await viewModel.addClaveModeTemplate(template)
+                                }
+                            } label: {
+                                Text(template.displayName)
+                                    .font(.caption.weight(.semibold))
+                                    .lineLimit(1)
+                                    .frame(width: 134, height: 44)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Add \(template.displayName), \(viewModel.selectedGrooveMixerPreset.displayName)")
+                        }
+                    }
+                }
+            }
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(viewModel.patterns) { pattern in
@@ -934,6 +971,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var isCountingIn = false
     @Published var countInRemainingBeats: Int?
     @Published var tempoLadder = TempoLadder()
+    @Published var selectedGrooveMixerPreset = GrooveMixerPreset.claveWithMetronome
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -1221,6 +1259,20 @@ final class MainMetronomeViewModel: ObservableObject {
 
     func addGrooveTemplate(_ template: GrooveTemplate) async {
         let groove = Pattern.groove(template)
+        library.appendPattern(groove)
+        pattern = groove
+        patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    func addClaveModeTemplate(_ template: ClaveModeTemplate) async {
+        let groove = Pattern.claveMode(template, mixerPreset: selectedGrooveMixerPreset)
         library.appendPattern(groove)
         pattern = groove
         patternNameDraft = pattern.name

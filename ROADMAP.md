@@ -15,6 +15,7 @@
 - Sound family picker with synthesized presets.
 - Exportable click-render verification assets.
 - Full son, rumba, and bossa clave template set.
+- Clave Mode mixer presets for clave, metronome click, and subdivisions.
 - Background audio app mode.
 - Fullscreen visual pulse mode.
 - Audible count-in.
@@ -28,6 +29,7 @@
 
 ## Later
 
+- Independent audio faders for rhythm lanes.
 - Jazz 2 and 4 and swing templates.
 - Gap/random silence trainers.
 - Song form mode.

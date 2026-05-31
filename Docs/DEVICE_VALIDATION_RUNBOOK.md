@@ -29,6 +29,8 @@ Use this runbook before App Store submission and before any claim about producti
 | Meter/subdivision | Meter and subdivision edits audibly change the click pattern after playback restart or prepare. | Device note. |
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
+| Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
+| Odd-meter clave feels | 5/8, 7/8, 9/8, and 11/8 Clave Mode templates create playable syncopated patterns. | Device note. |
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
 | Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
