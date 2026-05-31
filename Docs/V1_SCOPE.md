@@ -15,10 +15,11 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Pattern defaults for 4/4, 6/8, and 7/8.
 - Stable identifiers for patterns, beats, setlists, and setlist items.
 - Ordered setlists with move support.
-- Local persistence design, export/import planning, and Codable model support.
+- Local persistence for selected pattern, pattern library, and setlists.
+- Export/import planning and Codable model support.
 - SwiftUI performance play screen foundation.
 - Accessibility labels and large touch targets.
-- Audio engine protocol and scheduling spec.
+- Playable audio engine foundation and scheduling spec.
 
 ## Explicit Non-Goals
 

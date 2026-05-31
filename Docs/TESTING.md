@@ -15,6 +15,9 @@ The Swift package includes XCTest coverage for:
 - Beat interval scheduling.
 - Schedule beat wrapping.
 - Stub audio event delivery.
+- Default persisted library shape.
+- JSON library store round trip.
+- Persistence validation for empty pattern libraries.
 
 Run with:
 
@@ -31,7 +34,7 @@ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 swift test
 ```
 
-The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, and `Metronome` schemes. Use the `AudioEngine` scheme for scheduler and engine boundary tests once full Xcode is active.
+The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, `Persistence`, and `Metronome` schemes. Use the dedicated schemes for module tests once full Xcode is active.
 
 ## Future Test Layers
 

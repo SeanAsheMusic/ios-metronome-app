@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1FECF894639D520C3D00E56F"
+               BlueprintIdentifier = "D0978E2356AA54A80C6E3D97"
                BuildableName = "Metronome.app"
                BlueprintName = "Metronome"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B489C00DDBA6095D009F7DAA"
+               BlueprintIdentifier = "2149C15044EBF6DDDBC16692"
                BuildableName = "RhythmModelTests.xctest"
                BlueprintName = "RhythmModelTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8966426DE40BC781A1BC889B"
+               BlueprintIdentifier = "73E615503C8A17FAC3A43780"
                BuildableName = "RhythmModel.framework"
                BlueprintName = "RhythmModel"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -56,9 +56,23 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "286AF344FEE84412D14BF905"
+               BlueprintIdentifier = "63E085B8D52776E7C01E76C0"
                BuildableName = "AudioEngine.framework"
                BlueprintName = "AudioEngine"
+               ReferencedContainer = "container:Metronome.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6DB52593AEA81D300EBC8190"
+               BuildableName = "Persistence.framework"
+               BlueprintName = "Persistence"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -74,7 +88,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B489C00DDBA6095D009F7DAA"
+               BlueprintIdentifier = "2149C15044EBF6DDDBC16692"
                BuildableName = "RhythmModelTests.xctest"
                BlueprintName = "RhythmModelTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -84,9 +98,19 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9341E63EA4C57F85E4F3B74E"
+               BlueprintIdentifier = "9C8E816BAD490476793DC6F4"
                BuildableName = "AudioEngineTests.xctest"
                BlueprintName = "AudioEngineTests"
+               ReferencedContainer = "container:Metronome.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "01BE75F28CD8AC1FC1E8CEC3"
+               BuildableName = "PersistenceTests.xctest"
+               BlueprintName = "PersistenceTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </TestableReference>

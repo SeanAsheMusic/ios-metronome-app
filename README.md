@@ -15,7 +15,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
 - Synthesized click engine foundation using AVFoundation
-- Local persistence planning
+- Local JSON persistence for selected pattern, pattern library, and setlists
 - XCTest coverage for model and scheduler behavior
 - Accessibility-first UI and docs
 
@@ -27,10 +27,12 @@ Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sh
 
 - `Sources/RhythmModel`: Core domain model for patterns, meters, accents, and setlists.
 - `Sources/AudioEngine`: AVFoundation click engine, scheduler, and testable timing contracts.
+- `Sources/Persistence`: Versioned JSON library store for local-first data.
 - `App`: SwiftUI app skeleton for Xcode integration.
 - `Docs`: Product, architecture, audio, privacy, testing, and App Store planning.
 - `Tests/RhythmModelTests`: XCTest coverage for the safe model layer.
 - `Tests/AudioEngineTests`: XCTest coverage for scheduling and stub event delivery.
+- `Tests/PersistenceTests`: XCTest coverage for local library storage.
 
 ## Build And Test
 
@@ -39,6 +41,7 @@ The repository includes a generated Xcode project and a Swift package manifest.
 ```sh
 xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'platform=iOS Simulator,name=iPhone 16'
 xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 This environment has Swift but not a full active Xcode installation, so local test execution currently needs Xcode selected. The model package can also be tested with:

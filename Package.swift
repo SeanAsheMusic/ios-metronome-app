@@ -6,12 +6,15 @@ let package = Package(
     name: "iOSMetronomeApp",
     products: [
         .library(name: "RhythmModel", targets: ["RhythmModel"]),
-        .library(name: "AudioEngine", targets: ["AudioEngine"])
+        .library(name: "AudioEngine", targets: ["AudioEngine"]),
+        .library(name: "Persistence", targets: ["Persistence"])
     ],
     targets: [
         .target(name: "RhythmModel"),
         .target(name: "AudioEngine", dependencies: ["RhythmModel"]),
+        .target(name: "Persistence", dependencies: ["RhythmModel"]),
         .testTarget(name: "RhythmModelTests", dependencies: ["RhythmModel"]),
-        .testTarget(name: "AudioEngineTests", dependencies: ["AudioEngine", "RhythmModel"])
+        .testTarget(name: "AudioEngineTests", dependencies: ["AudioEngine", "RhythmModel"]),
+        .testTarget(name: "PersistenceTests", dependencies: ["Persistence", "RhythmModel"])
     ]
 )

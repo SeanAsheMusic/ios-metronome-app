@@ -1,6 +1,17 @@
 # Persistence
 
-Future local-first storage for patterns, setlists, preferences, snapshots, and export/import bundles.
+Local-first JSON storage for the user's metronome library.
+
+The current implementation lives in `Sources/Persistence` and stores:
+
+- Schema version.
+- Selected pattern.
+- Pattern library.
+- Setlists.
+
+The play screen loads the selected pattern on launch and saves tempo changes back to disk.
+
+Future storage work still includes preferences, snapshots, export/import bundles, and migrations.
 
 Rules:
 

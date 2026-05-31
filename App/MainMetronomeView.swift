@@ -1,5 +1,6 @@
 import SwiftUI
 import AudioEngine
+import Persistence
 import RhythmModel
 
 struct MainMetronomeView: View {
@@ -140,14 +141,22 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var pulseIsActive = false
 
     private let audioEngine: any MetronomeAudioEngine
+    private let libraryStore: MetronomeLibraryStore?
+    private var library = MetronomeLibrary.defaultLibrary()
     private var tapTimes: [Date] = []
     private var pulseResetTask: Task<Void, Never>?
 
-    init(audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine()) {
+    init(
+        audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine(),
+        libraryStore: MetronomeLibraryStore? = try? MetronomeLibraryStore.live()
+    ) {
         self.audioEngine = audioEngine
+        self.libraryStore = libraryStore
     }
 
     func prepare() async {
+        await loadLibrary()
+
         await audioEngine.setEventHandler { [weak self] event in
             await MainActor.run {
                 self?.handleBeat(event)
@@ -178,6 +187,7 @@ final class MainMetronomeViewModel: ObservableObject {
     func updateBPM(by delta: Int) async {
         let newValue = min(Pattern.maximumBPM, max(Pattern.minimumBPM, pattern.bpm + delta))
         pattern.bpm = newValue
+        saveSelectedPattern()
         try? await audioEngine.prepare(pattern: pattern)
     }
 
@@ -200,8 +210,39 @@ final class MainMetronomeViewModel: ObservableObject {
 
         let tappedBPM = Int((60.0 / averageInterval).rounded())
         pattern.bpm = min(Pattern.maximumBPM, max(Pattern.minimumBPM, tappedBPM))
+        saveSelectedPattern()
         Task {
             try? await audioEngine.prepare(pattern: pattern)
+        }
+    }
+
+    private func loadLibrary() async {
+        guard let libraryStore else {
+            library = MetronomeLibrary.defaultLibrary()
+            pattern = library.selectedPattern
+            return
+        }
+
+        do {
+            let loadedLibrary = try await libraryStore.load()
+            library = loadedLibrary
+            pattern = loadedLibrary.selectedPattern
+        } catch {
+            library = MetronomeLibrary.defaultLibrary()
+            pattern = library.selectedPattern
+            try? await libraryStore.save(library)
+        }
+    }
+
+    private func saveSelectedPattern() {
+        library.updateSelectedPattern(pattern)
+        guard let libraryStore else {
+            return
+        }
+
+        let snapshot = library
+        Task {
+            try? await libraryStore.save(snapshot)
         }
     }
 
