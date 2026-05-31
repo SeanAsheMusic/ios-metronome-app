@@ -12,7 +12,9 @@ The current implementation lives in `Sources/Persistence` and stores:
 
 The app loads the selected pattern on launch, saves tempo changes back to disk, switches between saved patterns, duplicates the active pattern, persists active setlist edits, and persists sound settings.
 
-Future storage work still includes preferences, snapshots, export/import bundles, and migrations.
+The persistence module also supports versioned portable export documents through `MetronomeLibraryExport`, plus raw-library import for recovery.
+
+Future storage work still includes user-facing document picker/share UI, snapshots, and migrations.
 
 Rules:
 

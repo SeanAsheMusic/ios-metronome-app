@@ -173,6 +173,73 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(loadedLibrary.selectedPattern.bpm, 88)
     }
 
+    func testStoreExportsPortableLibraryDocument() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        let exportedAt = Date(timeIntervalSince1970: 1_800_000_000)
+
+        _ = try await store.load()
+        let data = try await store.exportLibrary(exportedAt: exportedAt)
+        let exported = try JSONDecoder().decode(MetronomeLibraryExport.self, from: data)
+
+        XCTAssertEqual(exported.formatVersion, MetronomeLibraryExport.currentFormatVersion)
+        XCTAssertEqual(exported.exportedAt, exportedAt)
+        XCTAssertEqual(exported.appName, "Pulsecraft")
+        XCTAssertEqual(exported.library.selectedPattern.name, "Default 4/4")
+    }
+
+    func testStoreImportsPortableLibraryDocument() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        var library = MetronomeLibrary.defaultLibrary()
+        var selectedPattern = library.selectedPattern
+        selectedPattern.rename(to: "Imported")
+        library.updateSelectedPattern(selectedPattern)
+        let exported = MetronomeLibraryExport(
+            exportedAt: Date(timeIntervalSince1970: 1_800_000_000),
+            library: library
+        )
+        let data = try JSONEncoder().encode(exported)
+
+        let imported = try await store.importLibrary(from: data)
+
+        XCTAssertEqual(imported.selectedPattern.name, "Imported")
+        XCTAssertEqual(try await store.load(), imported)
+    }
+
+    func testStoreImportsRawLibraryForRecovery() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        var library = MetronomeLibrary.defaultLibrary()
+        var selectedPattern = library.selectedPattern
+        selectedPattern.bpm = 72
+        library.updateSelectedPattern(selectedPattern)
+        let data = try JSONEncoder().encode(library)
+
+        let imported = try await store.importLibrary(from: data)
+
+        XCTAssertEqual(imported.selectedPattern.bpm, 72)
+    }
+
+    func testStoreRejectsUnsupportedExportVersion() async {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        let exported = MetronomeLibraryExport(
+            formatVersion: 999,
+            exportedAt: Date(timeIntervalSince1970: 1_800_000_000),
+            library: MetronomeLibrary.defaultLibrary()
+        )
+        let data = try! JSONEncoder().encode(exported)
+
+        do {
+            _ = try await store.importLibrary(from: data)
+            XCTFail("Expected unsupported export version to be rejected.")
+        } catch MetronomeLibraryStoreError.unsupportedExportVersion(999) {
+        } catch {
+            XCTFail("Unexpected error: \(error)")
+        }
+    }
+
     func testStoreRejectsEmptyPatternLibrary() async {
         let fileURL = temporaryFileURL()
         let store = MetronomeLibraryStore(fileURL: fileURL)

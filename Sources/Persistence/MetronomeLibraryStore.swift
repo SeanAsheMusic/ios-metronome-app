@@ -138,9 +138,31 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
     }
 }
 
+public struct MetronomeLibraryExport: Codable, Equatable, Sendable {
+    public static let currentFormatVersion = 1
+
+    public var formatVersion: Int
+    public var exportedAt: Date
+    public var appName: String
+    public var library: MetronomeLibrary
+
+    public init(
+        formatVersion: Int = MetronomeLibraryExport.currentFormatVersion,
+        exportedAt: Date = Date(),
+        appName: String = "Pulsecraft",
+        library: MetronomeLibrary
+    ) {
+        self.formatVersion = formatVersion
+        self.exportedAt = exportedAt
+        self.appName = appName
+        self.library = library
+    }
+}
+
 public enum MetronomeLibraryStoreError: Error, Equatable {
     case emptyPatternLibrary
     case unsupportedSchemaVersion(Int)
+    case unsupportedExportVersion(Int)
 }
 
 public actor MetronomeLibraryStore {
@@ -194,6 +216,29 @@ public actor MetronomeLibraryStore {
     public func replaceSelectedPattern(_ pattern: Pattern) throws -> MetronomeLibrary {
         var library = try load()
         library.updateSelectedPattern(pattern)
+        try save(library)
+        return library
+    }
+
+    public func exportLibrary(exportedAt: Date = Date()) throws -> Data {
+        let library = try load()
+        let export = MetronomeLibraryExport(exportedAt: exportedAt, library: library)
+        return try encoder.encode(export)
+    }
+
+    public func importLibrary(from data: Data) throws -> MetronomeLibrary {
+        let library: MetronomeLibrary
+
+        if let export = try? decoder.decode(MetronomeLibraryExport.self, from: data) {
+            guard export.formatVersion == MetronomeLibraryExport.currentFormatVersion else {
+                throw MetronomeLibraryStoreError.unsupportedExportVersion(export.formatVersion)
+            }
+            library = export.library
+        } else {
+            library = try decoder.decode(MetronomeLibrary.self, from: data)
+        }
+
+        try validate(library)
         try save(library)
         return library
     }

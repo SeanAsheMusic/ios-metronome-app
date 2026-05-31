@@ -22,6 +22,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Visual pulse driven by scheduled beat events
 - Synthesized click engine foundation using AVFoundation
 - Local JSON persistence for selected pattern, pattern library, and setlists
+- Versioned local library export/import support
 - XCTest coverage for model and scheduler behavior
 - Accessibility-first UI and docs
 
