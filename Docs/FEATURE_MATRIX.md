@@ -14,7 +14,7 @@
 | No ads/subscription core | Subscription present | Paid app | Paid app | Ads/upsells reported | No ads/no subs | V1 |
 | Tuner | Yes | No | Strong | No | Ignore | Later/no |
 | Practice timer | Yes | Coach modes | Strong | Trainer | Quiet/local only | V1 |
-| Clave/groove modes | Limited | Limited | Limited | Limited | Improve | V1.1/later |
+| Clave/groove modes | Limited | Limited | Limited | Limited | Template foundation | V1 |
 | Gap/random silence | Limited | Coach | Assistant | Trainer | Improve | Later |
 | MIDI/Link | No/varies | No/varies | No/varies | Link | Defer | Later |
 

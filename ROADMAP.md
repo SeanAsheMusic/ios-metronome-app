@@ -10,6 +10,7 @@
 - Direct numeric BPM entry.
 - Local export/import bundles.
 - Sound family picker with synthesized presets.
+- Clave and bossa groove template foundation.
 - Physical-device audio measurement harness.
 - Accessibility audit.
 
@@ -19,10 +20,10 @@
 - Fullscreen visual pulse modes.
 - Count-in.
 - Sound provenance manifest.
+- Full clave mode.
 
 ## Later
 
-- Clave and groove templates.
 - Jazz 2 and 4 and swing templates.
 - Gap/random silence trainers.
 - Song form mode.

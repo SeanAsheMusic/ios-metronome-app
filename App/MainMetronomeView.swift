@@ -542,6 +542,31 @@ struct MainMetronomeView: View {
                 .accessibilityLabel("Duplicate current pattern")
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Grooves")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(GrooveTemplate.allCases, id: \.self) { template in
+                            Button {
+                                Task {
+                                    await viewModel.addGrooveTemplate(template)
+                                }
+                            } label: {
+                                Text(template.displayName)
+                                    .font(.caption.weight(.semibold))
+                                    .lineLimit(1)
+                                    .frame(width: 126, height: 40)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Add \(template.displayName) groove")
+                        }
+                    }
+                }
+            }
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(viewModel.patterns) { pattern in
@@ -934,6 +959,20 @@ final class MainMetronomeViewModel: ObservableObject {
         }
     }
 
+    func addGrooveTemplate(_ template: GrooveTemplate) async {
+        let groove = Pattern.groove(template)
+        library.appendPattern(groove)
+        pattern = groove
+        patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
     var canDeleteCurrentPattern: Bool {
         patterns.count > 1
     }
@@ -1228,7 +1267,11 @@ final class MainMetronomeViewModel: ObservableObject {
         }
     }
 
-    private func handleBeat(_: ScheduledBeatEvent) {
+    private func handleBeat(_ event: ScheduledBeatEvent) {
+        guard event.soundRole != .muted else {
+            return
+        }
+
         pulseResetTask?.cancel()
         pulseIsActive = true
 

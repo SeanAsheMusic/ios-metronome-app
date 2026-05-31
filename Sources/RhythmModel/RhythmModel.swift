@@ -109,6 +109,42 @@ public enum ClickSoundRole: String, CaseIterable, Codable, Hashable, Sendable {
     case muted
 }
 
+public enum GrooveTemplate: String, CaseIterable, Codable, Hashable, Sendable {
+    case sonClave32
+    case sonClave23
+    case rumbaClave32
+    case bossaClave
+
+    public var displayName: String {
+        switch self {
+        case .sonClave32: "Son Clave 3:2"
+        case .sonClave23: "Son Clave 2:3"
+        case .rumbaClave32: "Rumba Clave 3:2"
+        case .bossaClave: "Bossa Clave"
+        }
+    }
+
+    public var defaultBPM: Int {
+        switch self {
+        case .sonClave32, .sonClave23, .rumbaClave32: 96
+        case .bossaClave: 132
+        }
+    }
+
+    public var stepCount: Int {
+        16
+    }
+
+    public var activeStepIndexes: Set<Int> {
+        switch self {
+        case .sonClave32: [0, 3, 6, 10, 12]
+        case .sonClave23: [0, 2, 6, 9, 12]
+        case .rumbaClave32: [0, 3, 7, 10, 12]
+        case .bossaClave: [0, 3, 6, 10, 13]
+        }
+    }
+}
+
 public struct Beat: Identifiable, Codable, Equatable, Hashable, Sendable {
     public let id: UUID
     public let index: Int
@@ -138,6 +174,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public var meter: Meter
     public var subdivision: Subdivision
     public var beats: [Beat]
+    public var grooveTemplate: GrooveTemplate?
 
     public init(
         id: UUID = UUID(),
@@ -145,7 +182,8 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         bpm: Int,
         meter: Meter,
         subdivision: Subdivision,
-        beats: [Beat]? = nil
+        beats: [Beat]? = nil,
+        grooveTemplate: GrooveTemplate? = nil
     ) throws {
         try Pattern.validateBPM(bpm)
 
@@ -155,6 +193,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.meter = meter
         self.subdivision = subdivision
         self.beats = beats ?? Pattern.generateBeats(for: meter)
+        self.grooveTemplate = grooveTemplate
     }
 
     public static func validateBPM(_ bpm: Int) throws {
@@ -192,6 +231,34 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         try! Pattern(id: id, name: "Default 7/8", bpm: 110, meter: .sevenEight, subdivision: .eighth)
     }
 
+    public static func groove(_ template: GrooveTemplate, id: UUID = UUID()) -> Pattern {
+        try! Pattern(
+            id: id,
+            name: template.displayName,
+            bpm: template.defaultBPM,
+            meter: .fourFour,
+            subdivision: .sixteenth,
+            beats: Pattern.generateGrooveBeats(for: template),
+            grooveTemplate: template
+        )
+    }
+
+    public static func generateGrooveBeats(for template: GrooveTemplate) -> [Beat] {
+        (0..<template.stepCount).map { index in
+            let isActive = template.activeStepIndexes.contains(index)
+            let accent: AccentLevel = index == 0 ? .strong : (isActive ? .normal : .muted)
+            let role: ClickSoundRole = index == 0 ? .downbeat : (isActive ? .beat : .muted)
+            return Beat(index: index, accent: accent, soundRole: role)
+        }
+    }
+
+    public var eventIntervalDivisor: Int {
+        guard beats.count > meter.beatsPerBar, beats.count.isMultiple(of: meter.beatsPerBar) else {
+            return 1
+        }
+        return beats.count / meter.beatsPerBar
+    }
+
     public mutating func rename(to name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
@@ -203,10 +270,12 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public mutating func updateMeter(_ meter: Meter) {
         self.meter = meter
         beats = Pattern.generateBeats(for: meter)
+        grooveTemplate = nil
     }
 
     public mutating func updateSubdivision(_ subdivision: Subdivision) {
         self.subdivision = subdivision
+        grooveTemplate = nil
     }
 
     public mutating func cycleAccent(at index: Int) throws {

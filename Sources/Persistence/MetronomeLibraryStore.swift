@@ -124,7 +124,9 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
             patterns: [
                 defaultPattern,
                 Pattern.defaultSixEight(),
-                Pattern.defaultSevenEight()
+                Pattern.defaultSevenEight(),
+                Pattern.groove(.sonClave32),
+                Pattern.groove(.bossaClave)
             ],
             setlists: [starterSetlist],
             audioSettings: MetronomeAudioSettings()

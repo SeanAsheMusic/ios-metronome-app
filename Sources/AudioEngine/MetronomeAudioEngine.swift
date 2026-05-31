@@ -147,6 +147,10 @@ public struct MetronomeScheduler: Sendable {
         return UInt64((60_000_000_000.0 / Double(bpm)).rounded())
     }
 
+    public func eventIntervalNanoseconds(for pattern: Pattern) throws -> UInt64 {
+        try beatIntervalNanoseconds(for: pattern.bpm) / UInt64(pattern.eventIntervalDivisor)
+    }
+
     public func schedule(
         pattern: Pattern,
         startingAt startTimeNanoseconds: UInt64,
@@ -156,7 +160,7 @@ public struct MetronomeScheduler: Sendable {
             return BeatSchedule(events: [])
         }
 
-        let interval = try beatIntervalNanoseconds(for: pattern.bpm)
+        let interval = try eventIntervalNanoseconds(for: pattern)
         let events = (0..<beatCount).map { offset in
             let beat = pattern.beats[offset % pattern.beats.count]
             return ScheduledBeatEvent(
@@ -320,7 +324,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 
             let interval: UInt64
             do {
-                interval = try scheduler.beatIntervalNanoseconds(for: pattern.bpm)
+                interval = try scheduler.eventIntervalNanoseconds(for: pattern)
             } catch {
                 await stop()
                 break

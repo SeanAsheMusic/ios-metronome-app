@@ -11,6 +11,13 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(try scheduler.beatIntervalNanoseconds(for: 240), 250_000_000)
     }
 
+    func testGroovePatternUsesSixteenthStepInterval() throws {
+        let scheduler = MetronomeScheduler()
+        let pattern = Pattern.groove(.sonClave32)
+
+        XCTAssertEqual(try scheduler.eventIntervalNanoseconds(for: pattern), 156_250_000)
+    }
+
     func testBeatIntervalRejectsInvalidTempo() {
         let scheduler = MetronomeScheduler()
 
@@ -71,6 +78,17 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(schedule.events[2].accent, .normal)
         XCTAssertEqual(schedule.events[4].accent, .normal)
         XCTAssertEqual(schedule.events[7].hostTimeNanoseconds, 1_000 + (7 * 545_454_545))
+    }
+
+    func testScheduleIncludesMutedGrooveSteps() throws {
+        let pattern = Pattern.groove(.sonClave32, id: UUID(uuidString: "3D7041AE-7309-4289-94C4-FA10B53E5D00")!)
+        let scheduler = MetronomeScheduler()
+
+        let schedule = try scheduler.schedule(pattern: pattern, startingAt: 1_000, beatCount: 5)
+
+        XCTAssertEqual(schedule.events.map(\.beatIndex), [0, 1, 2, 3, 4])
+        XCTAssertEqual(schedule.events.map(\.soundRole), [.downbeat, .muted, .muted, .beat, .muted])
+        XCTAssertEqual(schedule.events[4].hostTimeNanoseconds, 1_000 + (4 * 156_250_000))
     }
 
     func testStubPublishesInitialBeatEvent() async throws {

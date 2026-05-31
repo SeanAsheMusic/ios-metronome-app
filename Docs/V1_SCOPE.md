@@ -13,6 +13,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Common meters: 2/4, 3/4, 4/4, 5/4, 6/8, 7/8, 9/8, and 12/8.
 - Subdivisions: quarter, eighth, triplet, and sixteenth.
 - Accent levels: strong, normal, ghost, and muted.
+- Clave and bossa groove templates backed by a 16-step pattern foundation.
 - Pattern defaults for 4/4, 6/8, and 7/8.
 - Stable identifiers for patterns, beats, setlists, and setlist items.
 - Ordered setlists with move support.
@@ -39,7 +40,6 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 
 ## V1.1 Candidates
 
-- Pattern editor with beat-level accent/mute gestures.
 - Snapshot restore points.
 - Basic synthesized click renderer and provenance manifest.
 - Count-in.
@@ -48,4 +48,4 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 
 ## Later Candidates
 
-- Clave mode, jazz 2 and 4, swing, gap click, random silence, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Full clave mode, pattern editor with beat-level accent/mute gestures, jazz 2 and 4, swing, gap click, random silence, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.

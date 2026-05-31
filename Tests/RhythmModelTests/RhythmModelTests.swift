@@ -68,6 +68,31 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(pattern.beats[4].accent, .normal)
     }
 
+    func testGrooveTemplateCreatesSixteenthStepPattern() {
+        let pattern = Pattern.groove(.sonClave32)
+
+        XCTAssertEqual(pattern.name, "Son Clave 3:2")
+        XCTAssertEqual(pattern.bpm, 96)
+        XCTAssertEqual(pattern.meter, .fourFour)
+        XCTAssertEqual(pattern.subdivision, .sixteenth)
+        XCTAssertEqual(pattern.beats.count, 16)
+        XCTAssertEqual(pattern.grooveTemplate, .sonClave32)
+        XCTAssertEqual(pattern.eventIntervalDivisor, 4)
+        XCTAssertEqual(
+            pattern.beats.filter { $0.soundRole != .muted }.map(\.index),
+            [0, 3, 6, 10, 12]
+        )
+    }
+
+    func testPatternEditingClearsGrooveTemplateMarker() {
+        var pattern = Pattern.groove(.bossaClave)
+
+        pattern.updateMeter(.sevenEight)
+
+        XCTAssertNil(pattern.grooveTemplate)
+        XCTAssertEqual(pattern.beats.count, 7)
+    }
+
     func testPatternRenameTrimsName() {
         var pattern = Pattern.defaultFourFour()
 

@@ -11,8 +11,9 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Direct numeric BPM entry
 - Tap tempo from recent taps
 - Common meters, custom grouping foundation, subdivisions, and accents
+- Clave and bossa groove template foundation
 - Default 4/4, 6/8, and 7/8 patterns
-- Saved pattern switching and duplication
+- Saved pattern switching, duplication, and groove template creation
 - Protected saved-pattern deletion
 - Pattern name, meter, subdivision, and beat accent editing
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
