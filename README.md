@@ -11,8 +11,11 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Direct numeric BPM entry
 - Tap tempo from recent taps
 - Audible one- and two-bar count-in
+- Rhythm Trainer with fixed or random silent bars
+- Human Feel timing simulation with a high-humanization warning
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Editable subdivision-step grids for syncopation and beat silencing
+- Mixed per-beat subdivisions, including triplets, quintuplets, sixteenths, and septuplets
 - Full son, rumba, and bossa clave template set
 - Clave Mode with clave-only, click-only, clave-plus-click, and subdivision mixer presets
 - Default 4/4, 6/8, and 7/8 patterns
@@ -42,6 +45,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Settings Data controls for library export/import and latest snapshot restore
 - XCTest coverage for model, practice ladder, and scheduler behavior
 - Accessibility-first UI and docs
+- Microphone accuracy checking is feasible but deferred until microphone permission, onset detection, and device latency calibration can be validated on hardware.
 
 ## Deferred
 

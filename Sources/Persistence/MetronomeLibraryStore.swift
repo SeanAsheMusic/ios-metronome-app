@@ -68,7 +68,12 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
             subdivision: source.subdivision,
             beats: source.beats.enumerated().map { offset, beat in
                 Beat(index: offset, accent: beat.accent, soundRole: beat.soundRole)
-            }
+            },
+            grooveTemplate: source.grooveTemplate,
+            claveModeTemplate: source.claveModeTemplate,
+            grooveMixerPreset: source.grooveMixerPreset,
+            perBeatSubdivisions: source.perBeatSubdivisions,
+            stepDurationsInMeterBeats: source.stepDurationsInMeterBeats
         )
         appendPattern(duplicate)
         return duplicate

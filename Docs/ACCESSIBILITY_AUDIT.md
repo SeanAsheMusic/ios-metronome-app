@@ -12,12 +12,12 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 | Area | Source status | Notes |
 |---|---|---|
-| Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
+| Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, rhythm trainer, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
-| Edit | Implemented in source | Pattern name, meter, subdivision, and explicit beat/subdivision accent/mute controls are labeled. Beat menus announce the step number and current accent level. |
+| Edit | Implemented in source | Pattern name, meter, global subdivision, per-beat subdivision, and explicit beat/subdivision accent/mute controls are labeled. Beat menus announce the step number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, and Clave Mode creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, and remove controls have labels that include the affected item title. |
-| Settings | Implemented in source | Click preset, volume, accent boost, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
+| Settings | Implemented in source | Click preset, volume, accent boost, Human Feel, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
 | Dynamic Type | Source likely supports core flow | Most controls use SwiftUI text styles, flexible frames, scroll views, and minimum scale factors. Needs simulator/device verification at largest accessibility sizes. |
 | Touch targets | Implemented in source | Primary controls, beat cells, pattern actions, groove buttons, practice presets, settings refresh, and setlist reorder/remove controls are at least 44 pt in source. |
 | Color and contrast | Source likely supports | System colors and semantic secondary/accent colors are used. Needs high-contrast and dark-mode visual review. |
@@ -34,6 +34,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 - Count-in selection is a segmented picker labeled "Count-in length"; remaining count-in beats are announced when visible.
 - Practice timer controls expose duration, start/pause, reset, and remaining time.
 - Tempo ladder controls expose target BPM, step size, bars per step, and start/stop state.
+- Rhythm Trainer exposes mode, fixed bar counts, and random silent-bar chance.
 - Visual pulse exposes active/inactive state and reduced-motion state.
 
 ### Stage Pulse
@@ -48,6 +49,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 - Pattern name, meter, and subdivision fields use labels.
 - Beat and subdivision cells are fixed-size menus that announce step number and accent level.
 - Beat menus expose explicit Strong, Normal, Ghost, and Mute choices.
+- Per-beat subdivision menus include the beat number and selected subdivision.
 - If future gestures add lane editing, labels should include lane, accent level, and muted state.
 
 ### Patterns
@@ -64,7 +66,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 ### Settings
 
-- Sound preset, master volume, accent boost, audio output status, refresh, export, import, and latest snapshot restore controls are labeled.
+- Sound preset, master volume, accent boost, Human Feel, audio output status, refresh, export, import, and latest snapshot restore controls are labeled.
 - Audio output status combines route name, latency risk, and guidance message for VoiceOver users.
 - Import/export result messages are labeled when visible.
 

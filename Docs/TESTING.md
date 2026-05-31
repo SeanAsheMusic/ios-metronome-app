@@ -20,9 +20,11 @@ The Swift package includes XCTest coverage for:
 - Pattern selection, duplication, and deletion library operations.
 - Persistence validation for empty pattern libraries.
 - Pattern rename, meter update, editable subdivision-step regeneration, beat accent cycling, and explicit beat accent assignment.
+- Mixed per-beat subdivision generation and variable scheduler intervals.
 - Pattern deletion and setlist-reference cleanup.
 - Setlist item add, select, move, and remove operations.
 - Audio settings clamping and persistence.
+- Rhythm Trainer fixed/random mute behavior and Human Feel warning thresholds.
 - Portable library export/import and raw-library recovery import.
 - Bounded local snapshots before library overwrites and imports.
 - Latest local snapshot restore.

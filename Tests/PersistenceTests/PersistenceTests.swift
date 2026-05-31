@@ -60,6 +60,18 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(library.patterns.count, 6)
     }
 
+    func testLibraryDuplicatesMixedSubdivisionPattern() throws {
+        var library = MetronomeLibrary.defaultLibrary()
+        let source = Pattern.mixedSubdivision(subdivisions: [.sixteenth, .quintuplet, .triplet, .eighth])
+        library.appendPattern(source)
+
+        let duplicate = try library.duplicateSelectedPattern(name: "Mixed Copy")
+
+        XCTAssertEqual(duplicate.perBeatSubdivisions, source.perBeatSubdivisions)
+        XCTAssertEqual(duplicate.stepDurationsInMeterBeats, source.stepDurationsInMeterBeats)
+        XCTAssertEqual(duplicate.beats.count, source.beats.count)
+    }
+
     func testLibraryDeletesPatternAndMovesSelection() throws {
         var library = MetronomeLibrary.defaultLibrary()
         let deletedID = library.selectedPatternID

@@ -66,14 +66,18 @@ public enum Subdivision: String, CaseIterable, Codable, Hashable, Sendable {
     case quarter
     case eighth
     case triplet
+    case quintuplet
     case sixteenth
+    case septuplet
 
     public var stepsPerBeat: Int {
         switch self {
         case .quarter: 1
         case .eighth: 2
         case .triplet: 3
+        case .quintuplet: 5
         case .sixteenth: 4
+        case .septuplet: 7
         }
     }
 
@@ -85,8 +89,12 @@ public enum Subdivision: String, CaseIterable, Codable, Hashable, Sendable {
             beatUnit == 4 ? 2 : 1
         case .triplet:
             3
+        case .quintuplet:
+            5
         case .sixteenth:
             beatUnit == 4 ? 4 : 2
+        case .septuplet:
+            7
         }
     }
 
@@ -95,7 +103,9 @@ public enum Subdivision: String, CaseIterable, Codable, Hashable, Sendable {
         case .quarter: "Quarter"
         case .eighth: "Eighth"
         case .triplet: "Triplet"
+        case .quintuplet: "Quintuplet"
         case .sixteenth: "Sixteenth"
+        case .septuplet: "Septuplet"
         }
     }
 }
@@ -318,6 +328,8 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public var grooveTemplate: GrooveTemplate?
     public var claveModeTemplate: ClaveModeTemplate?
     public var grooveMixerPreset: GrooveMixerPreset?
+    public var perBeatSubdivisions: [Subdivision]?
+    public var stepDurationsInMeterBeats: [Double]?
 
     public init(
         id: UUID = UUID(),
@@ -328,7 +340,9 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         beats: [Beat]? = nil,
         grooveTemplate: GrooveTemplate? = nil,
         claveModeTemplate: ClaveModeTemplate? = nil,
-        grooveMixerPreset: GrooveMixerPreset? = nil
+        grooveMixerPreset: GrooveMixerPreset? = nil,
+        perBeatSubdivisions: [Subdivision]? = nil,
+        stepDurationsInMeterBeats: [Double]? = nil
     ) throws {
         try Pattern.validateBPM(bpm)
 
@@ -341,6 +355,8 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.grooveTemplate = grooveTemplate
         self.claveModeTemplate = claveModeTemplate
         self.grooveMixerPreset = grooveMixerPreset
+        self.perBeatSubdivisions = perBeatSubdivisions
+        self.stepDurationsInMeterBeats = stepDurationsInMeterBeats
     }
 
     public static func validateBPM(_ bpm: Int) throws {
@@ -350,6 +366,16 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     }
 
     public static func generateBeats(for meter: Meter, subdivision: Subdivision = .quarter) -> [Beat] {
+        generateSubdivisionBeats(
+            for: meter,
+            subdivisions: Array(repeating: subdivision, count: meter.beatsPerBar)
+        ).beats
+    }
+
+    public static func generateSubdivisionBeats(
+        for meter: Meter,
+        subdivisions: [Subdivision]
+    ) -> (beats: [Beat], stepDurationsInMeterBeats: [Double]) {
         var groupStarts: Set<Int> = [0]
         var cursor = 0
         for group in meter.grouping.dropLast() {
@@ -357,29 +383,44 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
             groupStarts.insert(cursor)
         }
 
-        let stepsPerMeterBeat = subdivision.stepsPerMeterBeat(beatUnit: meter.beatUnit)
-        let stepCount = meter.beatsPerBar * stepsPerMeterBeat
-
-        return (0..<stepCount).map { index in
-            let isMeterBeatStart = index.isMultiple(of: stepsPerMeterBeat)
-            let meterBeatIndex = index / stepsPerMeterBeat
-            let isDownbeat = index == 0
-            let isGroupStart = isMeterBeatStart && groupStarts.contains(meterBeatIndex)
-
-            let accent: AccentLevel
-            let role: ClickSoundRole
-            if isDownbeat {
-                accent = .strong
-                role = .downbeat
-            } else if isMeterBeatStart {
-                accent = isGroupStart ? .normal : .ghost
-                role = .beat
-            } else {
-                accent = .ghost
-                role = .subdivision
-            }
-            return Beat(index: index, accent: accent, soundRole: role)
+        let resolvedSubdivisions: [Subdivision]
+        if subdivisions.count == meter.beatsPerBar {
+            resolvedSubdivisions = subdivisions
+        } else {
+            resolvedSubdivisions = Array(repeating: .quarter, count: meter.beatsPerBar)
         }
+
+        var beats: [Beat] = []
+        var stepDurations: [Double] = []
+        for meterBeatIndex in 0..<meter.beatsPerBar {
+            let subdivision = resolvedSubdivisions[meterBeatIndex]
+            let stepsPerMeterBeat = subdivision.stepsPerMeterBeat(beatUnit: meter.beatUnit)
+            let duration = 1.0 / Double(stepsPerMeterBeat)
+
+            for stepInMeterBeat in 0..<stepsPerMeterBeat {
+                let index = beats.count
+                let isDownbeat = index == 0
+                let isGroupStart = stepInMeterBeat == 0 && groupStarts.contains(meterBeatIndex)
+
+                let accent: AccentLevel
+                let role: ClickSoundRole
+                if isDownbeat {
+                    accent = .strong
+                    role = .downbeat
+                } else if stepInMeterBeat == 0 {
+                    accent = isGroupStart ? .normal : .ghost
+                    role = .beat
+                } else {
+                    accent = .ghost
+                    role = .subdivision
+                }
+
+                beats.append(Beat(index: index, accent: accent, soundRole: role))
+                stepDurations.append(duration)
+            }
+        }
+
+        return (beats, stepDurations)
     }
 
     public static func defaultFourFour(id: UUID = UUID()) -> Pattern {
@@ -420,6 +461,29 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
             beats: Pattern.generateClaveModeBeats(for: template, mixerPreset: mixerPreset),
             claveModeTemplate: template,
             grooveMixerPreset: mixerPreset
+        )
+    }
+
+    public static func mixedSubdivision(
+        name: String = "Mixed Subdivisions",
+        bpm: Int = 96,
+        meter: Meter = .fourFour,
+        subdivisions: [Subdivision],
+        id: UUID = UUID()
+    ) -> Pattern {
+        let resolvedSubdivisions = subdivisions.count == meter.beatsPerBar
+            ? subdivisions
+            : Array(repeating: Subdivision.quarter, count: meter.beatsPerBar)
+        let generated = Pattern.generateSubdivisionBeats(for: meter, subdivisions: resolvedSubdivisions)
+        try! Pattern(
+            id: id,
+            name: name,
+            bpm: bpm,
+            meter: meter,
+            subdivision: .quarter,
+            beats: generated.beats,
+            perBeatSubdivisions: resolvedSubdivisions,
+            stepDurationsInMeterBeats: generated.stepDurationsInMeterBeats
         )
     }
 
@@ -470,10 +534,30 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     }
 
     public var eventIntervalDivisor: Int {
+        guard stepDurationsInMeterBeats == nil else {
+            return 1
+        }
         guard beats.count > meter.beatsPerBar, beats.count.isMultiple(of: meter.beatsPerBar) else {
             return 1
         }
         return beats.count / meter.beatsPerBar
+    }
+
+    public func eventDurationInMeterBeats(atEventOffset offset: Int) -> Double {
+        guard let stepDurationsInMeterBeats, !stepDurationsInMeterBeats.isEmpty else {
+            return 1.0 / Double(eventIntervalDivisor)
+        }
+        return stepDurationsInMeterBeats[offset % stepDurationsInMeterBeats.count]
+    }
+
+    public var subdivisionSummary: String {
+        guard let perBeatSubdivisions, perBeatSubdivisions.count == meter.beatsPerBar else {
+            return subdivision.displayName
+        }
+        return perBeatSubdivisions
+            .enumerated()
+            .map { offset, subdivision in "\(offset + 1): \(subdivision.displayName)" }
+            .joined(separator: ", ")
     }
 
     public mutating func rename(to name: String) {
@@ -490,11 +574,32 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil
+        perBeatSubdivisions = nil
+        stepDurationsInMeterBeats = nil
     }
 
     public mutating func updateSubdivision(_ subdivision: Subdivision) {
         self.subdivision = subdivision
         beats = Pattern.generateBeats(for: meter, subdivision: subdivision)
+        grooveTemplate = nil
+        claveModeTemplate = nil
+        grooveMixerPreset = nil
+        perBeatSubdivisions = nil
+        stepDurationsInMeterBeats = nil
+    }
+
+    public mutating func updateBeatSubdivision(_ subdivision: Subdivision, at meterBeatIndex: Int) throws {
+        guard (0..<meter.beatsPerBar).contains(meterBeatIndex) else {
+            throw MetronomeValidationError.invalidBeatIndex(meterBeatIndex)
+        }
+
+        var subdivisions = perBeatSubdivisions ?? Array(repeating: self.subdivision, count: meter.beatsPerBar)
+        subdivisions[meterBeatIndex] = subdivision
+        let generated = Pattern.generateSubdivisionBeats(for: meter, subdivisions: subdivisions)
+
+        perBeatSubdivisions = subdivisions
+        stepDurationsInMeterBeats = generated.stepDurationsInMeterBeats
+        beats = generated.beats
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil

@@ -35,7 +35,9 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(Subdivision.quarter.stepsPerBeat, 1)
         XCTAssertEqual(Subdivision.eighth.stepsPerBeat, 2)
         XCTAssertEqual(Subdivision.triplet.stepsPerBeat, 3)
+        XCTAssertEqual(Subdivision.quintuplet.stepsPerBeat, 5)
         XCTAssertEqual(Subdivision.sixteenth.stepsPerBeat, 4)
+        XCTAssertEqual(Subdivision.septuplet.stepsPerBeat, 7)
         XCTAssertEqual(Subdivision.eighth.stepsPerMeterBeat(beatUnit: 4), 2)
         XCTAssertEqual(Subdivision.eighth.stepsPerMeterBeat(beatUnit: 8), 1)
         XCTAssertEqual(Subdivision.sixteenth.stepsPerMeterBeat(beatUnit: 8), 2)
@@ -216,6 +218,29 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(pattern.beats.map(\.soundRole), [.downbeat, .beat, .beat, .beat, .beat])
     }
 
+    func testMixedPerBeatSubdivisionsCreateVariableStepDurations() throws {
+        let pattern = Pattern.mixedSubdivision(
+            subdivisions: [.sixteenth, .quintuplet, .triplet, .eighth]
+        )
+
+        XCTAssertEqual(pattern.beats.count, 14)
+        XCTAssertEqual(pattern.perBeatSubdivisions, [.sixteenth, .quintuplet, .triplet, .eighth])
+        XCTAssertEqual(pattern.eventIntervalDivisor, 1)
+        XCTAssertEqual(pattern.stepDurationsInMeterBeats?.prefix(6).map { ($0 * 100).rounded() / 100 }, [0.25, 0.25, 0.25, 0.25, 0.2, 0.2])
+        XCTAssertEqual(pattern.subdivisionSummary, "1: Sixteenth, 2: Quintuplet, 3: Triplet, 4: Eighth")
+    }
+
+    func testPatternCanUpdateOneBeatSubdivision() throws {
+        var pattern = Pattern.defaultFourFour()
+
+        try pattern.updateBeatSubdivision(.quintuplet, at: 1)
+
+        XCTAssertEqual(pattern.beats.count, 8)
+        XCTAssertEqual(pattern.perBeatSubdivisions, [.quarter, .quintuplet, .quarter, .quarter])
+        XCTAssertEqual(pattern.stepDurationsInMeterBeats, [1.0, 0.2, 0.2, 0.2, 0.2, 0.2, 1.0, 1.0])
+        XCTAssertNil(pattern.grooveTemplate)
+    }
+
     func testPatternCyclesAccentAndSoundRole() throws {
         var pattern = Pattern.defaultFourFour()
 
@@ -310,6 +335,14 @@ final class RhythmModelTests: XCTestCase {
 
     func testCodableRoundTrip() throws {
         let pattern = Pattern.defaultSevenEight()
+        let data = try JSONEncoder().encode(pattern)
+        let decoded = try JSONDecoder().decode(Pattern.self, from: data)
+
+        XCTAssertEqual(decoded, pattern)
+    }
+
+    func testMixedSubdivisionCodableRoundTrip() throws {
+        let pattern = Pattern.mixedSubdivision(subdivisions: [.sixteenth, .quintuplet, .triplet, .eighth])
         let data = try JSONEncoder().encode(pattern)
         let decoded = try JSONDecoder().decode(Pattern.self, from: data)
 

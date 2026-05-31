@@ -111,15 +111,133 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
     public var soundPreset: ClickSoundPreset
     public var masterGain: Double
     public var accentBoost: Double
+    public var humanizationAmount: Double
+    public var rhythmTrainer: RhythmTrainerSettings
 
     public init(
         soundPreset: ClickSoundPreset = .classic,
         masterGain: Double = 0.8,
-        accentBoost: Double = 1.0
+        accentBoost: Double = 1.0,
+        humanizationAmount: Double = 0.0,
+        rhythmTrainer: RhythmTrainerSettings = RhythmTrainerSettings()
     ) {
         self.soundPreset = soundPreset
         self.masterGain = min(1.0, max(0.0, masterGain))
         self.accentBoost = min(1.5, max(0.5, accentBoost))
+        self.humanizationAmount = min(1.0, max(0.0, humanizationAmount))
+        self.rhythmTrainer = rhythmTrainer
+    }
+
+    public var humanizationWarning: String? {
+        humanizationAmount >= 0.9 ? "High human feel intentionally makes the click inaccurate." : nil
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case soundPreset
+        case masterGain
+        case accentBoost
+        case humanizationAmount
+        case rhythmTrainer
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            soundPreset: try container.decodeIfPresent(ClickSoundPreset.self, forKey: .soundPreset) ?? .classic,
+            masterGain: try container.decodeIfPresent(Double.self, forKey: .masterGain) ?? 0.8,
+            accentBoost: try container.decodeIfPresent(Double.self, forKey: .accentBoost) ?? 1.0,
+            humanizationAmount: try container.decodeIfPresent(Double.self, forKey: .humanizationAmount) ?? 0.0,
+            rhythmTrainer: try container.decodeIfPresent(RhythmTrainerSettings.self, forKey: .rhythmTrainer) ?? RhythmTrainerSettings()
+        )
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(soundPreset, forKey: .soundPreset)
+        try container.encode(masterGain, forKey: .masterGain)
+        try container.encode(accentBoost, forKey: .accentBoost)
+        try container.encode(humanizationAmount, forKey: .humanizationAmount)
+        try container.encode(rhythmTrainer, forKey: .rhythmTrainer)
+    }
+}
+
+public enum RhythmTrainerMode: String, CaseIterable, Codable, Equatable, Sendable {
+    case off
+    case fixedBars
+    case randomBars
+
+    public var displayName: String {
+        switch self {
+        case .off: "Off"
+        case .fixedBars: "Fixed Gaps"
+        case .randomBars: "Random Gaps"
+        }
+    }
+}
+
+public struct RhythmTrainerSettings: Codable, Equatable, Sendable {
+    public static let minimumBars = 1
+    public static let maximumBars = 8
+
+    public var mode: RhythmTrainerMode
+    public var audibleBars: Int
+    public var silentBars: Int
+    public var randomSilenceProbability: Double
+
+    public init(
+        mode: RhythmTrainerMode = .off,
+        audibleBars: Int = 3,
+        silentBars: Int = 1,
+        randomSilenceProbability: Double = 0.25
+    ) {
+        self.mode = mode
+        self.audibleBars = min(Self.maximumBars, max(Self.minimumBars, audibleBars))
+        self.silentBars = min(Self.maximumBars, max(Self.minimumBars, silentBars))
+        self.randomSilenceProbability = min(1.0, max(0.0, randomSilenceProbability))
+    }
+
+    public var isEnabled: Bool {
+        mode != .off
+    }
+
+    public var summary: String {
+        switch mode {
+        case .off:
+            "Off"
+        case .fixedBars:
+            "\(audibleBars) on, \(silentBars) silent"
+        case .randomBars:
+            "\(Int((randomSilenceProbability * 100).rounded()))% random silent bars"
+        }
+    }
+
+    public func soundRole(
+        for originalRole: ClickSoundRole,
+        patternID: UUID,
+        barIndex: Int
+    ) -> ClickSoundRole {
+        guard originalRole != .muted else {
+            return originalRole
+        }
+
+        switch mode {
+        case .off:
+            return originalRole
+        case .fixedBars:
+            let cycleLength = audibleBars + silentBars
+            let barInCycle = barIndex % cycleLength
+            return barInCycle >= audibleBars ? .muted : originalRole
+        case .randomBars:
+            return Self.randomUnit(patternID: patternID, barIndex: barIndex) < randomSilenceProbability ? .muted : originalRole
+        }
+    }
+
+    private static func randomUnit(patternID: UUID, barIndex: Int) -> Double {
+        var hasher = Hasher()
+        hasher.combine(patternID)
+        hasher.combine(barIndex)
+        let value = abs(hasher.finalize() % 10_000)
+        return Double(value) / 10_000.0
     }
 }
 
@@ -215,6 +333,12 @@ public struct MetronomeScheduler: Sendable {
         try beatIntervalNanoseconds(for: pattern.bpm) / UInt64(pattern.eventIntervalDivisor)
     }
 
+    public func eventIntervalNanoseconds(for pattern: Pattern, eventOffset: Int) throws -> UInt64 {
+        let beatInterval = try beatIntervalNanoseconds(for: pattern.bpm)
+        let multiplier = pattern.eventDurationInMeterBeats(atEventOffset: eventOffset)
+        return UInt64((Double(beatInterval) * multiplier).rounded())
+    }
+
     public func schedule(
         pattern: Pattern,
         startingAt startTimeNanoseconds: UInt64,
@@ -224,16 +348,20 @@ public struct MetronomeScheduler: Sendable {
             return BeatSchedule(events: [])
         }
 
-        let interval = try eventIntervalNanoseconds(for: pattern)
+        let firstInterval = try eventIntervalNanoseconds(for: pattern, eventOffset: 0)
+        var nextEventTime = startTimeNanoseconds
         let events = (0..<beatCount).map { offset in
             let beat = pattern.beats[offset % pattern.beats.count]
-            return ScheduledBeatEvent(
+            let event = ScheduledBeatEvent(
                 patternID: pattern.id,
                 beatIndex: beat.index,
                 accent: beat.accent,
                 soundRole: beat.soundRole,
-                hostTimeNanoseconds: startTimeNanoseconds + (UInt64(offset) * interval)
+                hostTimeNanoseconds: nextEventTime
             )
+            let interval = (try? eventIntervalNanoseconds(for: pattern, eventOffset: offset)) ?? firstInterval
+            nextEventTime += interval
+            return event
         }
         return BeatSchedule(events: events)
     }
@@ -603,17 +731,10 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
                 break
             }
 
-            let interval: UInt64
-            do {
-                interval = try scheduler.eventIntervalNanoseconds(for: pattern)
-            } catch {
-                await stop()
-                break
-            }
-
             let now = DispatchTime.now().uptimeNanoseconds
-            if nextBeatTime > now {
-                try? await Task.sleep(nanoseconds: nextBeatTime - now)
+            let humanizedBeatTime = humanizedHostTime(nextBeatTime, pattern: pattern, eventOffset: beatOffset)
+            if humanizedBeatTime > now {
+                try? await Task.sleep(nanoseconds: humanizedBeatTime - now)
             }
 
             guard !Task.isCancelled, isRunning else {
@@ -621,12 +742,18 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             }
 
             let beat = pattern.beats[beatOffset % pattern.beats.count]
+            let barIndex = beatOffset / max(1, pattern.beats.count)
+            let soundRole = settings.rhythmTrainer.soundRole(
+                for: beat.soundRole,
+                patternID: pattern.id,
+                barIndex: barIndex
+            )
             let event = ScheduledBeatEvent(
                 patternID: pattern.id,
                 beatIndex: beat.index,
                 accent: beat.accent,
-                soundRole: beat.soundRole,
-                hostTimeNanoseconds: nextBeatTime
+                soundRole: soundRole,
+                hostTimeNanoseconds: humanizedBeatTime
             )
             await timingRecorder.record(
                 scheduledHostTimeNanoseconds: event.hostTimeNanoseconds,
@@ -639,9 +766,34 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
                 }
             }
 
+            let interval: UInt64
+            do {
+                interval = try scheduler.eventIntervalNanoseconds(for: pattern, eventOffset: beatOffset)
+            } catch {
+                await stop()
+                break
+            }
             beatOffset += 1
             nextBeatTime += interval
         }
+    }
+
+    private func humanizedHostTime(_ hostTime: UInt64, pattern: Pattern, eventOffset: Int) -> UInt64 {
+        guard settings.humanizationAmount > 0 else {
+            return hostTime
+        }
+
+        let interval = (try? scheduler.eventIntervalNanoseconds(for: pattern, eventOffset: eventOffset)) ?? 0
+        guard interval > 0 else {
+            return hostTime
+        }
+
+        let maximumOffset = Double(interval) * 0.25 * settings.humanizationAmount
+        let randomOffset = Double.random(in: -maximumOffset...maximumOffset)
+        if randomOffset < 0 {
+            return hostTime - min(hostTime, UInt64(abs(randomOffset).rounded()))
+        }
+        return hostTime + UInt64(randomOffset.rounded())
     }
 
     private func play(event: ScheduledBeatEvent) {

@@ -1,3 +1,4 @@
+import Foundation
 import XCTest
 @testable import AudioEngine
 @testable import RhythmModel
@@ -26,10 +27,44 @@ final class AudioEngineTests: XCTestCase {
     }
 
     func testAudioSettingsClampValues() {
-        let settings = MetronomeAudioSettings(masterGain: 2.0, accentBoost: 0.1)
+        let settings = MetronomeAudioSettings(masterGain: 2.0, accentBoost: 0.1, humanizationAmount: 2.0)
 
         XCTAssertEqual(settings.masterGain, 1.0)
         XCTAssertEqual(settings.accentBoost, 0.5)
+        XCTAssertEqual(settings.humanizationAmount, 1.0)
+        XCTAssertEqual(settings.humanizationWarning, "High human feel intentionally makes the click inaccurate.")
+    }
+
+    func testAudioSettingsDecodeOlderPayloadDefaultsNewFields() throws {
+        let data = Data("""
+        {"soundPreset":"wood","masterGain":0.5,"accentBoost":1.1}
+        """.utf8)
+
+        let settings = try JSONDecoder().decode(MetronomeAudioSettings.self, from: data)
+
+        XCTAssertEqual(settings.soundPreset, .wood)
+        XCTAssertEqual(settings.masterGain, 0.5)
+        XCTAssertEqual(settings.accentBoost, 1.1)
+        XCTAssertEqual(settings.humanizationAmount, 0.0)
+        XCTAssertEqual(settings.rhythmTrainer, RhythmTrainerSettings())
+    }
+
+    func testRhythmTrainerFixedBarsMutesSilentCycle() {
+        let settings = RhythmTrainerSettings(mode: .fixedBars, audibleBars: 2, silentBars: 1)
+        let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!
+
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 0), .beat)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 1), .beat)
+        XCTAssertEqual(settings.soundRole(for: .beat, patternID: patternID, barIndex: 2), .muted)
+    }
+
+    func testRhythmTrainerRandomBarsCanMuteAllOrNone() {
+        let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!
+        let allSilent = RhythmTrainerSettings(mode: .randomBars, randomSilenceProbability: 1.0)
+        let noneSilent = RhythmTrainerSettings(mode: .randomBars, randomSilenceProbability: 0.0)
+
+        XCTAssertEqual(allSilent.soundRole(for: .beat, patternID: patternID, barIndex: 0), .muted)
+        XCTAssertEqual(noneSilent.soundRole(for: .beat, patternID: patternID, barIndex: 0), .beat)
     }
 
     func testClickSoundPresetDisplayNames() {
@@ -117,6 +152,20 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(schedule.events.map(\.beatIndex), [0, 1, 2, 3, 4])
         XCTAssertEqual(schedule.events.map(\.soundRole), [.downbeat, .muted, .muted, .beat, .muted])
         XCTAssertEqual(schedule.events[4].hostTimeNanoseconds, 1_000 + (4 * 156_250_000))
+    }
+
+    func testScheduleSupportsMixedPerBeatSubdivisions() throws {
+        let scheduler = MetronomeScheduler()
+        let pattern = Pattern.mixedSubdivision(
+            bpm: 60,
+            subdivisions: [.sixteenth, .quintuplet, .triplet, .eighth],
+            id: UUID(uuidString: "B2193D8E-C2B6-4F2F-AB8E-8BE0DC1528D7")!
+        )
+
+        let schedule = try scheduler.schedule(pattern: pattern, startingAt: 1_000, beatCount: 7)
+
+        XCTAssertEqual(schedule.events.map(\.beatIndex), [0, 1, 2, 3, 4, 5, 6])
+        XCTAssertEqual(schedule.events.map(\.hostTimeNanoseconds), [1_000, 250_001_000, 500_001_000, 750_001_000, 1_000_001_000, 1_200_001_000, 1_400_001_000])
     }
 
     func testStubPublishesInitialBeatEvent() async throws {

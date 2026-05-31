@@ -22,6 +22,9 @@
 - Audio timing measurement harness.
 - Source-level accessibility audit.
 - Local tempo ladder practice tool.
+- Rhythm Trainer fixed/random silent bars.
+- Human Feel timing simulation.
+- Mixed per-beat subdivision editing with tuplets.
 
 ## V1.1
 
@@ -30,6 +33,7 @@
 ## Later
 
 - Independent audio faders for rhythm lanes.
+- Microphone accuracy checker.
 - Jazz 2 and 4 and swing templates.
 - Gap/random silence trainers.
 - Song form mode.

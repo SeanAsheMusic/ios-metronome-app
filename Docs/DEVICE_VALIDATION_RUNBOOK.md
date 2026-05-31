@@ -28,12 +28,15 @@ Use this runbook before App Store submission and before any claim about producti
 | Tap tempo | Recent taps update tempo and stay inside 30 to 300 BPM. | Device note. |
 | Meter/subdivision | Meter and subdivision edits audibly change the click pattern after playback restart or prepare. | Device note. |
 | Subdivision editing | Eighth, triplet, and sixteenth subdivision steps can be muted or accented from the editor. | Device note. |
+| Mixed subdivisions | Different subdivisions per beat, including quintuplets, play at the expected spacing. | Device note. |
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
 | Odd-meter clave feels | 5/8, 7/8, 9/8, and 11/8 Clave Mode templates create playable syncopated patterns. | Device note. |
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
 | Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
+| Rhythm Trainer | Fixed silent bars and random silent bars mute whole bars while keeping the transport running. | Device note. |
+| Human Feel | Zero percent remains steady; high values audibly drift and show the inaccuracy warning. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
 | Click fixtures | `SoundLibrary/RenderedVerification` WAVs match `SHA256SUMS` and are useful for preset listening review. | Checksum output plus notes. |
 
@@ -105,3 +108,5 @@ Before submission, attach or preserve:
 - Privacy manifest confirmation.
 
 If any item above fails, either fix it before submission or document the limitation in release notes and remove any claim the failed item would make misleading.
+
+Human Feel must be set to 0% for timing measurement runs. Microphone accuracy checking must be validated separately with known-latency input hardware before release.

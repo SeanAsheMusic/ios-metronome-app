@@ -183,6 +183,36 @@ struct MainMetronomeView: View {
                         .accessibilityLabel("Accent boost")
                     }
 
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Human Feel")
+                                .font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Text("\(viewModel.humanizationPercent)%")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Slider(value: Binding(
+                            get: { viewModel.audioSettings.humanizationAmount },
+                            set: { value in
+                                Task {
+                                    await viewModel.updateHumanizationAmount(value)
+                                }
+                            }
+                        ), in: 0...1)
+                        .accessibilityLabel("Human feel")
+                        .accessibilityValue("\(viewModel.humanizationPercent) percent")
+
+                        if let warning = viewModel.audioSettings.humanizationWarning {
+                            Text(warning)
+                                .font(.caption)
+                                .foregroundStyle(.yellow)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityLabel(warning)
+                        }
+                    }
+
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Output")
                             .font(.subheadline.weight(.semibold))
@@ -285,10 +315,13 @@ struct MainMetronomeView: View {
                 .font(.title3.weight(.semibold))
                 .accessibilityLabel("Pattern \(viewModel.pattern.name)")
 
-            Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivision.displayName)")
+            Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivisionSummary)")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-                .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivision.displayName)")
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.center)
+                .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivisionSummary)")
         }
     }
 
@@ -420,7 +453,7 @@ struct MainMetronomeView: View {
     private var patternSummary: some View {
         HStack(spacing: 12) {
             summaryPill(title: "Meter", value: viewModel.pattern.meter.displayName)
-            summaryPill(title: "Subdivision", value: viewModel.pattern.subdivision.displayName)
+            summaryPill(title: "Subdivision", value: viewModel.pattern.subdivisionSummary)
             summaryPill(title: "Saved", value: "\(viewModel.patterns.count)")
             summaryPill(title: "Setlist", value: "\(viewModel.activeSetlist.items.count)")
         }
@@ -433,6 +466,9 @@ struct MainMetronomeView: View {
                 .foregroundStyle(.secondary)
             Text(value)
                 .font(.headline)
+                .lineLimit(2)
+                .minimumScaleFactor(0.65)
+                .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 64)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -527,6 +563,76 @@ struct MainMetronomeView: View {
                         viewModel.updateTempoLadderBars(by: -1)
                     } increment: {
                         viewModel.updateTempoLadderBars(by: 1)
+                    }
+                }
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Rhythm Trainer")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                        Text(viewModel.audioSettings.rhythmTrainer.summary)
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Rhythm trainer \(viewModel.audioSettings.rhythmTrainer.summary)")
+
+                    Picker("Rhythm trainer", selection: Binding(
+                        get: { viewModel.audioSettings.rhythmTrainer.mode },
+                        set: { mode in
+                            Task {
+                                await viewModel.updateRhythmTrainerMode(mode)
+                            }
+                        }
+                    )) {
+                        ForEach(RhythmTrainerMode.allCases, id: \.self) { mode in
+                            Text(mode.displayName).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .accessibilityLabel("Rhythm trainer mode")
+                }
+
+                if viewModel.audioSettings.rhythmTrainer.mode == .fixedBars {
+                    ladderStepper(title: "Audible", value: "\(viewModel.audioSettings.rhythmTrainer.audibleBars)", decrementLabel: "Decrease audible bars", incrementLabel: "Increase audible bars") {
+                        Task { await viewModel.updateRhythmTrainerAudibleBars(by: -1) }
+                    } increment: {
+                        Task { await viewModel.updateRhythmTrainerAudibleBars(by: 1) }
+                    }
+
+                    ladderStepper(title: "Silent", value: "\(viewModel.audioSettings.rhythmTrainer.silentBars)", decrementLabel: "Decrease silent bars", incrementLabel: "Increase silent bars") {
+                        Task { await viewModel.updateRhythmTrainerSilentBars(by: -1) }
+                    } increment: {
+                        Task { await viewModel.updateRhythmTrainerSilentBars(by: 1) }
+                    }
+                } else if viewModel.audioSettings.rhythmTrainer.mode == .randomBars {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Silent Chance")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text("\(viewModel.rhythmTrainerRandomPercent)%")
+                                .font(.caption.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                        }
+                        Slider(value: Binding(
+                            get: { viewModel.audioSettings.rhythmTrainer.randomSilenceProbability },
+                            set: { value in
+                                Task {
+                                    await viewModel.updateRhythmTrainerRandomSilence(value)
+                                }
+                            }
+                        ), in: 0...1)
+                        .accessibilityLabel("Random silent bar chance")
+                        .accessibilityValue("\(viewModel.rhythmTrainerRandomPercent) percent")
                     }
                 }
             }
@@ -661,8 +767,48 @@ struct MainMetronomeView: View {
                     }
                 }
             }
+
+            perBeatSubdivisionEditor
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private var perBeatSubdivisionEditor: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Per-beat subdivisions")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(0..<viewModel.pattern.meter.beatsPerBar, id: \.self) { beatIndex in
+                        Menu {
+                            ForEach(Subdivision.allCases, id: \.self) { subdivision in
+                                Button {
+                                    Task {
+                                        await viewModel.updateBeatSubdivision(subdivision, at: beatIndex)
+                                    }
+                                } label: {
+                                    Text(subdivision.displayName)
+                                }
+                            }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Text("\(beatIndex + 1)")
+                                    .font(.caption.weight(.bold))
+                                Text(viewModel.beatSubdivisionLabel(at: beatIndex))
+                                    .font(.caption2.weight(.semibold))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.75)
+                            }
+                            .frame(width: 86, height: 46)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Beat \(beatIndex + 1) subdivision \(viewModel.beatSubdivisionAccessibilityLabel(at: beatIndex))")
+                    }
+                }
+            }
+        }
     }
 
     private var patternLibrary: some View {
@@ -1440,21 +1586,66 @@ final class MainMetronomeViewModel: ObservableObject {
     func updateMasterGain(_ value: Double) async {
         var settings = audioSettings
         settings.masterGain = value
-        await updateAudioSettings(MetronomeAudioSettings(
-            soundPreset: settings.soundPreset,
-            masterGain: settings.masterGain,
-            accentBoost: settings.accentBoost
-        ))
+        await updateAudioSettings(settings)
     }
 
     func updateAccentBoost(_ value: Double) async {
         var settings = audioSettings
         settings.accentBoost = value
-        await updateAudioSettings(MetronomeAudioSettings(
-            soundPreset: settings.soundPreset,
-            masterGain: settings.masterGain,
-            accentBoost: settings.accentBoost
-        ))
+        await updateAudioSettings(settings)
+    }
+
+    func updateHumanizationAmount(_ value: Double) async {
+        var settings = audioSettings
+        settings.humanizationAmount = min(1.0, max(0.0, value))
+        await updateAudioSettings(settings)
+    }
+
+    var humanizationPercent: Int {
+        Int((audioSettings.humanizationAmount * 100).rounded())
+    }
+
+    var rhythmTrainerRandomPercent: Int {
+        Int((audioSettings.rhythmTrainer.randomSilenceProbability * 100).rounded())
+    }
+
+    func updateRhythmTrainerMode(_ mode: RhythmTrainerMode) async {
+        var settings = audioSettings
+        settings.rhythmTrainer.mode = mode
+        await updateAudioSettings(settings)
+    }
+
+    func updateRhythmTrainerAudibleBars(by delta: Int) async {
+        var settings = audioSettings
+        settings.rhythmTrainer = RhythmTrainerSettings(
+            mode: settings.rhythmTrainer.mode,
+            audibleBars: settings.rhythmTrainer.audibleBars + delta,
+            silentBars: settings.rhythmTrainer.silentBars,
+            randomSilenceProbability: settings.rhythmTrainer.randomSilenceProbability
+        )
+        await updateAudioSettings(settings)
+    }
+
+    func updateRhythmTrainerSilentBars(by delta: Int) async {
+        var settings = audioSettings
+        settings.rhythmTrainer = RhythmTrainerSettings(
+            mode: settings.rhythmTrainer.mode,
+            audibleBars: settings.rhythmTrainer.audibleBars,
+            silentBars: settings.rhythmTrainer.silentBars + delta,
+            randomSilenceProbability: settings.rhythmTrainer.randomSilenceProbability
+        )
+        await updateAudioSettings(settings)
+    }
+
+    func updateRhythmTrainerRandomSilence(_ value: Double) async {
+        var settings = audioSettings
+        settings.rhythmTrainer = RhythmTrainerSettings(
+            mode: settings.rhythmTrainer.mode,
+            audibleBars: settings.rhythmTrainer.audibleBars,
+            silentBars: settings.rhythmTrainer.silentBars,
+            randomSilenceProbability: value
+        )
+        await updateAudioSettings(settings)
     }
 
     private func updateAudioSettings(_ settings: MetronomeAudioSettings) async {
@@ -1508,6 +1699,31 @@ final class MainMetronomeViewModel: ObservableObject {
         pattern.updateSubdivision(subdivision)
         saveSelectedPattern()
         try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func updateBeatSubdivision(_ subdivision: Subdivision, at meterBeatIndex: Int) async {
+        do {
+            try pattern.updateBeatSubdivision(subdivision, at: meterBeatIndex)
+            saveSelectedPattern()
+            try await audioEngine.prepare(pattern: pattern)
+        } catch {
+        }
+    }
+
+    func beatSubdivisionLabel(at meterBeatIndex: Int) -> String {
+        beatSubdivision(at: meterBeatIndex).displayName
+    }
+
+    func beatSubdivisionAccessibilityLabel(at meterBeatIndex: Int) -> String {
+        beatSubdivision(at: meterBeatIndex).displayName.lowercased()
+    }
+
+    private func beatSubdivision(at meterBeatIndex: Int) -> Subdivision {
+        guard let perBeatSubdivisions = pattern.perBeatSubdivisions,
+              perBeatSubdivisions.indices.contains(meterBeatIndex) else {
+            return pattern.subdivision
+        }
+        return perBeatSubdivisions[meterBeatIndex]
     }
 
     func cycleAccent(at index: Int) async {

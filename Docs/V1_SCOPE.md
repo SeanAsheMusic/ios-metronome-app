@@ -11,9 +11,12 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Play/stop UI skeleton.
 - Tap tempo entry point.
 - Audible one- and two-bar count-in.
+- Rhythm Trainer with fixed and random silent-bar modes.
+- Human Feel timing simulation with a warning for intentionally inaccurate high settings.
 - Common meters: 2/4, 3/4, 4/4, 5/4, 5/8, 6/8, 7/8, 9/8, 11/8, and 12/8.
-- Subdivisions: quarter, eighth, triplet, and sixteenth.
+- Subdivisions: quarter, eighth, triplet, quintuplet, sixteenth, and septuplet.
 - Editable subdivision-step grids for syncopations and silencing.
+- Mixed per-beat subdivision editing.
 - Accent levels: strong, normal, ghost, and muted.
 - Explicit per-step accent and mute editing.
 - Full son, rumba, and bossa clave templates backed by a 16-step pattern foundation.
@@ -54,4 +57,4 @@ No active source-level V1.1 candidates remain beyond device/accessibility valida
 
 ## Later Candidates
 
-- Independent audio faders for rhythm lanes, subdivision/lane-level pattern gestures, jazz 2 and 4, swing, gap click, random silence, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, jazz 2 and 4, swing, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
