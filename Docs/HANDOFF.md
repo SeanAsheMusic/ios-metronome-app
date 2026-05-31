@@ -13,11 +13,12 @@
 - `Docs/ACCESSIBILITY_AUDIT.md` records the source-level accessibility pass and the remaining device checklist.
 - `Docs/DEVICE_VALIDATION_RUNBOOK.md` records the full device-validation pass/fail matrix.
 - `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, `Persistence`, and test targets.
+- Current source has been validated with Swift package tests, Mac Catalyst Xcode tests, and iPhone 17 simulator build/test runs. The app also launches and renders the Play screen on the iPhone 17 simulator.
 
 ## Next Engineering Task
 
-Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes, and execute `Docs/DEVICE_VALIDATION_RUNBOOK.md` on real devices and representative simulators.
+Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes on physical hardware, and execute `Docs/DEVICE_VALIDATION_RUNBOOK.md` on real devices.
 
 ## Do Not Do Next
 
-Do not start with tuner, accounts, cloud sync, subscriptions, ads, Apple Watch, Ableton Link, or MIDI. The next valuable work is full Xcode/device validation, timing measurement, accessibility verification, and polish on the core metronome flows.
+Do not start with tuner, accounts, cloud sync, subscriptions, ads, Apple Watch, Ableton Link, MIDI, or microphone accuracy checking. The next valuable work is physical-device validation, timing measurement, accessibility verification, signing setup, and polish on the core metronome flows.

@@ -14,12 +14,12 @@
 - Latest local snapshot restore.
 - Sound family picker with synthesized presets.
 - Exportable click-render verification assets.
-- Full son, rumba, and bossa clave template set.
+- Full son, rumba, bossa, 6/8 bell, 12/8 bell, and odd-meter clave template set.
 - Clave Mode mixer presets for clave, metronome click, and subdivisions.
 - Background audio app mode.
 - Fullscreen visual pulse mode.
 - Audible count-in.
-- Audio timing measurement harness.
+- Audio timing measurement harness and Settings timing summary controls.
 - Source-level accessibility audit.
 - Local tempo ladder practice tool.
 - Rhythm Trainer fixed/random silent bars.
@@ -32,12 +32,12 @@
 ## V1.1
 
 - Device VoiceOver and Accessibility Inspector audit.
+- Real-device timing validation using `Docs/DEVICE_VALIDATION_RUNBOOK.md`.
 
 ## Later
 
 - Independent audio faders for rhythm lanes.
 - Microphone accuracy checker.
-- Gap/random silence trainers.
 - External display.
 - Optional iCloud.
 - Hardware pedals.
