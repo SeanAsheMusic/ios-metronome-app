@@ -31,6 +31,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
 | Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
+| Click fixtures | `SoundLibrary/RenderedVerification` WAVs match `SHA256SUMS` and are useful for preset listening review. | Checksum output plus notes. |
 
 ## Audio Timing
 

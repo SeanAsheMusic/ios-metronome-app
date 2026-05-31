@@ -23,6 +23,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Local tempo ladder practice tool with target, step, and bars-per-step controls
 - Settings tab for synthesized click preset, volume, and accent boost
 - Runtime synthesized click provenance manifest
+- Exportable click-render verification WAVs with checksums
 - Audio output status with wireless latency warning
 - App privacy manifest declaring no tracking and no collected data
 - Large performance SwiftUI play surface wired to playback state

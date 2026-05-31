@@ -12,6 +12,7 @@
 - Bounded local library snapshots.
 - Latest local snapshot restore.
 - Sound family picker with synthesized presets.
+- Exportable click-render verification assets.
 - Clave and bossa groove template foundation.
 - Background audio app mode.
 - Fullscreen visual pulse mode.
@@ -23,7 +24,6 @@
 ## V1.1
 
 - Pattern editor with per-beat accent/mute controls.
-- Exportable click-render verification assets.
 - Device VoiceOver and Accessibility Inspector audit.
 - Full clave mode.
 

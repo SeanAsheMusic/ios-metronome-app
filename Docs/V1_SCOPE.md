@@ -28,6 +28,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Full-screen stage pulse mode.
 - Accessibility labels and large touch targets.
 - Playable audio engine foundation and scheduling spec.
+- Exportable click-render verification fixtures.
 - Background audio mode in the generated app target.
 
 ## Explicit Non-Goals
@@ -46,7 +47,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 
 ## V1.1 Candidates
 
-- Extended click renderer provenance for any future pre-rendered assets.
+No active source-level V1.1 candidates remain beyond device/accessibility validation and deeper deferred feature work.
 
 ## Later Candidates
 

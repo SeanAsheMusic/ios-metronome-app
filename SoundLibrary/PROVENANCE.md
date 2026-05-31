@@ -18,6 +18,10 @@ Pulsecraft does not ship copied DAW, system, hardware, sample-pack, or third-par
 | Muted role | Zero-gain buffer |
 | External assets | None |
 
+## Verification Fixtures
+
+`Tools/render_click_verification_assets.rb` renders exportable WAV fixtures under `SoundLibrary/RenderedVerification` using the same source-controlled preset parameters. These files are for listening review, waveform inspection, and checksum-based verification only. They are not bundled by the app target.
+
 ## Preset Parameters
 
 All gains below are pre-master-gain base values. Downbeat gain is additionally multiplied by accent boost and clipped to 1.0.
@@ -43,6 +47,6 @@ All gains below are pre-master-gain base values. Downbeat gain is additionally m
 
 ## Verification Notes
 
-- Any future pre-rendered assets must include generator source, render command, sample rate, bit depth, and hash.
+- Any future pre-rendered shipped assets must include generator source, render command, sample rate, bit depth, and hash.
 - Any future imported samples must include explicit rights evidence before entering the repository.
 - This manifest should be updated in the same commit as any click parameter change.
