@@ -117,6 +117,7 @@ app_target.build_configurations.each do |config|
   config.build_settings['INFOPLIST_KEY_LSApplicationCategoryType'] = 'public.app-category.music'
   config.build_settings['INFOPLIST_KEY_NSHumanReadableCopyright'] = 'Copyright © 2026 Sean Ashe Music'
   config.build_settings['INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents'] = 'YES'
+  config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] = 'audio'
   config.build_settings['INFOPLIST_KEY_UILaunchScreen_Generation'] = 'YES'
   config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations'] = 'UIInterfaceOrientationPortrait'
   config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad'] = 'UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight'

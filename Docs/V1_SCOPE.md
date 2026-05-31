@@ -23,6 +23,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - SwiftUI performance play screen foundation.
 - Accessibility labels and large touch targets.
 - Playable audio engine foundation and scheduling spec.
+- Background audio mode in the generated app target.
 
 ## Explicit Non-Goals
 

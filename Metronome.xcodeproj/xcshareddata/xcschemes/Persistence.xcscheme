@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "739CBB0CB903853A8A849E8F"
+               BlueprintIdentifier = "892946AFBA98AE7555292F29"
                BuildableName = "Persistence.framework"
                BlueprintName = "Persistence"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -28,7 +28,7 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "72387C08651D6CF054C48231"
+               BlueprintIdentifier = "8F7F2B1C4534E7823F1AD52F"
                BuildableName = "PersistenceTests.xctest"
                BlueprintName = "PersistenceTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -42,7 +42,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3E8EA4D5C76BF2C85918C0BE"
+               BlueprintIdentifier = "33A6096AFA85BE5465AC975D"
                BuildableName = "RhythmModel.framework"
                BlueprintName = "RhythmModel"
                ReferencedContainer = "container:Metronome.xcodeproj">
@@ -60,7 +60,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "72387C08651D6CF054C48231"
+               BlueprintIdentifier = "8F7F2B1C4534E7823F1AD52F"
                BuildableName = "PersistenceTests.xctest"
                BlueprintName = "PersistenceTests"
                ReferencedContainer = "container:Metronome.xcodeproj">

@@ -11,6 +11,7 @@
 - Local export/import bundles.
 - Sound family picker with synthesized presets.
 - Clave and bossa groove template foundation.
+- Background audio app mode.
 - Physical-device audio measurement harness.
 - Accessibility audit.
 

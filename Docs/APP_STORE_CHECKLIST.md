@@ -37,6 +37,7 @@ The app target includes `PrivacyInfo.xcprivacy` with no tracking, no collected d
 
 - Smoke test install, cold launch, play screen, pattern defaults, setlist ordering.
 - Accessibility pass with VoiceOver, Dynamic Type, Reduce Motion, and high contrast.
+- Background audio smoke test with screen locked and app backgrounded.
 - Physical-device audio tests before claiming precision, including built-in speaker, wired headphones, Bluetooth, and AirPlay where available.
 
 ## Review Notes

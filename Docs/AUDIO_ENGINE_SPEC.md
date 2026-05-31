@@ -39,7 +39,7 @@ Bluetooth output may be usable for practice but not guaranteed for stage-critica
 
 ## Background And Lock Screen
 
-Background audio is a future implementation requirement for live use. It must be backed by the correct app capability and tested on hardware before release claims.
+The generated app target includes the `audio` background mode for lock-screen practice and live use. This still needs full Xcode and physical-device validation before release claims.
 
 ## Haptic And Visual Sync
 

@@ -7,6 +7,7 @@
 - Core rhythm models are implemented in `Sources/RhythmModel`.
 - Audio engine protocols and the AVFoundation click engine are in `Sources/AudioEngine`.
 - Local JSON persistence lives in `Sources/Persistence`.
+- The generated app target includes the background audio mode.
 - XCTest coverage exists for rhythm models, audio scheduling, persistence, and practice timer behavior.
 - SwiftUI app UI exists under `App` with Play, Edit, Patterns, Setlist, and Settings tabs.
 - `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, `Persistence`, and test targets.
