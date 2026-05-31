@@ -110,6 +110,11 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         try setlists[0].move(from: source, to: destination)
     }
 
+    public mutating func updateActiveSetlistItemBarCount(id: SetlistItem.ID, barCount: Int) throws {
+        ensureActiveSetlist()
+        try setlists[0].updateBarCount(for: id, barCount: barCount)
+    }
+
     public mutating func selectPatternFromActiveSetlist(itemID: SetlistItem.ID) {
         guard let item = activeSetlist.items.first(where: { $0.id == itemID }) else {
             return

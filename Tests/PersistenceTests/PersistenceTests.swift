@@ -129,6 +129,15 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(library.activeSetlist.items.map(\.position), [0, 1, 2])
     }
 
+    func testLibraryUpdatesSetlistItemBarCount() throws {
+        var library = MetronomeLibrary.defaultLibrary()
+        let itemID = library.activeSetlist.items[0].id
+
+        try library.updateActiveSetlistItemBarCount(id: itemID, barCount: 12)
+
+        XCTAssertEqual(library.activeSetlist.items[0].resolvedBarCount, 12)
+    }
+
     func testLibraryRemovesActiveSetlistItem() throws {
         var library = MetronomeLibrary.defaultLibrary()
         let itemID = library.activeSetlist.items[0].id

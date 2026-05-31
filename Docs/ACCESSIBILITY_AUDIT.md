@@ -16,7 +16,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
 | Edit | Implemented in source | Pattern name, meter, global subdivision, per-beat subdivision, and explicit beat/subdivision accent/mute controls are labeled. Beat menus announce the step number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, Clave Mode creation, Swing template creation, and Polyrhythm template creation have labels. |
-| Setlist | Implemented in source | Add, select, reorder, and remove controls have labels that include the affected item title. |
+| Setlist | Implemented in source | Add, select, reorder, bar-count, auto-advance, and remove controls have labels that include the affected item title. |
 | Settings | Implemented in source | Click preset, volume, accent boost, Human Feel, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
 | Dynamic Type | Source likely supports core flow | Most controls use SwiftUI text styles, flexible frames, scroll views, and minimum scale factors. Needs simulator/device verification at largest accessibility sizes. |
 | Touch targets | Implemented in source | Primary controls, beat cells, pattern actions, groove buttons, practice presets, settings refresh, and setlist reorder/remove controls are at least 44 pt in source. |
@@ -60,7 +60,8 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 ### Setlist
 
-- Setlist items announce item number and title.
+- Setlist items announce item number, title, and section bar count.
+- Song-form auto-advance exposes on/off state.
 - Move earlier, move later, and remove controls include the setlist item title in the label.
 - The visual item card uses color to show current-pattern state; source should add a non-color accessibility value if this state becomes operationally important.
 

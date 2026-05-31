@@ -849,16 +849,33 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 }
 
 public struct SetlistItem: Identifiable, Codable, Equatable, Sendable {
+    public static let minimumBarCount = 1
+    public static let maximumBarCount = 256
+
     public let id: UUID
     public var patternID: Pattern.ID
     public var title: String
     public var position: Int
+    public var barCount: Int?
 
-    public init(id: UUID = UUID(), patternID: Pattern.ID, title: String, position: Int) {
+    public init(id: UUID = UUID(), patternID: Pattern.ID, title: String, position: Int, barCount: Int? = 4) {
         self.id = id
         self.patternID = patternID
         self.title = title
         self.position = position
+        self.barCount = barCount.map(Self.clampedBarCount)
+    }
+
+    public var resolvedBarCount: Int {
+        Self.clampedBarCount(barCount ?? 4)
+    }
+
+    public mutating func setBarCount(_ barCount: Int) {
+        self.barCount = Self.clampedBarCount(barCount)
+    }
+
+    private static func clampedBarCount(_ barCount: Int) -> Int {
+        min(maximumBarCount, max(minimumBarCount, barCount))
     }
 }
 
@@ -890,6 +907,13 @@ public struct Setlist: Identifiable, Codable, Equatable, Sendable {
     public mutating func removeItems(for patternID: Pattern.ID) {
         items.removeAll { $0.patternID == patternID }
         items = Setlist.normalize(items)
+    }
+
+    public mutating func updateBarCount(for itemID: SetlistItem.ID, barCount: Int) throws {
+        guard let index = items.firstIndex(where: { $0.id == itemID }) else {
+            throw MetronomeValidationError.invalidSetlistItem
+        }
+        items[index].setBarCount(barCount)
     }
 
     public mutating func move(from source: Int, to destination: Int) throws {

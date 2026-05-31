@@ -25,6 +25,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Protected saved-pattern deletion
 - Pattern name, meter, subdivision, and explicit per-step accent/mute editing
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
+- Song-form setlists with per-section bar counts and auto-advance
 - Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
 - Simple local practice timer on the Play screen with 5, 10, and 20 minute presets
 - Local tempo ladder practice tool with target, step, and bars-per-step controls

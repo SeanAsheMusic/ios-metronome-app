@@ -94,6 +94,7 @@ Use `Docs/ACCESSIBILITY_AUDIT.md` as the screen-by-screen checklist.
 | Export | Settings exports a readable JSON library file. | File saved plus note. |
 | Import | Exported JSON imports and replaces the local library. | Before/after note. |
 | Latest snapshot restore | After an overwrite/import, Restore Latest Snapshot confirms first, restores the previous library, and snapshots the current library before replacement. | Before/after note. |
+| Song form | Setlist bar counts save, reload, and auto-advance through sections while playback continues. | Device note. |
 | Privacy posture | No account, network prompt, tracking prompt, analytics SDK, or cloud dependency appears. | Tester note. |
 
 ## Release Decision

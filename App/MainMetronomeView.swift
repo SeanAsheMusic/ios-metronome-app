@@ -994,9 +994,30 @@ struct MainMetronomeView: View {
     private var setlistPanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(viewModel.activeSetlist.name)
-                    .font(.headline)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(viewModel.activeSetlist.name)
+                        .font(.headline)
+                    Text(viewModel.songFormSummary)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Setlist \(viewModel.activeSetlist.name), \(viewModel.songFormAccessibilitySummary)")
+
                 Spacer()
+
+                Toggle("Auto", isOn: Binding(
+                    get: { viewModel.isSongFormAutoAdvanceEnabled },
+                    set: { enabled in
+                        viewModel.setSongFormAutoAdvance(enabled)
+                    }
+                ))
+                .labelsHidden()
+                .accessibilityLabel("Song form auto advance")
+                .accessibilityValue(viewModel.isSongFormAutoAdvanceEnabled ? "On" : "Off")
+
                 Button {
                     Task {
                         await viewModel.addCurrentPatternToSetlist()
@@ -1044,11 +1065,46 @@ struct MainMetronomeView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
+                    Text("\(item.resolvedBarCount) bars")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
-                .frame(width: 176, height: 52, alignment: .leading)
+                .frame(width: 176, height: 66, alignment: .leading)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Setlist item \(offset + 1), \(item.title)")
+            .accessibilityLabel("Setlist item \(offset + 1), \(item.title), \(item.resolvedBarCount) bars")
+
+            HStack(spacing: 6) {
+                Button {
+                    Task {
+                        await viewModel.updateSetlistItemBarCount(id: item.id, by: -1)
+                    }
+                } label: {
+                    Label("Fewer bars", systemImage: "minus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Decrease bars for \(item.title)")
+
+                Text("\(item.resolvedBarCount)")
+                    .font(.headline.monospacedDigit())
+                    .frame(width: 44, height: 44)
+                    .accessibilityHidden(true)
+
+                Button {
+                    Task {
+                        await viewModel.updateSetlistItemBarCount(id: item.id, by: 1)
+                    }
+                } label: {
+                    Label("More bars", systemImage: "plus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Increase bars for \(item.title)")
+            }
 
             HStack(spacing: 6) {
                 Button {
@@ -1176,6 +1232,8 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var countInRemainingBeats: Int?
     @Published var tempoLadder = TempoLadder()
     @Published var selectedGrooveMixerPreset = GrooveMixerPreset.claveWithMetronome
+    @Published var isSongFormAutoAdvanceEnabled = false
+    @Published var songFormCompletedBars = 0
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -1184,6 +1242,8 @@ final class MainMetronomeViewModel: ObservableObject {
     private var pulseResetTask: Task<Void, Never>?
     private var practiceTickerTask: Task<Void, Never>?
     private var countInTask: Task<Void, Never>?
+    private var songFormActiveItemID: SetlistItem.ID?
+    private var songFormHasSeenFirstDownbeat = false
 
     init(
         audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine(),
@@ -1220,6 +1280,7 @@ final class MainMetronomeViewModel: ObservableObject {
 
     private func startPlayback() async {
         do {
+            resetSongFormProgress(keepActiveItem: songFormActiveItemID != nil)
             try await audioEngine.prepare(pattern: pattern)
             try await audioEngine.start()
             audioRouteStatus = await audioEngine.currentRouteStatus()
@@ -1239,6 +1300,7 @@ final class MainMetronomeViewModel: ObservableObject {
         pulseResetTask?.cancel()
         pulseIsActive = false
         isPlaying = false
+        resetSongFormProgress(keepActiveItem: songFormActiveItemID != nil)
     }
 
     private func startCountIn() {
@@ -1441,6 +1503,7 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
+        resetSongFormProgress()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
     }
@@ -1455,6 +1518,7 @@ final class MainMetronomeViewModel: ObservableObject {
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             tapTimes.removeAll()
+            resetSongFormProgress()
             try await audioEngine.prepare(pattern: pattern)
             await saveLibrarySnapshot()
         } catch {
@@ -1471,6 +1535,7 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
+        resetSongFormProgress()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
     }
@@ -1485,6 +1550,7 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
+        resetSongFormProgress()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
     }
@@ -1499,6 +1565,7 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
+        resetSongFormProgress()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
     }
@@ -1513,6 +1580,7 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
+        resetSongFormProgress()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
     }
@@ -1535,6 +1603,7 @@ final class MainMetronomeViewModel: ObservableObject {
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             tapTimes.removeAll()
+            resetSongFormProgress()
             try await audioEngine.prepare(pattern: pattern)
             await saveLibrarySnapshot()
         } catch {
@@ -1550,6 +1619,8 @@ final class MainMetronomeViewModel: ObservableObject {
     func selectSetlistItem(id: SetlistItem.ID) async {
         library.selectPatternFromActiveSetlist(itemID: id)
         pattern = library.selectedPattern
+        songFormActiveItemID = id
+        resetSongFormProgress(keepActiveItem: true)
         patternNameDraft = pattern.name
         bpmEntryDraft = "\(pattern.bpm)"
         bpmEntryMessage = nil
@@ -1563,6 +1634,7 @@ final class MainMetronomeViewModel: ObservableObject {
         do {
             try library.moveActiveSetlistItem(from: source, to: destination)
             activeSetlist = library.activeSetlist
+            resetSongFormProgress()
             await saveLibrarySnapshot()
         } catch {
         }
@@ -1572,9 +1644,56 @@ final class MainMetronomeViewModel: ObservableObject {
         do {
             try library.removeActiveSetlistItem(id: id)
             activeSetlist = library.activeSetlist
+            if songFormActiveItemID == id {
+                songFormActiveItemID = nil
+            }
+            resetSongFormProgress(keepActiveItem: songFormActiveItemID != nil)
             await saveLibrarySnapshot()
         } catch {
         }
+    }
+
+    func updateSetlistItemBarCount(id: SetlistItem.ID, by delta: Int) async {
+        guard let item = activeSetlist.items.first(where: { $0.id == id }) else {
+            return
+        }
+
+        do {
+            try library.updateActiveSetlistItemBarCount(id: id, barCount: item.resolvedBarCount + delta)
+            activeSetlist = library.activeSetlist
+            resetSongFormProgress(keepActiveItem: true)
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    func setSongFormAutoAdvance(_ enabled: Bool) {
+        isSongFormAutoAdvanceEnabled = enabled
+        resetSongFormProgress(keepActiveItem: songFormActiveItemID != nil)
+    }
+
+    var songFormSummary: String {
+        let state = isSongFormAutoAdvanceEnabled ? "Auto on" : "Auto off"
+        guard let item = activeSongFormItem else {
+            return state
+        }
+        return "\(state) · \(songFormCompletedBars)/\(item.resolvedBarCount) bars"
+    }
+
+    var songFormAccessibilitySummary: String {
+        let state = isSongFormAutoAdvanceEnabled ? "auto advance on" : "auto advance off"
+        guard let item = activeSongFormItem else {
+            return state
+        }
+        return "\(state), \(songFormCompletedBars) of \(item.resolvedBarCount) bars completed"
+    }
+
+    private var activeSongFormItem: SetlistItem? {
+        if let songFormActiveItemID,
+           let item = activeSetlist.items.first(where: { $0.id == songFormActiveItemID }) {
+            return item
+        }
+        return activeSetlist.items.first { $0.patternID == pattern.id }
     }
 
     func togglePracticeTimer() {
@@ -1956,11 +2075,12 @@ final class MainMetronomeViewModel: ObservableObject {
     }
 
     private func handleBeat(_ event: ScheduledBeatEvent) {
+        applyTempoLadderIfNeeded(for: event)
+        applySongFormIfNeeded(for: event)
+
         guard event.soundRole != .muted else {
             return
         }
-
-        applyTempoLadderIfNeeded(for: event)
 
         pulseResetTask?.cancel()
         pulseIsActive = true
@@ -1970,6 +2090,71 @@ final class MainMetronomeViewModel: ObservableObject {
             await MainActor.run {
                 self?.pulseIsActive = false
             }
+        }
+    }
+
+    private func applySongFormIfNeeded(for event: ScheduledBeatEvent) {
+        guard isSongFormAutoAdvanceEnabled,
+              isPlaying,
+              event.patternID == pattern.id,
+              event.beatIndex == 0,
+              !activeSetlist.items.isEmpty,
+              let currentIndex = songFormCurrentItemIndex(for: event.patternID) else {
+            return
+        }
+
+        let currentItem = activeSetlist.items[currentIndex]
+        if songFormActiveItemID == nil {
+            songFormActiveItemID = currentItem.id
+        }
+
+        guard songFormHasSeenFirstDownbeat else {
+            songFormHasSeenFirstDownbeat = true
+            return
+        }
+
+        songFormCompletedBars += 1
+        guard songFormCompletedBars >= currentItem.resolvedBarCount else {
+            return
+        }
+
+        let nextIndex = (currentIndex + 1) % activeSetlist.items.count
+        let nextItem = activeSetlist.items[nextIndex]
+        Task {
+            await advanceSongForm(to: nextItem.id)
+        }
+    }
+
+    private func songFormCurrentItemIndex(for patternID: Pattern.ID) -> Int? {
+        if let songFormActiveItemID,
+           let activeIndex = activeSetlist.items.firstIndex(where: { $0.id == songFormActiveItemID }),
+           activeSetlist.items[activeIndex].patternID == patternID {
+            return activeIndex
+        }
+
+        return activeSetlist.items.firstIndex { $0.patternID == patternID }
+    }
+
+    private func advanceSongForm(to itemID: SetlistItem.ID) async {
+        library.selectPatternFromActiveSetlist(itemID: itemID)
+        pattern = library.selectedPattern
+        songFormActiveItemID = itemID
+        resetSongFormProgress(keepActiveItem: true)
+        patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    private func resetSongFormProgress(keepActiveItem: Bool = false) {
+        songFormCompletedBars = 0
+        songFormHasSeenFirstDownbeat = false
+        if !keepActiveItem {
+            songFormActiveItemID = nil
         }
     }
 

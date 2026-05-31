@@ -17,7 +17,7 @@
 | `AudioEngine` | Audio scheduling protocol, event contracts, future AVFoundation implementation boundary. |
 | `App` | SwiftUI app entry and performance play screen. |
 | `PatternEditor` | Future beat/accent/grouping editing views. |
-| `Setlists` | Future setlist library and reorder workflows. |
+| `Setlists` | Ordered setlist library, section bar counts, reorder workflows, and song-form auto-advance. |
 | `Persistence` | Local store, migration boundary, snapshots, latest snapshot restore, and export/import. |
 | `SoundLibrary` | Synthesized click preset notes and provenance manifest. |
 | `Practice` | Practice timers, tempo ladders, rhythm-trainer gap modes, and local-only analytics. |
@@ -41,6 +41,8 @@ Microphone accuracy checking is architecturally possible with an input tap, onse
 Clave Mode currently renders mixer choices into a single playable pattern so the existing audio source of truth remains intact. Independent per-lane audio faders should be added only after the audio engine supports simultaneous lane events without compromising timing.
 
 Polyrhythm templates follow the same v1 approach: they flatten primary and cross pulses into one scheduled pattern, with primary pulse hits mapped to beat sounds and cross-pulse-only hits mapped to subdivision sounds. True lane-specific volume and sound selection remains a later audio-engine feature.
+
+Song-form auto-advance uses setlist item bar counts and scheduled audio beat events. Bar-based practice features must run even when the audible downbeat is muted, so state progression happens before muted events are ignored by visual pulse handling.
 
 ## Persistence Direction
 

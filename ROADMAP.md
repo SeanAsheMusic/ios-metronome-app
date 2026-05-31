@@ -27,6 +27,7 @@
 - Mixed per-beat subdivision editing with tuplets.
 - Jazz 2 and 4 and swing templates.
 - Flattened polyrhythm templates.
+- Song-form setlist auto-advance.
 
 ## V1.1
 
@@ -37,7 +38,6 @@
 - Independent audio faders for rhythm lanes.
 - Microphone accuracy checker.
 - Gap/random silence trainers.
-- Song form mode.
 - External display.
 - Optional iCloud.
 - Hardware pedals.

@@ -26,6 +26,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Pattern defaults for 4/4, 6/8, and 7/8.
 - Stable identifiers for patterns, beats, setlists, and setlist items.
 - Ordered setlists with move support.
+- Song-form setlist sections with per-item bar counts and auto-advance.
 - Local persistence for selected pattern, pattern library, and setlists.
 - Bounded local snapshots before library overwrites and imports.
 - Latest local snapshot restore.
@@ -59,4 +60,4 @@ No active source-level V1.1 candidates remain beyond device/accessibility valida
 
 ## Later Candidates
 
-- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.

@@ -23,6 +23,7 @@ The Swift package includes XCTest coverage for:
 - Mixed per-beat subdivision generation and variable scheduler intervals.
 - Pattern deletion and setlist-reference cleanup.
 - Setlist item add, select, move, and remove operations.
+- Song-form setlist section bar counts.
 - Audio settings clamping and persistence.
 - Rhythm Trainer fixed/random mute behavior and Human Feel warning thresholds.
 - Portable library export/import and raw-library recovery import.

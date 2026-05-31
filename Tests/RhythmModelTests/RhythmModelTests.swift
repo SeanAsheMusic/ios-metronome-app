@@ -323,6 +323,19 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(setlist.items.map(\.position), [0, 1, 2])
     }
 
+    func testSetlistItemBarCountClampsForSongForms() throws {
+        let pattern = Pattern.defaultFourFour()
+        var setlist = Setlist(name: "Song")
+        setlist.append(pattern: pattern)
+
+        let itemID = setlist.items[0].id
+        try setlist.updateBarCount(for: itemID, barCount: 0)
+        XCTAssertEqual(setlist.items[0].resolvedBarCount, SetlistItem.minimumBarCount)
+
+        try setlist.updateBarCount(for: itemID, barCount: 999)
+        XCTAssertEqual(setlist.items[0].resolvedBarCount, SetlistItem.maximumBarCount)
+    }
+
     func testSetlistRemoveNormalizesPositions() throws {
         let first = Pattern.defaultFourFour()
         let second = Pattern.defaultSixEight()
