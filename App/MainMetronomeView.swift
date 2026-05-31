@@ -164,6 +164,46 @@ struct MainMetronomeView: View {
                         ), in: 0.5...1.5)
                         .accessibilityLabel("Accent boost")
                     }
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Output")
+                            .font(.subheadline.weight(.semibold))
+
+                        HStack(spacing: 10) {
+                            Image(systemName: viewModel.audioRouteSymbolName)
+                                .font(.headline)
+                                .frame(width: 28, height: 28)
+                                .foregroundStyle(viewModel.audioRouteTint)
+                                .accessibilityHidden(true)
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(viewModel.audioRouteStatus.outputName)
+                                    .font(.subheadline.weight(.semibold))
+                                    .lineLimit(1)
+                                Text(viewModel.audioRouteStatus.message)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Button {
+                                Task {
+                                    await viewModel.refreshAudioRouteStatus()
+                                }
+                            } label: {
+                                Label("Refresh", systemImage: "arrow.clockwise")
+                                    .labelStyle(.iconOnly)
+                                    .frame(width: 40, height: 40)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Refresh audio output")
+                        }
+                        .padding(10)
+                        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Audio output \(viewModel.audioRouteStatus.outputName), \(viewModel.audioRouteStatus.latencyRisk.displayName), \(viewModel.audioRouteStatus.message)")
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -668,6 +708,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var pulseIsActive = false
     @Published var dataTransferMessage: String?
     @Published var practiceTimer = PracticeTimer(durationSeconds: 600)
+    @Published var audioRouteStatus = AudioRouteStatus.status(for: [])
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -707,6 +748,7 @@ final class MainMetronomeViewModel: ObservableObject {
         do {
             try await audioEngine.prepare(pattern: pattern)
             try await audioEngine.start()
+            audioRouteStatus = await audioEngine.currentRouteStatus()
             isPlaying = true
         } catch {
             isPlaying = false
@@ -775,6 +817,7 @@ final class MainMetronomeViewModel: ObservableObject {
             try? await libraryStore.save(library)
         }
         try? await audioEngine.updateSettings(audioSettings)
+        audioRouteStatus = await audioEngine.currentRouteStatus()
     }
 
     private func applyLibrary(_ library: MetronomeLibrary) async {
@@ -787,6 +830,7 @@ final class MainMetronomeViewModel: ObservableObject {
         tapTimes.removeAll()
         try? await audioEngine.updateSettings(audioSettings)
         try? await audioEngine.prepare(pattern: pattern)
+        audioRouteStatus = await audioEngine.currentRouteStatus()
     }
 
     private func saveSelectedPattern() {
@@ -965,7 +1009,28 @@ final class MainMetronomeViewModel: ObservableObject {
         audioSettings = settings
         library.updateAudioSettings(settings)
         try? await audioEngine.updateSettings(settings)
+        audioRouteStatus = await audioEngine.currentRouteStatus()
         await saveLibrarySnapshot()
+    }
+
+    func refreshAudioRouteStatus() async {
+        audioRouteStatus = await audioEngine.currentRouteStatus()
+    }
+
+    var audioRouteSymbolName: String {
+        switch audioRouteStatus.latencyRisk {
+        case .low: "speaker.wave.2.fill"
+        case .elevated: "exclamationmark.triangle.fill"
+        case .unknown: "questionmark.circle.fill"
+        }
+    }
+
+    var audioRouteTint: Color {
+        switch audioRouteStatus.latencyRisk {
+        case .low: .green
+        case .elevated: .yellow
+        case .unknown: .secondary
+        }
     }
 
     var selectedMeterOption: MeterOption {

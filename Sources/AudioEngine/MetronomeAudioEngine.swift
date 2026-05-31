@@ -64,6 +64,81 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
     }
 }
 
+public enum AudioLatencyRisk: String, Codable, Equatable, Sendable {
+    case low
+    case elevated
+    case unknown
+
+    public var displayName: String {
+        switch self {
+        case .low: "Low latency"
+        case .elevated: "Latency warning"
+        case .unknown: "Latency unknown"
+        }
+    }
+}
+
+public struct AudioRouteOutput: Codable, Equatable, Sendable {
+    public let portType: String
+    public let name: String
+
+    public init(portType: String, name: String) {
+        self.portType = portType
+        self.name = name
+    }
+}
+
+public struct AudioRouteStatus: Codable, Equatable, Sendable {
+    public let outputName: String
+    public let latencyRisk: AudioLatencyRisk
+    public let message: String
+
+    public init(outputName: String, latencyRisk: AudioLatencyRisk, message: String) {
+        self.outputName = outputName
+        self.latencyRisk = latencyRisk
+        self.message = message
+    }
+
+    public static func status(for outputs: [AudioRouteOutput]) -> AudioRouteStatus {
+        guard let primaryOutput = outputs.first else {
+            return AudioRouteStatus(
+                outputName: "Unknown output",
+                latencyRisk: .unknown,
+                message: "Audio output is unavailable."
+            )
+        }
+
+        let portType = primaryOutput.portType.lowercased()
+        let outputName = primaryOutput.name.isEmpty ? "Audio output" : primaryOutput.name
+
+        if portType.contains("bluetooth") || portType.contains("airplay") {
+            return AudioRouteStatus(
+                outputName: outputName,
+                latencyRisk: .elevated,
+                message: "Wireless routes can feel late for stage timing."
+            )
+        }
+
+        if portType.contains("headphones")
+            || portType.contains("headset")
+            || portType.contains("speaker")
+            || portType.contains("receiver")
+            || portType.contains("lineout") {
+            return AudioRouteStatus(
+                outputName: outputName,
+                latencyRisk: .low,
+                message: "Wired or built-in output is best for timing."
+            )
+        }
+
+        return AudioRouteStatus(
+            outputName: outputName,
+            latencyRisk: .unknown,
+            message: "Latency has not been measured for this route."
+        )
+    }
+}
+
 public struct MetronomeScheduler: Sendable {
     public init() {}
 
@@ -102,6 +177,7 @@ public protocol MetronomeAudioEngine: Sendable {
     func stop() async
     func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async
     func updateSettings(_ settings: MetronomeAudioSettings) async throws
+    func currentRouteStatus() async -> AudioRouteStatus
 }
 
 public actor AudioEngineStub: MetronomeAudioEngine {
@@ -139,6 +215,12 @@ public actor AudioEngineStub: MetronomeAudioEngine {
     }
 
     public func updateSettings(_: MetronomeAudioSettings) async throws {}
+
+    public func currentRouteStatus() async -> AudioRouteStatus {
+        AudioRouteStatus.status(for: [
+            AudioRouteOutput(portType: "builtInSpeaker", name: "Test speaker")
+        ])
+    }
 }
 
 public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
@@ -212,6 +294,19 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     public func updateSettings(_ settings: MetronomeAudioSettings) async throws {
         self.settings = settings
         clickBuffers = try makeClickBuffers(settings: settings)
+    }
+
+    public func currentRouteStatus() async -> AudioRouteStatus {
+#if os(iOS)
+        let outputs = AVAudioSession.sharedInstance().currentRoute.outputs.map { output in
+            AudioRouteOutput(portType: output.portType.rawValue, name: output.portName)
+        }
+        return AudioRouteStatus.status(for: outputs)
+#else
+        return AudioRouteStatus.status(for: [
+            AudioRouteOutput(portType: "unknown", name: "Default output")
+        ])
+#endif
     }
 
     private func runPlaybackLoop() async {

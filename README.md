@@ -18,6 +18,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
 - Simple local practice timer on the Play screen with 5, 10, and 20 minute presets
 - Settings tab for synthesized click preset, volume, and accent boost
+- Audio output status with wireless latency warning
 - App privacy manifest declaring no tracking and no collected data
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events

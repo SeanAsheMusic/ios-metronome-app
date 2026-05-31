@@ -32,6 +32,34 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(ClickSoundPreset.mechanical.displayName, "Mechanical")
     }
 
+    func testAudioRouteStatusWarnsForBluetooth() {
+        let status = AudioRouteStatus.status(for: [
+            AudioRouteOutput(portType: "BluetoothA2DPOutput", name: "AirPods")
+        ])
+
+        XCTAssertEqual(status.outputName, "AirPods")
+        XCTAssertEqual(status.latencyRisk, .elevated)
+        XCTAssertEqual(status.message, "Wireless routes can feel late for stage timing.")
+    }
+
+    func testAudioRouteStatusTreatsBuiltInSpeakerAsLowRisk() {
+        let status = AudioRouteStatus.status(for: [
+            AudioRouteOutput(portType: "Speaker", name: "iPhone Speaker")
+        ])
+
+        XCTAssertEqual(status.outputName, "iPhone Speaker")
+        XCTAssertEqual(status.latencyRisk, .low)
+        XCTAssertEqual(status.message, "Wired or built-in output is best for timing.")
+    }
+
+    func testAudioRouteStatusHandlesUnknownOutput() {
+        let status = AudioRouteStatus.status(for: [])
+
+        XCTAssertEqual(status.outputName, "Unknown output")
+        XCTAssertEqual(status.latencyRisk, .unknown)
+        XCTAssertEqual(status.message, "Audio output is unavailable.")
+    }
+
     func testScheduleWrapsPatternBeats() throws {
         let pattern = Pattern.defaultSevenEight(id: UUID(uuidString: "A87F4C4B-806A-4B6C-B371-7F0D1C1D7D7F")!)
         let scheduler = MetronomeScheduler()

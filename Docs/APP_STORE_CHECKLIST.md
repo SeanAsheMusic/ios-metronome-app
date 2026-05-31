@@ -37,8 +37,8 @@ The app target includes `PrivacyInfo.xcprivacy` with no tracking, no collected d
 
 - Smoke test install, cold launch, play screen, pattern defaults, setlist ordering.
 - Accessibility pass with VoiceOver, Dynamic Type, Reduce Motion, and high contrast.
-- Physical-device audio tests before claiming precision.
+- Physical-device audio tests before claiming precision, including built-in speaker, wired headphones, Bluetooth, and AirPlay where available.
 
 ## Review Notes
 
-Explain that v1 requires no account, uses local data, and does not include ads or subscriptions. Do not claim timing precision beyond measured evidence.
+Explain that v1 requires no account, uses local data, does not include ads or subscriptions, and warns users that wireless audio routes can feel late. Do not claim timing precision beyond measured evidence.
