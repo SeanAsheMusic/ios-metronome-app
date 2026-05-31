@@ -17,6 +17,7 @@ The Swift package includes XCTest coverage for:
 - Stub audio event delivery.
 - Default persisted library shape.
 - JSON library store round trip.
+- Pattern selection, duplication, and deletion library operations.
 - Persistence validation for empty pattern libraries.
 
 Run with:

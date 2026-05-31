@@ -9,7 +9,7 @@ The current implementation lives in `Sources/Persistence` and stores:
 - Pattern library.
 - Setlists.
 
-The play screen loads the selected pattern on launch and saves tempo changes back to disk.
+The play screen loads the selected pattern on launch, saves tempo changes back to disk, switches between saved patterns, and can duplicate the active pattern.
 
 Future storage work still includes preferences, snapshots, export/import bundles, and migrations.
 

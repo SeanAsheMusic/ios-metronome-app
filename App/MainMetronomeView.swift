@@ -13,6 +13,7 @@ struct MainMetronomeView: View {
             transportControls
             tempoControls
             patternSummary
+            patternLibrary
             visualPulse
             Spacer(minLength: 0)
         }
@@ -107,6 +108,7 @@ struct MainMetronomeView: View {
         HStack(spacing: 12) {
             summaryPill(title: "Meter", value: viewModel.pattern.meter.displayName)
             summaryPill(title: "Subdivision", value: viewModel.pattern.subdivision.displayName)
+            summaryPill(title: "Saved", value: "\(viewModel.patterns.count)")
         }
     }
 
@@ -123,6 +125,60 @@ struct MainMetronomeView: View {
         .accessibilityElement(children: .combine)
     }
 
+    private var patternLibrary: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Patterns")
+                    .font(.headline)
+                Spacer()
+                Button {
+                    Task {
+                        await viewModel.duplicateCurrentPattern()
+                    }
+                } label: {
+                    Label("Duplicate", systemImage: "plus.square.on.square")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Duplicate current pattern")
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(viewModel.patterns) { pattern in
+                        Button {
+                            Task {
+                                await viewModel.selectPattern(id: pattern.id)
+                            }
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(pattern.name)
+                                    .font(.subheadline.weight(.semibold))
+                                    .lineLimit(1)
+                                Text("\(pattern.bpm) BPM · \(pattern.meter.displayName)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                            }
+                            .frame(width: 148, height: 58, alignment: .leading)
+                            .padding(.horizontal, 12)
+                            .background(
+                                pattern.id == viewModel.pattern.id ? Color.accentColor.opacity(0.22) : Color.secondary.opacity(0.12),
+                                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(pattern.name), \(pattern.bpm) beats per minute")
+                        .accessibilityValue(pattern.id == viewModel.pattern.id ? "Selected" : "Not selected")
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
     private var visualPulse: some View {
         Circle()
             .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
@@ -137,6 +193,7 @@ struct MainMetronomeView: View {
 @MainActor
 final class MainMetronomeViewModel: ObservableObject {
     @Published var pattern = Pattern.defaultFourFour()
+    @Published var patterns: [Pattern] = MetronomeLibrary.defaultLibrary().patterns
     @Published var isPlaying = false
     @Published var pulseIsActive = false
 
@@ -220,6 +277,7 @@ final class MainMetronomeViewModel: ObservableObject {
         guard let libraryStore else {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
+            patterns = library.patterns
             return
         }
 
@@ -227,15 +285,18 @@ final class MainMetronomeViewModel: ObservableObject {
             let loadedLibrary = try await libraryStore.load()
             library = loadedLibrary
             pattern = loadedLibrary.selectedPattern
+            patterns = loadedLibrary.patterns
         } catch {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
+            patterns = library.patterns
             try? await libraryStore.save(library)
         }
     }
 
     private func saveSelectedPattern() {
         library.updateSelectedPattern(pattern)
+        patterns = library.patterns
         guard let libraryStore else {
             return
         }
@@ -244,6 +305,34 @@ final class MainMetronomeViewModel: ObservableObject {
         Task {
             try? await libraryStore.save(snapshot)
         }
+    }
+
+    func selectPattern(id: Pattern.ID) async {
+        library.selectPattern(id: id)
+        pattern = library.selectedPattern
+        patterns = library.patterns
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    func duplicateCurrentPattern() async {
+        do {
+            let duplicate = try library.duplicateSelectedPattern()
+            pattern = duplicate
+            patterns = library.patterns
+            tapTimes.removeAll()
+            try await audioEngine.prepare(pattern: pattern)
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    private func saveLibrarySnapshot() async {
+        guard let libraryStore else {
+            return
+        }
+        try? await libraryStore.save(library)
     }
 
     private func handleBeat(_: ScheduledBeatEvent) {

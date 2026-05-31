@@ -11,6 +11,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Tap tempo from recent taps
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Default 4/4, 6/8, and 7/8 patterns
+- Saved pattern switching and duplication
 - Saved patterns and ordered setlists
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
@@ -27,7 +28,7 @@ Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sh
 
 - `Sources/RhythmModel`: Core domain model for patterns, meters, accents, and setlists.
 - `Sources/AudioEngine`: AVFoundation click engine, scheduler, and testable timing contracts.
-- `Sources/Persistence`: Versioned JSON library store for local-first data.
+- `Sources/Persistence`: Versioned JSON library store and saved-pattern operations for local-first data.
 - `App`: SwiftUI app skeleton for Xcode integration.
 - `Docs`: Product, architecture, audio, privacy, testing, and App Store planning.
 - `Tests/RhythmModelTests`: XCTest coverage for the safe model layer.

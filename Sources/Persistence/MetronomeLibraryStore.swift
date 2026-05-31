@@ -25,6 +25,13 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         patterns.first { $0.id == selectedPatternID } ?? patterns[0]
     }
 
+    public mutating func selectPattern(id: Pattern.ID) {
+        guard patterns.contains(where: { $0.id == id }) else {
+            return
+        }
+        selectedPatternID = id
+    }
+
     public mutating func updateSelectedPattern(_ pattern: Pattern) {
         selectedPatternID = pattern.id
 
@@ -32,6 +39,41 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
             patterns[index] = pattern
         } else {
             patterns.insert(pattern, at: 0)
+        }
+    }
+
+    public mutating func appendPattern(_ pattern: Pattern) {
+        if let index = patterns.firstIndex(where: { $0.id == pattern.id }) {
+            patterns[index] = pattern
+        } else {
+            patterns.append(pattern)
+        }
+        selectedPatternID = pattern.id
+    }
+
+    public mutating func duplicateSelectedPattern(name: String? = nil) throws -> Pattern {
+        let source = selectedPattern
+        let duplicate = try Pattern(
+            name: name ?? "\(source.name) Copy",
+            bpm: source.bpm,
+            meter: source.meter,
+            subdivision: source.subdivision,
+            beats: source.beats.enumerated().map { offset, beat in
+                Beat(index: offset, accent: beat.accent, soundRole: beat.soundRole)
+            }
+        )
+        appendPattern(duplicate)
+        return duplicate
+    }
+
+    public mutating func deletePattern(id: Pattern.ID) throws {
+        guard patterns.count > 1 else {
+            throw MetronomeLibraryStoreError.emptyPatternLibrary
+        }
+
+        patterns.removeAll { $0.id == id }
+        if selectedPatternID == id || !patterns.contains(where: { $0.id == selectedPatternID }) {
+            selectedPatternID = patterns[0].id
         }
     }
 

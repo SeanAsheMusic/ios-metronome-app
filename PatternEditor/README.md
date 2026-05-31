@@ -1,5 +1,5 @@
 # Pattern Editor
 
-Future SwiftUI surfaces for editing beat accents, grouping, subdivisions, clave/groove templates, and per-pattern metadata.
+SwiftUI pattern work has started on the main play screen with saved pattern switching, duplication, BPM editing, and tap tempo.
 
-V1 should keep this simple: edit existing pattern names, BPM, meter, subdivision, and accent state without introducing a full sequencer too early.
+Remaining V1 editor work should keep this simple: edit existing pattern names, meter, subdivision, and accent state without introducing a full sequencer too early.
