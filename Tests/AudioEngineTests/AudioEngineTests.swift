@@ -39,6 +39,34 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(ClickSoundPreset.mechanical.displayName, "Mechanical")
     }
 
+    func testAudioTimingSummaryCalculatesOffsetAndJitter() {
+        let samples = [
+            AudioTimingSample(scheduledHostTimeNanoseconds: 1_000, observedHostTimeNanoseconds: 1_100),
+            AudioTimingSample(scheduledHostTimeNanoseconds: 2_000, observedHostTimeNanoseconds: 2_250),
+            AudioTimingSample(scheduledHostTimeNanoseconds: 3_000, observedHostTimeNanoseconds: 3_050)
+        ]
+
+        let summary = AudioTimingSummary(samples: samples)
+
+        XCTAssertEqual(summary.sampleCount, 3)
+        XCTAssertEqual(summary.minimumOffsetNanoseconds, 50)
+        XCTAssertEqual(summary.maximumOffsetNanoseconds, 250)
+        XCTAssertEqual(summary.averageOffsetNanoseconds, 133)
+        XCTAssertEqual(summary.peakToPeakJitterNanoseconds, 200)
+    }
+
+    func testAudioTimingRecorderPrunesOldSamples() async {
+        let recorder = AudioTimingRecorder(sampleLimit: 2)
+
+        await recorder.record(scheduledHostTimeNanoseconds: 1_000, observedHostTimeNanoseconds: 1_100)
+        await recorder.record(scheduledHostTimeNanoseconds: 2_000, observedHostTimeNanoseconds: 2_100)
+        await recorder.record(scheduledHostTimeNanoseconds: 3_000, observedHostTimeNanoseconds: 3_300)
+
+        let summary = await recorder.summary()
+        XCTAssertEqual(summary.sampleCount, 2)
+        XCTAssertEqual(summary.maximumOffsetNanoseconds, 300)
+    }
+
     func testAudioRouteStatusWarnsForBluetooth() {
         let status = AudioRouteStatus.status(for: [
             AudioRouteOutput(portType: "BluetoothA2DPOutput", name: "AirPods")

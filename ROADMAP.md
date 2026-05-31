@@ -15,7 +15,7 @@
 - Background audio app mode.
 - Fullscreen visual pulse mode.
 - Audible count-in.
-- Physical-device audio measurement harness.
+- Audio timing measurement harness.
 - Accessibility audit.
 
 ## V1.1

@@ -32,6 +32,65 @@ public struct BeatSchedule: Equatable, Sendable {
     }
 }
 
+public struct AudioTimingSample: Equatable, Sendable {
+    public let scheduledHostTimeNanoseconds: UInt64
+    public let observedHostTimeNanoseconds: UInt64
+
+    public init(scheduledHostTimeNanoseconds: UInt64, observedHostTimeNanoseconds: UInt64) {
+        self.scheduledHostTimeNanoseconds = scheduledHostTimeNanoseconds
+        self.observedHostTimeNanoseconds = observedHostTimeNanoseconds
+    }
+
+    public var offsetNanoseconds: Int64 {
+        Int64(observedHostTimeNanoseconds) - Int64(scheduledHostTimeNanoseconds)
+    }
+}
+
+public struct AudioTimingSummary: Equatable, Sendable {
+    public let sampleCount: Int
+    public let minimumOffsetNanoseconds: Int64
+    public let maximumOffsetNanoseconds: Int64
+    public let averageOffsetNanoseconds: Int64
+    public let peakToPeakJitterNanoseconds: UInt64
+
+    public init(samples: [AudioTimingSample]) {
+        let offsets = samples.map(\.offsetNanoseconds)
+        sampleCount = offsets.count
+        minimumOffsetNanoseconds = offsets.min() ?? 0
+        maximumOffsetNanoseconds = offsets.max() ?? 0
+        let total = offsets.reduce(Int64(0), +)
+        averageOffsetNanoseconds = offsets.isEmpty ? 0 : total / Int64(offsets.count)
+        peakToPeakJitterNanoseconds = UInt64(maximumOffsetNanoseconds - minimumOffsetNanoseconds)
+    }
+}
+
+public actor AudioTimingRecorder {
+    private let sampleLimit: Int
+    private var samples: [AudioTimingSample] = []
+
+    public init(sampleLimit: Int = 720) {
+        self.sampleLimit = max(1, sampleLimit)
+    }
+
+    public func record(scheduledHostTimeNanoseconds: UInt64, observedHostTimeNanoseconds: UInt64) {
+        samples.append(AudioTimingSample(
+            scheduledHostTimeNanoseconds: scheduledHostTimeNanoseconds,
+            observedHostTimeNanoseconds: observedHostTimeNanoseconds
+        ))
+        if samples.count > sampleLimit {
+            samples.removeFirst(samples.count - sampleLimit)
+        }
+    }
+
+    public func summary() -> AudioTimingSummary {
+        AudioTimingSummary(samples: samples)
+    }
+
+    public func reset() {
+        samples.removeAll()
+    }
+}
+
 public enum ClickSoundPreset: String, CaseIterable, Codable, Equatable, Sendable {
     case classic
     case wood
@@ -183,6 +242,8 @@ public protocol MetronomeAudioEngine: Sendable {
     func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async
     func updateSettings(_ settings: MetronomeAudioSettings) async throws
     func currentRouteStatus() async -> AudioRouteStatus
+    func timingSummary() async -> AudioTimingSummary
+    func resetTimingMeasurements() async
 }
 
 public actor AudioEngineStub: MetronomeAudioEngine {
@@ -237,6 +298,12 @@ public actor AudioEngineStub: MetronomeAudioEngine {
             AudioRouteOutput(portType: "builtInSpeaker", name: "Test speaker")
         ])
     }
+
+    public func timingSummary() async -> AudioTimingSummary {
+        AudioTimingSummary(samples: [])
+    }
+
+    public func resetTimingMeasurements() async {}
 }
 
 public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
@@ -251,6 +318,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     private var clickBuffers: [ClickSoundRole: AVAudioPCMBuffer] = [:]
     private var isGraphConfigured = false
     private var settings = MetronomeAudioSettings()
+    private let timingRecorder = AudioTimingRecorder()
 
     public init() {}
 
@@ -361,6 +429,14 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 #endif
     }
 
+    public func timingSummary() async -> AudioTimingSummary {
+        await timingRecorder.summary()
+    }
+
+    public func resetTimingMeasurements() async {
+        await timingRecorder.reset()
+    }
+
     private func runPlaybackLoop() async {
         var beatOffset = 0
         var nextBeatTime = DispatchTime.now().uptimeNanoseconds
@@ -394,6 +470,10 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
                 accent: beat.accent,
                 soundRole: beat.soundRole,
                 hostTimeNanoseconds: nextBeatTime
+            )
+            await timingRecorder.record(
+                scheduledHostTimeNanoseconds: event.hostTimeNanoseconds,
+                observedHostTimeNanoseconds: DispatchTime.now().uptimeNanoseconds
             )
             play(event: event)
             if let eventHandler {

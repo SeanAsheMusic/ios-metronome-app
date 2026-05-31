@@ -29,6 +29,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Reduce Motion-aware visual pulse
 - Full-screen stage pulse mode
 - Synthesized click engine foundation using AVFoundation
+- Audio timing measurement harness for device validation
 - Generated app project includes background audio mode for lock-screen practice/live use
 - Local JSON persistence for selected pattern, pattern library, and setlists
 - Bounded local library snapshots before overwrites/imports

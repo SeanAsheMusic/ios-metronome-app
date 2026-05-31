@@ -33,6 +33,7 @@ The Swift package includes XCTest coverage for:
 - Visual pulse respects the Reduce Motion environment setting.
 - Full-screen stage pulse follows the same playback pulse state.
 - Audio engine one-shot cue events for count-in.
+- Audio timing summary and bounded timing measurement recorder behavior.
 
 Run with:
 
@@ -55,7 +56,7 @@ The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, `
 
 - Rhythm model property tests for odd meters and grouping.
 - Persistence migration tests for every schema version.
-- Audio drift and jitter tests on physical devices.
+- Audio drift and jitter tests on physical devices using the timing recorder plus external observation where possible.
 - Route-change tests for speaker, wired headphones, Bluetooth, and AirPlay.
 - SwiftUI snapshot tests for Dynamic Type, RTL, dark mode, and compact iPhone screens.
 - Accessibility Inspector and on-device VoiceOver flows.
