@@ -4,6 +4,10 @@ import PackageDescription
 
 let package = Package(
     name: "iOSMetronomeApp",
+    platforms: [
+        .iOS(.v17),
+        .macOS(.v14)
+    ],
     products: [
         .library(name: "RhythmModel", targets: ["RhythmModel"]),
         .library(name: "AudioEngine", targets: ["AudioEngine"]),

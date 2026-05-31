@@ -513,7 +513,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     }
 
     public static func groove(_ template: GrooveTemplate, id: UUID = UUID()) -> Pattern {
-        try! Pattern(
+        return try! Pattern(
             id: id,
             name: template.displayName,
             bpm: template.defaultBPM,
@@ -529,7 +529,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         mixerPreset: GrooveMixerPreset = .claveWithMetronome,
         id: UUID = UUID()
     ) -> Pattern {
-        try! Pattern(
+        return try! Pattern(
             id: id,
             name: "\(template.displayName) \(mixerPreset.displayName)",
             bpm: template.defaultBPM,
@@ -552,7 +552,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
             ? subdivisions
             : Array(repeating: Subdivision.quarter, count: meter.beatsPerBar)
         let generated = Pattern.generateSubdivisionBeats(for: meter, subdivisions: resolvedSubdivisions)
-        try! Pattern(
+        return try! Pattern(
             id: id,
             name: name,
             bpm: bpm,
@@ -566,7 +566,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 
     public static func swing(_ template: SwingTemplate, id: UUID = UUID()) -> Pattern {
         let generated = Pattern.generateSwingBeats(for: template)
-        try! Pattern(
+        return try! Pattern(
             id: id,
             name: template.displayName,
             bpm: template.defaultBPM,
@@ -631,7 +631,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 
     public static func polyrhythm(_ template: PolyrhythmTemplate, id: UUID = UUID()) -> Pattern {
         let generated = Pattern.generatePolyrhythmBeats(for: template)
-        try! Pattern(
+        return try! Pattern(
             id: id,
             name: template.displayName,
             bpm: template.defaultBPM,

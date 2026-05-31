@@ -2,15 +2,17 @@ import AVFoundation
 import Foundation
 import RhythmModel
 
+public typealias MetronomePattern = RhythmModel.Pattern
+
 public struct ScheduledBeatEvent: Equatable, Sendable {
-    public let patternID: Pattern.ID
+    public let patternID: MetronomePattern.ID
     public let beatIndex: Int
     public let accent: AccentLevel
     public let soundRole: ClickSoundRole
     public let hostTimeNanoseconds: UInt64
 
     public init(
-        patternID: Pattern.ID,
+        patternID: MetronomePattern.ID,
         beatIndex: Int,
         accent: AccentLevel,
         soundRole: ClickSoundRole,
@@ -325,22 +327,22 @@ public struct MetronomeScheduler: Sendable {
     public init() {}
 
     public func beatIntervalNanoseconds(for bpm: Int) throws -> UInt64 {
-        try Pattern.validateBPM(bpm)
+        try MetronomePattern.validateBPM(bpm)
         return UInt64((60_000_000_000.0 / Double(bpm)).rounded())
     }
 
-    public func eventIntervalNanoseconds(for pattern: Pattern) throws -> UInt64 {
+    public func eventIntervalNanoseconds(for pattern: MetronomePattern) throws -> UInt64 {
         try beatIntervalNanoseconds(for: pattern.bpm) / UInt64(pattern.eventIntervalDivisor)
     }
 
-    public func eventIntervalNanoseconds(for pattern: Pattern, eventOffset: Int) throws -> UInt64 {
+    public func eventIntervalNanoseconds(for pattern: MetronomePattern, eventOffset: Int) throws -> UInt64 {
         let beatInterval = try beatIntervalNanoseconds(for: pattern.bpm)
         let multiplier = pattern.eventDurationInMeterBeats(atEventOffset: eventOffset)
         return UInt64((Double(beatInterval) * multiplier).rounded())
     }
 
     public func schedule(
-        pattern: Pattern,
+        pattern: MetronomePattern,
         startingAt startTimeNanoseconds: UInt64,
         beatCount: Int
     ) throws -> BeatSchedule {
@@ -368,10 +370,10 @@ public struct MetronomeScheduler: Sendable {
 }
 
 public protocol MetronomeAudioEngine: Sendable {
-    func prepare(pattern: Pattern) async throws
+    func prepare(pattern: MetronomePattern) async throws
     func start() async throws
     func stop() async
-    func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws
+    func playOneShot(pattern: MetronomePattern, soundRole: ClickSoundRole) async throws
     func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async
     func updateSettings(_ settings: MetronomeAudioSettings) async throws
     func currentRouteStatus() async -> AudioRouteStatus
@@ -381,12 +383,12 @@ public protocol MetronomeAudioEngine: Sendable {
 
 public actor AudioEngineStub: MetronomeAudioEngine {
     public private(set) var isRunning = false
-    private var preparedPattern: Pattern?
+    private var preparedPattern: MetronomePattern?
     private var eventHandler: (@Sendable (ScheduledBeatEvent) async -> Void)?
 
     public init() {}
 
-    public func prepare(pattern: Pattern) async throws {
+    public func prepare(pattern: MetronomePattern) async throws {
         preparedPattern = pattern
     }
 
@@ -409,7 +411,7 @@ public actor AudioEngineStub: MetronomeAudioEngine {
         isRunning = false
     }
 
-    public func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws {
+    public func playOneShot(pattern: MetronomePattern, soundRole: ClickSoundRole) async throws {
         let event = ScheduledBeatEvent(
             patternID: pattern.id,
             beatIndex: 0,
@@ -445,7 +447,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     private var audioEngine = AVAudioEngine()
     private var player = AVAudioPlayerNode()
     private let scheduler = MetronomeScheduler()
-    private var preparedPattern: Pattern?
+    private var preparedPattern: MetronomePattern?
     private var eventHandler: (@Sendable (ScheduledBeatEvent) async -> Void)?
     private var playbackTask: Task<Void, Never>?
     private var clickBuffers: [ClickSoundRole: AVAudioPCMBuffer] = [:]
@@ -467,7 +469,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 #endif
     }
 
-    public func prepare(pattern: Pattern) async throws {
+    public func prepare(pattern: MetronomePattern) async throws {
         preparedPattern = pattern
         installSessionObserversIfNeeded()
 
@@ -519,7 +521,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         audioEngine.pause()
     }
 
-    public func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws {
+    public func playOneShot(pattern: MetronomePattern, soundRole: ClickSoundRole) async throws {
         preparedPattern = pattern
 
         if clickBuffers.isEmpty {
@@ -778,7 +780,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         }
     }
 
-    private func humanizedHostTime(_ hostTime: UInt64, pattern: Pattern, eventOffset: Int) -> UInt64 {
+    private func humanizedHostTime(_ hostTime: UInt64, pattern: MetronomePattern, eventOffset: Int) -> UInt64 {
         guard settings.humanizationAmount > 0 else {
             return hostTime
         }
@@ -789,7 +791,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         }
 
         let maximumOffset = Double(interval) * 0.25 * settings.humanizationAmount
-        let randomOffset = Double.random(in: -maximumOffset...maximumOffset)
+        let randomOffset = Swift.Double.random(in: (-maximumOffset)...maximumOffset)
         if randomOffset < 0 {
             return hostTime - min(hostTime, UInt64(abs(randomOffset).rounded()))
         }

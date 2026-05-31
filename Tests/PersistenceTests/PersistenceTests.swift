@@ -248,9 +248,10 @@ final class PersistenceTests: XCTestCase {
         try await store.save(updatedLibrary)
 
         let restoredLibrary = try await store.restoreLatestSnapshot()
+        let loadedLibrary = try await store.load()
 
         XCTAssertEqual(restoredLibrary?.selectedPattern.bpm, 72)
-        XCTAssertEqual(try await store.load().selectedPattern.bpm, 72)
+        XCTAssertEqual(loadedLibrary.selectedPattern.bpm, 72)
     }
 
     func testStoreRestoreLatestSnapshotReturnsNilWhenMissing() async throws {
@@ -291,9 +292,10 @@ final class PersistenceTests: XCTestCase {
         let data = try JSONEncoder().encode(exported)
 
         let imported = try await store.importLibrary(from: data)
+        let loadedLibrary = try await store.load()
 
         XCTAssertEqual(imported.selectedPattern.name, "Imported")
-        XCTAssertEqual(try await store.load(), imported)
+        XCTAssertEqual(loadedLibrary, imported)
     }
 
     func testStoreSnapshotsExistingLibraryBeforeImport() async throws {

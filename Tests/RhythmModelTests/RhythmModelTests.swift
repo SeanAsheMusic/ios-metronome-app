@@ -67,6 +67,7 @@ final class RhythmModelTests: XCTestCase {
         let pattern = Pattern.defaultSevenEight()
 
         XCTAssertEqual(pattern.meter.grouping, [2, 2, 3])
+        XCTAssertEqual(pattern.subdivision, .eighth)
         XCTAssertEqual(pattern.beats.count, 7)
         XCTAssertEqual(pattern.beats[0].accent, .strong)
         XCTAssertEqual(pattern.beats[2].accent, .normal)
@@ -180,7 +181,8 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertNil(pattern.grooveMixerPreset)
         XCTAssertNil(pattern.swingTemplate)
         XCTAssertNil(pattern.polyrhythmTemplate)
-        XCTAssertEqual(pattern.beats.count, 7)
+        XCTAssertEqual(pattern.subdivision, .sixteenth)
+        XCTAssertEqual(pattern.beats.count, 14)
     }
 
     func testPatternRenameTrimsName() {
