@@ -287,6 +287,15 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         beats[index].soundRole = Pattern.soundRole(for: beats[index].accent, index: index)
     }
 
+    public mutating func setAccent(_ accent: AccentLevel, at index: Int) throws {
+        guard beats.indices.contains(index) else {
+            throw MetronomeValidationError.invalidBeatIndex(index)
+        }
+
+        beats[index].accent = accent
+        beats[index].soundRole = Pattern.soundRole(for: accent, index: index)
+    }
+
     private static func soundRole(for accent: AccentLevel, index: Int) -> ClickSoundRole {
         switch accent {
         case .strong:

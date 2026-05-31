@@ -635,9 +635,15 @@ struct MainMetronomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(viewModel.pattern.beats) { beat in
-                        Button {
-                            Task {
-                                await viewModel.cycleAccent(at: beat.index)
+                        Menu {
+                            ForEach(AccentLevel.allCases, id: \.self) { accent in
+                                Button {
+                                    Task {
+                                        await viewModel.setAccent(accent, at: beat.index)
+                                    }
+                                } label: {
+                                    Label(viewModel.menuLabel(for: accent), systemImage: viewModel.systemImage(for: accent))
+                                }
                             }
                         } label: {
                             VStack(spacing: 4) {
@@ -651,7 +657,7 @@ struct MainMetronomeView: View {
                         .buttonStyle(.bordered)
                         .tint(viewModel.tint(for: beat.accent))
                         .accessibilityLabel("Beat \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
-                        .accessibilityHint("Cycles accent level")
+                        .accessibilityHint("Opens accent and mute choices")
                     }
                 }
             }
@@ -1453,12 +1459,39 @@ final class MainMetronomeViewModel: ObservableObject {
         }
     }
 
+    func setAccent(_ accent: AccentLevel, at index: Int) async {
+        do {
+            try pattern.setAccent(accent, at: index)
+            saveSelectedPattern()
+            try await audioEngine.prepare(pattern: pattern)
+        } catch {
+        }
+    }
+
     func shortLabel(for accent: AccentLevel) -> String {
         switch accent {
         case .strong: "S"
         case .normal: "N"
         case .ghost: "G"
         case .muted: "M"
+        }
+    }
+
+    func menuLabel(for accent: AccentLevel) -> String {
+        switch accent {
+        case .strong: "Strong"
+        case .normal: "Normal"
+        case .ghost: "Ghost"
+        case .muted: "Mute"
+        }
+    }
+
+    func systemImage(for accent: AccentLevel) -> String {
+        switch accent {
+        case .strong: "largecircle.fill.circle"
+        case .normal: "circle.fill"
+        case .ghost: "circle"
+        case .muted: "speaker.slash"
         }
     }
 

@@ -7,7 +7,7 @@
 - Large touch targets of at least 44 x 44 pt.
 - High contrast and dark mode.
 - Reduce Motion support for pulse animation; the visual pulse no longer scales or animates when Reduce Motion is enabled.
-- Future beat grid controls must expose beat number, subdivision position, accent level, and muted state.
+- Beat grid controls must expose beat number, accent level, and muted state. Future subdivision or lane editing should also expose subdivision position and lane.
 
 ## Current Audit
 

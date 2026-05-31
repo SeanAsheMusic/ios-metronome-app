@@ -154,6 +154,21 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertThrowsError(try pattern.cycleAccent(at: 99))
     }
 
+    func testPatternSetsExplicitAccentAndSoundRole() throws {
+        var pattern = Pattern.defaultFourFour()
+
+        try pattern.setAccent(.muted, at: 0)
+        try pattern.setAccent(.strong, at: 1)
+        try pattern.setAccent(.ghost, at: 2)
+
+        XCTAssertEqual(pattern.beats[0].accent, .muted)
+        XCTAssertEqual(pattern.beats[0].soundRole, .muted)
+        XCTAssertEqual(pattern.beats[1].accent, .strong)
+        XCTAssertEqual(pattern.beats[1].soundRole, .beat)
+        XCTAssertEqual(pattern.beats[2].accent, .ghost)
+        XCTAssertEqual(pattern.beats[2].soundRole, .subdivision)
+    }
+
     func testSetlistOrderingAndMove() throws {
         let first = Pattern.defaultFourFour()
         let second = Pattern.defaultSixEight()

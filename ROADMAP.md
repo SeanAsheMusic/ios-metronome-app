@@ -6,6 +6,7 @@
 - Minimal SwiftUI play surface.
 - Local persistence implementation.
 - Pattern and setlist editing.
+- Explicit per-beat accent/mute controls.
 - Synthesized click prototype.
 - Direct numeric BPM entry.
 - Local export/import bundles.
@@ -23,7 +24,6 @@
 
 ## V1.1
 
-- Pattern editor with per-beat accent/mute controls.
 - Device VoiceOver and Accessibility Inspector audit.
 - Full clave mode.
 
