@@ -144,6 +144,28 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(setlist.items.map(\.position), [0, 1, 2])
     }
 
+    func testSetlistRemoveNormalizesPositions() throws {
+        let first = Pattern.defaultFourFour()
+        let second = Pattern.defaultSixEight()
+        let third = Pattern.defaultSevenEight()
+        var setlist = Setlist(name: "Gig")
+        setlist.append(pattern: first)
+        setlist.append(pattern: second)
+        setlist.append(pattern: third)
+
+        try setlist.removeItem(id: setlist.items[1].id)
+
+        XCTAssertEqual(setlist.items.map(\.patternID), [first.id, third.id])
+        XCTAssertEqual(setlist.items.map(\.position), [0, 1])
+    }
+
+    func testSetlistRemoveRejectsUnknownItem() {
+        var setlist = Setlist(name: "Gig")
+        setlist.append(pattern: Pattern.defaultFourFour())
+
+        XCTAssertThrowsError(try setlist.removeItem(id: UUID()))
+    }
+
     func testCodableRoundTrip() throws {
         let pattern = Pattern.defaultSevenEight()
         let data = try JSONEncoder().encode(pattern)

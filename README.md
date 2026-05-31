@@ -13,7 +13,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved pattern switching and duplication
 - Pattern name, meter, subdivision, and beat accent editing
-- Saved patterns and ordered setlists
+- Saved patterns and ordered setlists with add, select, reorder, and remove controls
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
 - Synthesized click engine foundation using AVFoundation

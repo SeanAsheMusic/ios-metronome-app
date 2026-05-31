@@ -20,6 +20,7 @@ The Swift package includes XCTest coverage for:
 - Pattern selection, duplication, and deletion library operations.
 - Persistence validation for empty pattern libraries.
 - Pattern rename, meter update, subdivision update, and beat accent cycling.
+- Setlist item add, select, move, and remove operations.
 
 Run with:
 

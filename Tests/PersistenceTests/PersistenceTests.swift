@@ -78,6 +78,55 @@ final class PersistenceTests: XCTestCase {
         XCTAssertThrowsError(try library.deletePattern(id: library.selectedPatternID))
     }
 
+    func testLibraryAppendsSelectedPatternToActiveSetlist() {
+        var library = MetronomeLibrary.defaultLibrary()
+        let initialCount = library.activeSetlist.items.count
+
+        library.appendSelectedPatternToActiveSetlist()
+
+        XCTAssertEqual(library.activeSetlist.items.count, initialCount + 1)
+        XCTAssertEqual(library.activeSetlist.items.last?.patternID, library.selectedPatternID)
+    }
+
+    func testLibraryMovesActiveSetlistItem() throws {
+        var library = MetronomeLibrary.defaultLibrary()
+        library.selectPattern(id: library.patterns[1].id)
+        library.appendSelectedPatternToActiveSetlist()
+        library.selectPattern(id: library.patterns[2].id)
+        library.appendSelectedPatternToActiveSetlist()
+
+        try library.moveActiveSetlistItem(from: 2, to: 0)
+
+        XCTAssertEqual(library.activeSetlist.items.map(\.patternID), [
+            library.patterns[2].id,
+            library.patterns[0].id,
+            library.patterns[1].id
+        ])
+        XCTAssertEqual(library.activeSetlist.items.map(\.position), [0, 1, 2])
+    }
+
+    func testLibraryRemovesActiveSetlistItem() throws {
+        var library = MetronomeLibrary.defaultLibrary()
+        let itemID = library.activeSetlist.items[0].id
+
+        try library.removeActiveSetlistItem(id: itemID)
+
+        XCTAssertTrue(library.activeSetlist.items.isEmpty)
+    }
+
+    func testLibrarySelectsPatternFromActiveSetlistItem() {
+        var library = MetronomeLibrary.defaultLibrary()
+        let nextPattern = library.patterns[1]
+        library.selectPattern(id: nextPattern.id)
+        library.appendSelectedPatternToActiveSetlist()
+        let itemID = library.activeSetlist.items.last!.id
+        library.selectPattern(id: library.patterns[0].id)
+
+        library.selectPatternFromActiveSetlist(itemID: itemID)
+
+        XCTAssertEqual(library.selectedPatternID, nextPattern.id)
+    }
+
     func testStoreCreatesDefaultLibraryWhenFileIsMissing() async throws {
         let fileURL = temporaryFileURL()
         let store = MetronomeLibraryStore(fileURL: fileURL)

@@ -1,5 +1,13 @@
 # Setlists
 
-Future SwiftUI surfaces and feature code for saved setlists, ordered items, duplication, moving, and later export/import.
+Setlist workflow has started on the main play screen.
 
-The domain ordering logic starts in `Sources/RhythmModel`; this folder is for app-facing workflows.
+Current behavior:
+
+- Add the selected pattern to the active setlist.
+- Select a setlist item to make its pattern active.
+- Move setlist items earlier or later.
+- Remove setlist items.
+- Persist setlist state in the local library store.
+
+Remaining work includes creating and renaming multiple setlists, duplication, export/import, and a dedicated full-screen setlist mode.

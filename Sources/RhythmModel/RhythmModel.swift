@@ -7,6 +7,7 @@ public enum MetronomeValidationError: Error, Equatable {
     case invalidBeatIndex(Int)
     case emptySetlist
     case invalidSetlistMove
+    case invalidSetlistItem
 }
 
 public struct Meter: Codable, Hashable, Sendable {
@@ -259,6 +260,15 @@ public struct Setlist: Identifiable, Codable, Equatable, Sendable {
     public mutating func append(pattern: Pattern, title: String? = nil) {
         let nextPosition = items.count
         items.append(SetlistItem(patternID: pattern.id, title: title ?? pattern.name, position: nextPosition))
+    }
+
+    public mutating func removeItem(id: SetlistItem.ID) throws {
+        guard items.contains(where: { $0.id == id }) else {
+            throw MetronomeValidationError.invalidSetlistItem
+        }
+
+        items.removeAll { $0.id == id }
+        items = Setlist.normalize(items)
     }
 
     public mutating func move(from source: Int, to destination: Int) throws {

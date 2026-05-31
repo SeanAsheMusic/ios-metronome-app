@@ -15,6 +15,7 @@ struct MainMetronomeView: View {
             patternSummary
             patternEditor
             patternLibrary
+            setlistPanel
             visualPulse
             Spacer(minLength: 0)
         }
@@ -110,6 +111,7 @@ struct MainMetronomeView: View {
             summaryPill(title: "Meter", value: viewModel.pattern.meter.displayName)
             summaryPill(title: "Subdivision", value: viewModel.pattern.subdivision.displayName)
             summaryPill(title: "Saved", value: "\(viewModel.patterns.count)")
+            summaryPill(title: "Setlist", value: "\(viewModel.activeSetlist.items.count)")
         }
     }
 
@@ -253,6 +255,113 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var setlistPanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(viewModel.activeSetlist.name)
+                    .font(.headline)
+                Spacer()
+                Button {
+                    Task {
+                        await viewModel.addCurrentPatternToSetlist()
+                    }
+                } label: {
+                    Label("Add", systemImage: "text.badge.plus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Add current pattern to setlist")
+            }
+
+            if viewModel.activeSetlist.items.isEmpty {
+                Text("No setlist items")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(Array(viewModel.activeSetlist.items.enumerated()), id: \.element.id) { offset, item in
+                            setlistItemButton(item: item, offset: offset)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func setlistItemButton(item: SetlistItem, offset: Int) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Button {
+                Task {
+                    await viewModel.selectSetlistItem(id: item.id)
+                }
+            } label: {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(offset + 1). \(item.title)")
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+                    Text(viewModel.patternSummary(for: item.patternID))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+                .frame(width: 176, height: 52, alignment: .leading)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Setlist item \(offset + 1), \(item.title)")
+
+            HStack(spacing: 6) {
+                Button {
+                    Task {
+                        await viewModel.moveSetlistItem(from: offset, to: max(0, offset - 1))
+                    }
+                } label: {
+                    Label("Earlier", systemImage: "chevron.left")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 34, height: 34)
+                }
+                .buttonStyle(.bordered)
+                .disabled(offset == 0)
+                .accessibilityLabel("Move \(item.title) earlier")
+
+                Button {
+                    Task {
+                        await viewModel.moveSetlistItem(from: offset, to: min(viewModel.activeSetlist.items.count, offset + 2))
+                    }
+                } label: {
+                    Label("Later", systemImage: "chevron.right")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 34, height: 34)
+                }
+                .buttonStyle(.bordered)
+                .disabled(offset == viewModel.activeSetlist.items.count - 1)
+                .accessibilityLabel("Move \(item.title) later")
+
+                Button {
+                    Task {
+                        await viewModel.removeSetlistItem(id: item.id)
+                    }
+                } label: {
+                    Label("Remove", systemImage: "trash")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 34, height: 34)
+                }
+                .buttonStyle(.bordered)
+                .tint(.red)
+                .accessibilityLabel("Remove \(item.title) from setlist")
+            }
+        }
+        .padding(10)
+        .background(
+            item.patternID == viewModel.pattern.id ? Color.accentColor.opacity(0.18) : Color.secondary.opacity(0.1),
+            in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+        )
+    }
+
     private var visualPulse: some View {
         Circle()
             .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
@@ -298,6 +407,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var pattern = Pattern.defaultFourFour()
     @Published var patternNameDraft = Pattern.defaultFourFour().name
     @Published var patterns: [Pattern] = MetronomeLibrary.defaultLibrary().patterns
+    @Published var activeSetlist = MetronomeLibrary.defaultLibrary().activeSetlist
     @Published var isPlaying = false
     @Published var pulseIsActive = false
 
@@ -383,6 +493,7 @@ final class MainMetronomeViewModel: ObservableObject {
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
             patterns = library.patterns
+            activeSetlist = library.activeSetlist
             return
         }
 
@@ -392,11 +503,13 @@ final class MainMetronomeViewModel: ObservableObject {
             pattern = loadedLibrary.selectedPattern
             patternNameDraft = pattern.name
             patterns = loadedLibrary.patterns
+            activeSetlist = loadedLibrary.activeSetlist
         } catch {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
             patterns = library.patterns
+            activeSetlist = library.activeSetlist
             try? await libraryStore.save(library)
         }
     }
@@ -404,6 +517,7 @@ final class MainMetronomeViewModel: ObservableObject {
     private func saveSelectedPattern() {
         library.updateSelectedPattern(pattern)
         patterns = library.patterns
+        activeSetlist = library.activeSetlist
         guard let libraryStore else {
             return
         }
@@ -419,6 +533,7 @@ final class MainMetronomeViewModel: ObservableObject {
         pattern = library.selectedPattern
         patternNameDraft = pattern.name
         patterns = library.patterns
+        activeSetlist = library.activeSetlist
         tapTimes.removeAll()
         try? await audioEngine.prepare(pattern: pattern)
         await saveLibrarySnapshot()
@@ -430,11 +545,53 @@ final class MainMetronomeViewModel: ObservableObject {
             pattern = duplicate
             patternNameDraft = pattern.name
             patterns = library.patterns
+            activeSetlist = library.activeSetlist
             tapTimes.removeAll()
             try await audioEngine.prepare(pattern: pattern)
             await saveLibrarySnapshot()
         } catch {
         }
+    }
+
+    func addCurrentPatternToSetlist() async {
+        library.appendSelectedPatternToActiveSetlist()
+        activeSetlist = library.activeSetlist
+        await saveLibrarySnapshot()
+    }
+
+    func selectSetlistItem(id: SetlistItem.ID) async {
+        library.selectPatternFromActiveSetlist(itemID: id)
+        pattern = library.selectedPattern
+        patternNameDraft = pattern.name
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    func moveSetlistItem(from source: Int, to destination: Int) async {
+        do {
+            try library.moveActiveSetlistItem(from: source, to: destination)
+            activeSetlist = library.activeSetlist
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    func removeSetlistItem(id: SetlistItem.ID) async {
+        do {
+            try library.removeActiveSetlistItem(id: id)
+            activeSetlist = library.activeSetlist
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    func patternSummary(for id: Pattern.ID) -> String {
+        guard let pattern = patterns.first(where: { $0.id == id }) else {
+            return "Missing pattern"
+        }
+        return "\(pattern.bpm) BPM · \(pattern.meter.displayName)"
     }
 
     var selectedMeterOption: MeterOption {

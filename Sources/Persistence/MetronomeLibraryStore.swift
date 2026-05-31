@@ -25,6 +25,10 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         patterns.first { $0.id == selectedPatternID } ?? patterns[0]
     }
 
+    public var activeSetlist: Setlist {
+        setlists.first ?? Setlist(name: "Practice")
+    }
+
     public mutating func selectPattern(id: Pattern.ID) {
         guard patterns.contains(where: { $0.id == id }) else {
             return
@@ -77,6 +81,28 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         }
     }
 
+    public mutating func appendSelectedPatternToActiveSetlist() {
+        ensureActiveSetlist()
+        setlists[0].append(pattern: selectedPattern)
+    }
+
+    public mutating func removeActiveSetlistItem(id: SetlistItem.ID) throws {
+        ensureActiveSetlist()
+        try setlists[0].removeItem(id: id)
+    }
+
+    public mutating func moveActiveSetlistItem(from source: Int, to destination: Int) throws {
+        ensureActiveSetlist()
+        try setlists[0].move(from: source, to: destination)
+    }
+
+    public mutating func selectPatternFromActiveSetlist(itemID: SetlistItem.ID) {
+        guard let item = activeSetlist.items.first(where: { $0.id == itemID }) else {
+            return
+        }
+        selectPattern(id: item.patternID)
+    }
+
     public static func defaultLibrary() -> MetronomeLibrary {
         let defaultPattern = Pattern.defaultFourFour()
         var starterSetlist = Setlist(name: "Practice")
@@ -91,6 +117,12 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
             ],
             setlists: [starterSetlist]
         )
+    }
+
+    private mutating func ensureActiveSetlist() {
+        if setlists.isEmpty {
+            setlists = [Setlist(name: "Practice")]
+        }
     }
 }
 
