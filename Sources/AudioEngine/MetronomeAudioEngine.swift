@@ -189,6 +189,18 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
     private static func clampRoleGain(_ value: Double) -> Double {
         min(1.0, max(0.0, value))
     }
+
+    public mutating func resetRoleMixer() {
+        downbeatGain = 1.0
+        beatGain = 1.0
+        subdivisionGain = 1.0
+        cueGain = 1.0
+    }
+
+    public mutating func setPrecisionPracticeMode() {
+        humanizationAmount = 0.0
+        rhythmTrainer = RhythmTrainerSettings(mode: .off)
+    }
 }
 
 public enum RhythmTrainerMode: String, CaseIterable, Codable, Equatable, Sendable {

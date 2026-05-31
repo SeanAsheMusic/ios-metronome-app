@@ -82,6 +82,54 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(decoded.cueGain, 0.6)
     }
 
+    func testAudioSettingsResetRoleMixerKeepsOtherSettings() {
+        var settings = MetronomeAudioSettings(
+            soundPreset: .bell,
+            masterGain: 0.5,
+            accentBoost: 1.2,
+            downbeatGain: 0.2,
+            beatGain: 0.3,
+            subdivisionGain: 0.4,
+            cueGain: 0.5,
+            humanizationAmount: 0.75,
+            rhythmTrainer: RhythmTrainerSettings(mode: .fixedBars, audibleBars: 1, silentBars: 2)
+        )
+
+        settings.resetRoleMixer()
+
+        XCTAssertEqual(settings.soundPreset, .bell)
+        XCTAssertEqual(settings.masterGain, 0.5)
+        XCTAssertEqual(settings.accentBoost, 1.2)
+        XCTAssertEqual(settings.downbeatGain, 1.0)
+        XCTAssertEqual(settings.beatGain, 1.0)
+        XCTAssertEqual(settings.subdivisionGain, 1.0)
+        XCTAssertEqual(settings.cueGain, 1.0)
+        XCTAssertEqual(settings.humanizationAmount, 0.75)
+        XCTAssertEqual(settings.rhythmTrainer.mode, .fixedBars)
+    }
+
+    func testAudioSettingsPrecisionPracticeModeDisablesTimingAlterations() {
+        var settings = MetronomeAudioSettings(
+            soundPreset: .wood,
+            downbeatGain: 0.6,
+            beatGain: 0.7,
+            subdivisionGain: 0.8,
+            cueGain: 0.9,
+            humanizationAmount: 0.95,
+            rhythmTrainer: RhythmTrainerSettings(mode: .randomBars, randomSilenceProbability: 0.8)
+        )
+
+        settings.setPrecisionPracticeMode()
+
+        XCTAssertEqual(settings.soundPreset, .wood)
+        XCTAssertEqual(settings.downbeatGain, 0.6)
+        XCTAssertEqual(settings.beatGain, 0.7)
+        XCTAssertEqual(settings.subdivisionGain, 0.8)
+        XCTAssertEqual(settings.cueGain, 0.9)
+        XCTAssertEqual(settings.humanizationAmount, 0.0)
+        XCTAssertEqual(settings.rhythmTrainer.mode, .off)
+    }
+
     func testRhythmTrainerFixedBarsMutesSilentCycle() {
         let settings = RhythmTrainerSettings(mode: .fixedBars, audibleBars: 2, silentBars: 1)
         let patternID = UUID(uuidString: "34A78AE2-EDFC-445B-8E44-4C63C1E347A8")!

@@ -218,6 +218,31 @@ struct MainMetronomeView: View {
                         ) { value in
                             await viewModel.updateCueGain(value)
                         }
+
+                        HStack(spacing: 12) {
+                            Button {
+                                Task {
+                                    await viewModel.resetRoleMixer()
+                                }
+                            } label: {
+                                Label("Reset Mixer", systemImage: "arrow.counterclockwise")
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Reset mixer levels")
+
+                            Button {
+                                Task {
+                                    await viewModel.enablePrecisionPracticeMode()
+                                }
+                            } label: {
+                                Label("Precision", systemImage: "scope")
+                                    .frame(maxWidth: .infinity, minHeight: 44)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Enable precision practice mode")
+                            .accessibilityHint("Turns off Human Feel and Rhythm Trainer for timing validation.")
+                        }
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
@@ -1942,6 +1967,20 @@ final class MainMetronomeViewModel: ObservableObject {
         var settings = audioSettings
         settings.cueGain = value
         await updateAudioSettings(settings)
+    }
+
+    func resetRoleMixer() async {
+        var settings = audioSettings
+        settings.resetRoleMixer()
+        await updateAudioSettings(settings)
+    }
+
+    func enablePrecisionPracticeMode() async {
+        var settings = audioSettings
+        settings.setPrecisionPracticeMode()
+        await updateAudioSettings(settings)
+        await audioEngine.resetTimingMeasurements()
+        timingSummary = await audioEngine.timingSummary()
     }
 
     func updateHumanizationAmount(_ value: Double) async {

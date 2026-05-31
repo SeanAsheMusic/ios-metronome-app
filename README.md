@@ -29,7 +29,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
 - Simple local practice timer on the Play screen with 5, 10, and 20 minute presets
 - Local tempo ladder practice tool with target, step, and bars-per-step controls
-- Settings tab for synthesized click preset, volume, accent boost, and role-level mixer controls
+- Settings tab for synthesized click preset, volume, accent boost, role-level mixer controls, mixer reset, and Precision mode
 - Runtime synthesized click provenance manifest
 - Exportable click-render verification WAVs with checksums
 - Audio output status with wireless latency warning

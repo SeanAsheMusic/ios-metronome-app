@@ -14,6 +14,7 @@
 - Latest local snapshot restore.
 - Sound family picker with synthesized presets.
 - Role-level mixer for downbeat, beat, subdivision, and count-in cue levels.
+- Mixer reset and Precision mode for validation-safe settings.
 - Exportable click-render verification assets.
 - Full son, rumba, bossa, 6/8 bell, 12/8 bell, and odd-meter clave template set.
 - Clave Mode mixer presets for clave, metronome click, and subdivisions.

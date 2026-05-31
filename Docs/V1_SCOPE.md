@@ -36,7 +36,8 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - SwiftUI performance play screen foundation.
 - Full-screen stage pulse mode.
 - Accessibility labels and large touch targets.
-- Settings role-level mixer controls for downbeat, beat, subdivision, and count-in cue levels.
+- Settings role-level mixer controls for downbeat, beat, subdivision, and count-in cue levels, plus mixer reset.
+- Settings Precision mode to turn off timing-altering practice features before validation.
 - Playable audio engine foundation and scheduling spec.
 - Settings timing summary and reset controls for device validation runs.
 - Exportable click-render verification fixtures.
