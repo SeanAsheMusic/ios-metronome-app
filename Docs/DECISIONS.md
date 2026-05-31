@@ -14,7 +14,7 @@ The repository will not claim precise or stage-safe audio timing until AVFoundat
 
 ## D004: Synthesized Clicks Only Unless Rights Are Explicit
 
-DAW/system sounds are treated as references. V1 sound assets must be synthesized at runtime or generated from source-controlled DSP parameters with provenance.
+DAW/system sounds are treated as references. V1 sound assets must be synthesized at runtime or generated from source-controlled DSP parameters with provenance. Current preset parameters are documented in `SoundLibrary/PROVENANCE.md`.
 
 ## D005: Multi-Lane Rhythm Is The Long-Term Model
 

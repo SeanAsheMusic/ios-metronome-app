@@ -19,7 +19,7 @@
 | `PatternEditor` | Future beat/accent/grouping editing views. |
 | `Setlists` | Future setlist library and reorder workflows. |
 | `Persistence` | Future local store, migration, snapshots, export/import. |
-| `SoundLibrary` | Future synthesized click presets and provenance manifests. |
+| `SoundLibrary` | Synthesized click preset notes and provenance manifest. |
 | `Practice` | Practice timers, future mute trainers, tempo ladders, and local-only analytics. |
 | `RhythmModel.GrooveTemplate` | Built-in 16-step clave and bossa template foundation for future lane-based groove modes. |
 | `Accessibility` | Accessibility helpers and audit notes. |

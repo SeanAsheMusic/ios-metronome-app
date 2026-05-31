@@ -21,7 +21,7 @@
 - Pattern editor with per-beat accent/mute controls.
 - Fullscreen visual pulse modes.
 - Count-in.
-- Sound provenance manifest.
+- Exportable click-render verification assets.
 - Full clave mode.
 
 ## Later

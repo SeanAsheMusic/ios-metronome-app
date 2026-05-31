@@ -43,7 +43,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 ## V1.1 Candidates
 
 - Snapshot restore points.
-- Basic synthesized click renderer and provenance manifest.
+- Extended click renderer provenance for any future pre-rendered assets.
 - Count-in.
 - Fullscreen visual pulse.
 - Tempo ladders.
