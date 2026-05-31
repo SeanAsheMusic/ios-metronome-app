@@ -77,6 +77,19 @@ public enum Subdivision: String, CaseIterable, Codable, Hashable, Sendable {
         }
     }
 
+    public func stepsPerMeterBeat(beatUnit: Int) -> Int {
+        switch self {
+        case .quarter:
+            1
+        case .eighth:
+            beatUnit == 4 ? 2 : 1
+        case .triplet:
+            3
+        case .sixteenth:
+            beatUnit == 4 ? 4 : 2
+        }
+    }
+
     public var displayName: String {
         switch self {
         case .quarter: "Quarter"
@@ -324,7 +337,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.bpm = bpm
         self.meter = meter
         self.subdivision = subdivision
-        self.beats = beats ?? Pattern.generateBeats(for: meter)
+        self.beats = beats ?? Pattern.generateBeats(for: meter, subdivision: subdivision)
         self.grooveTemplate = grooveTemplate
         self.claveModeTemplate = claveModeTemplate
         self.grooveMixerPreset = grooveMixerPreset
@@ -336,7 +349,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         }
     }
 
-    public static func generateBeats(for meter: Meter) -> [Beat] {
+    public static func generateBeats(for meter: Meter, subdivision: Subdivision = .quarter) -> [Beat] {
         var groupStarts: Set<Int> = [0]
         var cursor = 0
         for group in meter.grouping.dropLast() {
@@ -344,11 +357,27 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
             groupStarts.insert(cursor)
         }
 
-        return (0..<meter.beatsPerBar).map { index in
+        let stepsPerMeterBeat = subdivision.stepsPerMeterBeat(beatUnit: meter.beatUnit)
+        let stepCount = meter.beatsPerBar * stepsPerMeterBeat
+
+        return (0..<stepCount).map { index in
+            let isMeterBeatStart = index.isMultiple(of: stepsPerMeterBeat)
+            let meterBeatIndex = index / stepsPerMeterBeat
             let isDownbeat = index == 0
-            let isGroupStart = groupStarts.contains(index)
-            let accent: AccentLevel = isDownbeat ? .strong : (isGroupStart ? .normal : .ghost)
-            let role: ClickSoundRole = isDownbeat ? .downbeat : .beat
+            let isGroupStart = isMeterBeatStart && groupStarts.contains(meterBeatIndex)
+
+            let accent: AccentLevel
+            let role: ClickSoundRole
+            if isDownbeat {
+                accent = .strong
+                role = .downbeat
+            } else if isMeterBeatStart {
+                accent = isGroupStart ? .normal : .ghost
+                role = .beat
+            } else {
+                accent = .ghost
+                role = .subdivision
+            }
             return Beat(index: index, accent: accent, soundRole: role)
         }
     }
@@ -457,7 +486,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 
     public mutating func updateMeter(_ meter: Meter) {
         self.meter = meter
-        beats = Pattern.generateBeats(for: meter)
+        beats = Pattern.generateBeats(for: meter, subdivision: subdivision)
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil
@@ -465,6 +494,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 
     public mutating func updateSubdivision(_ subdivision: Subdivision) {
         self.subdivision = subdivision
+        beats = Pattern.generateBeats(for: meter, subdivision: subdivision)
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil

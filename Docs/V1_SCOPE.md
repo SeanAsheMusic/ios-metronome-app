@@ -11,10 +11,11 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Play/stop UI skeleton.
 - Tap tempo entry point.
 - Audible one- and two-bar count-in.
-- Common meters: 2/4, 3/4, 4/4, 5/4, 6/8, 7/8, 9/8, and 12/8.
+- Common meters: 2/4, 3/4, 4/4, 5/4, 5/8, 6/8, 7/8, 9/8, 11/8, and 12/8.
 - Subdivisions: quarter, eighth, triplet, and sixteenth.
+- Editable subdivision-step grids for syncopations and silencing.
 - Accent levels: strong, normal, ghost, and muted.
-- Explicit per-beat accent and mute editing.
+- Explicit per-step accent and mute editing.
 - Full son, rumba, and bossa clave templates backed by a 16-step pattern foundation.
 - Clave Mode templates for traditional clave and odd-meter feels, with local mixer presets for clave, metronome click, and subdivisions.
 - Pattern defaults for 4/4, 6/8, and 7/8.

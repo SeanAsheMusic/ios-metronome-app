@@ -14,7 +14,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 |---|---|---|
 | Play | Implemented in source | Pattern, meter, BPM, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
-| Edit | Implemented in source | Pattern name, meter, subdivision, and explicit beat accent/mute controls are labeled. Beat menus announce the beat number and current accent level. |
+| Edit | Implemented in source | Pattern name, meter, subdivision, and explicit beat/subdivision accent/mute controls are labeled. Beat menus announce the step number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, and Clave Mode creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, and remove controls have labels that include the affected item title. |
 | Settings | Implemented in source | Click preset, volume, accent boost, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
@@ -46,9 +46,9 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 ### Edit
 
 - Pattern name, meter, and subdivision fields use labels.
-- Beat cells are fixed-size menus that announce beat number and accent level.
+- Beat and subdivision cells are fixed-size menus that announce step number and accent level.
 - Beat menus expose explicit Strong, Normal, Ghost, and Mute choices.
-- If future gestures add subdivision or lane editing, labels should include subdivision position, lane, accent level, and muted state.
+- If future gestures add lane editing, labels should include lane, accent level, and muted state.
 
 ### Patterns
 

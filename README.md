@@ -12,12 +12,13 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Tap tempo from recent taps
 - Audible one- and two-bar count-in
 - Common meters, custom grouping foundation, subdivisions, and accents
+- Editable subdivision-step grids for syncopation and beat silencing
 - Full son, rumba, and bossa clave template set
 - Clave Mode with clave-only, click-only, clave-plus-click, and subdivision mixer presets
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved pattern switching, duplication, and groove template creation
 - Protected saved-pattern deletion
-- Pattern name, meter, subdivision, and explicit per-beat accent/mute editing
+- Pattern name, meter, subdivision, and explicit per-step accent/mute editing
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
 - Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
 - Simple local practice timer on the Play screen with 5, 10, and 20 minute presets

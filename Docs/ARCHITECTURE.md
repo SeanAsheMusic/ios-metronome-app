@@ -13,7 +13,7 @@
 
 | Module | Responsibility |
 |---|---|
-| `RhythmModel` | Pattern, meter, subdivision, accent, beat generation, setlist ordering, Codable support. |
+| `RhythmModel` | Pattern, meter, subdivision-step generation, accent, beat generation, setlist ordering, Codable support. |
 | `AudioEngine` | Audio scheduling protocol, event contracts, future AVFoundation implementation boundary. |
 | `App` | SwiftUI app entry and performance play screen. |
 | `PatternEditor` | Future beat/accent/grouping editing views. |
@@ -29,6 +29,8 @@
 ## Data Flow
 
 SwiftUI views should read observable app state, mutate domain models through focused actions, and never own audio scheduling details. The audio engine should receive immutable schedule snapshots and publish timestamped beat events for visual pulse and haptic followers.
+
+Pattern subdivision changes regenerate editable step grids in the domain model. For simple meters, eighth, triplet, and sixteenth subdivisions expand each meter beat. For compound eighth-note meters, eighth remains the meter beat and sixteenth creates two steps per meter beat.
 
 Clave Mode currently renders mixer choices into a single playable pattern so the existing audio source of truth remains intact. Independent per-lane audio faders should be added only after the audio engine supports simultaneous lane events without compromising timing.
 

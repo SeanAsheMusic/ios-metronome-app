@@ -656,7 +656,7 @@ struct MainMetronomeView: View {
                         }
                         .buttonStyle(.bordered)
                         .tint(viewModel.tint(for: beat.accent))
-                        .accessibilityLabel("Beat \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
+                        .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
                         .accessibilityHint("Opens accent and mute choices")
                     }
                 }
@@ -936,7 +936,10 @@ final class MainMetronomeViewModel: ObservableObject {
         }
 
         var label: String {
-            "\(beatsPerBar)/\(beatUnit)"
+            if let grouping, grouping.count > 1 {
+                return "\(beatsPerBar)/\(beatUnit) \(grouping.map(String.init).joined(separator: "-"))"
+            }
+            return "\(beatsPerBar)/\(beatUnit)"
         }
 
         var meter: Meter {
@@ -949,9 +952,14 @@ final class MainMetronomeViewModel: ObservableObject {
         MeterOption(beatsPerBar: 3, beatUnit: 4, grouping: nil),
         MeterOption(beatsPerBar: 4, beatUnit: 4, grouping: nil),
         MeterOption(beatsPerBar: 5, beatUnit: 4, grouping: nil),
+        MeterOption(beatsPerBar: 5, beatUnit: 8, grouping: [2, 3]),
+        MeterOption(beatsPerBar: 5, beatUnit: 8, grouping: [3, 2]),
         MeterOption(beatsPerBar: 6, beatUnit: 8, grouping: [3, 3]),
         MeterOption(beatsPerBar: 7, beatUnit: 8, grouping: [2, 2, 3]),
+        MeterOption(beatsPerBar: 7, beatUnit: 8, grouping: [3, 2, 2]),
         MeterOption(beatsPerBar: 9, beatUnit: 8, grouping: [3, 3, 3]),
+        MeterOption(beatsPerBar: 9, beatUnit: 8, grouping: [2, 2, 2, 3]),
+        MeterOption(beatsPerBar: 11, beatUnit: 8, grouping: [3, 3, 2, 3]),
         MeterOption(beatsPerBar: 12, beatUnit: 8, grouping: [3, 3, 3, 3])
     ]
 

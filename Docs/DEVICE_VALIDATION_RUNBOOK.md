@@ -27,6 +27,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Direct BPM | Enter valid BPM values from 30 to 300; invalid values are rejected with clear text. | Device note. |
 | Tap tempo | Recent taps update tempo and stay inside 30 to 300 BPM. | Device note. |
 | Meter/subdivision | Meter and subdivision edits audibly change the click pattern after playback restart or prepare. | Device note. |
+| Subdivision editing | Eighth, triplet, and sixteenth subdivision steps can be muted or accented from the editor. | Device note. |
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |

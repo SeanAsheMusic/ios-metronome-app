@@ -19,7 +19,7 @@ The Swift package includes XCTest coverage for:
 - JSON library store round trip.
 - Pattern selection, duplication, and deletion library operations.
 - Persistence validation for empty pattern libraries.
-- Pattern rename, meter update, subdivision update, beat accent cycling, and explicit beat accent assignment.
+- Pattern rename, meter update, editable subdivision-step regeneration, beat accent cycling, and explicit beat accent assignment.
 - Pattern deletion and setlist-reference cleanup.
 - Setlist item add, select, move, and remove operations.
 - Audio settings clamping and persistence.

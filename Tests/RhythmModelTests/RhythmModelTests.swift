@@ -36,6 +36,9 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(Subdivision.eighth.stepsPerBeat, 2)
         XCTAssertEqual(Subdivision.triplet.stepsPerBeat, 3)
         XCTAssertEqual(Subdivision.sixteenth.stepsPerBeat, 4)
+        XCTAssertEqual(Subdivision.eighth.stepsPerMeterBeat(beatUnit: 4), 2)
+        XCTAssertEqual(Subdivision.eighth.stepsPerMeterBeat(beatUnit: 8), 1)
+        XCTAssertEqual(Subdivision.sixteenth.stepsPerMeterBeat(beatUnit: 8), 2)
     }
 
     func testDefaultFourFourPattern() {
@@ -185,6 +188,32 @@ final class RhythmModelTests: XCTestCase {
         pattern.updateSubdivision(.sixteenth)
 
         XCTAssertEqual(pattern.subdivision, .sixteenth)
+        XCTAssertEqual(pattern.beats.count, 16)
+        XCTAssertEqual(pattern.eventIntervalDivisor, 4)
+        XCTAssertEqual(Array(pattern.beats.map(\.soundRole).prefix(5)), [.downbeat, .subdivision, .subdivision, .subdivision, .beat])
+    }
+
+    func testPatternTripletSubdivisionCreatesEditableSteps() {
+        var pattern = Pattern.defaultFourFour()
+
+        pattern.updateSubdivision(.triplet)
+
+        XCTAssertEqual(pattern.beats.count, 12)
+        XCTAssertEqual(pattern.eventIntervalDivisor, 3)
+        XCTAssertEqual(Array(pattern.beats.map(\.soundRole).prefix(4)), [.downbeat, .subdivision, .subdivision, .beat])
+    }
+
+    func testCompoundMeterEighthSubdivisionStaysOnMeterBeats() throws {
+        let pattern = try Pattern(
+            name: "Five eight",
+            bpm: 108,
+            meter: Meter(beatsPerBar: 5, beatUnit: 8, grouping: [2, 3]),
+            subdivision: .eighth
+        )
+
+        XCTAssertEqual(pattern.beats.count, 5)
+        XCTAssertEqual(pattern.eventIntervalDivisor, 1)
+        XCTAssertEqual(pattern.beats.map(\.soundRole), [.downbeat, .beat, .beat, .beat, .beat])
     }
 
     func testPatternCyclesAccentAndSoundRole() throws {
