@@ -25,6 +25,7 @@ The Swift package includes XCTest coverage for:
 - Audio settings clamping and persistence.
 - Portable library export/import and raw-library recovery import.
 - Settings data export/import UI plumbing.
+- Practice timer formatting, duration selection, countdown, and clamping behavior.
 
 Run with:
 

@@ -17,6 +17,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Ordered setlists with move support.
 - Local persistence for selected pattern, pattern library, and setlists.
 - Versioned export/import storage support, Settings data controls, and Codable model support.
+- Simple local practice timer with preset durations.
 - SwiftUI performance play screen foundation.
 - Accessibility labels and large touch targets.
 - Playable audio engine foundation and scheduling spec.
@@ -43,7 +44,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Basic synthesized click renderer and provenance manifest.
 - Count-in.
 - Fullscreen visual pulse.
-- Simple practice timers.
+- Tempo ladders.
 
 ## Later Candidates
 

@@ -15,7 +15,8 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Protected saved-pattern deletion
 - Pattern name, meter, subdivision, and beat accent editing
 - Saved patterns and ordered setlists with add, select, reorder, and remove controls
-- Tabbed Play, Edit, Patterns, and Setlist app layout
+- Tabbed Play, Edit, Patterns, Setlist, and Settings app layout
+- Simple local practice timer on the Play screen with 5, 10, and 20 minute presets
 - Settings tab for synthesized click preset, volume, and accent boost
 - App privacy manifest declaring no tracking and no collected data
 - Large performance SwiftUI play surface wired to playback state

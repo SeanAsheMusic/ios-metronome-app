@@ -187,4 +187,41 @@ final class RhythmModelTests: XCTestCase {
 
         XCTAssertEqual(decoded, pattern)
     }
+
+    func testPracticeTimerFormatsRemainingTime() {
+        let timer = PracticeTimer(durationSeconds: 600, remainingSeconds: 65)
+
+        XCTAssertEqual(timer.formattedRemaining, "01:05")
+    }
+
+    func testPracticeTimerRunsDownAndStopsAtZero() {
+        var timer = PracticeTimer(durationSeconds: 60, remainingSeconds: 2)
+
+        timer.start()
+        timer.tick()
+        XCTAssertEqual(timer.remainingSeconds, 1)
+        XCTAssertTrue(timer.isRunning)
+
+        timer.tick()
+        XCTAssertEqual(timer.remainingSeconds, 0)
+        XCTAssertFalse(timer.isRunning)
+    }
+
+    func testPracticeTimerSelectDurationResetsAndPauses() {
+        var timer = PracticeTimer(durationSeconds: 600, remainingSeconds: 120, isRunning: true)
+
+        timer.selectDuration(seconds: 300)
+
+        XCTAssertEqual(timer.durationSeconds, 300)
+        XCTAssertEqual(timer.remainingSeconds, 300)
+        XCTAssertFalse(timer.isRunning)
+    }
+
+    func testPracticeTimerClampsDuration() {
+        let shortTimer = PracticeTimer(durationSeconds: 5)
+        let longTimer = PracticeTimer(durationSeconds: 7_200)
+
+        XCTAssertEqual(shortTimer.durationSeconds, PracticeTimer.minimumDurationSeconds)
+        XCTAssertEqual(longTimer.durationSeconds, PracticeTimer.maximumDurationSeconds)
+    }
 }

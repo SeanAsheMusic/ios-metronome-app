@@ -297,3 +297,64 @@ public struct Setlist: Identifiable, Codable, Equatable, Sendable {
             }
     }
 }
+
+public struct PracticeTimer: Codable, Equatable, Sendable {
+    public static let minimumDurationSeconds = 60
+    public static let maximumDurationSeconds = 3_600
+
+    public private(set) var durationSeconds: Int
+    public private(set) var remainingSeconds: Int
+    public private(set) var isRunning: Bool
+
+    public init(durationSeconds: Int = 600, remainingSeconds: Int? = nil, isRunning: Bool = false) {
+        let resolvedDuration = PracticeTimer.clampedDuration(durationSeconds)
+        let resolvedRemaining = remainingSeconds ?? resolvedDuration
+
+        self.durationSeconds = resolvedDuration
+        self.remainingSeconds = min(resolvedDuration, max(0, resolvedRemaining))
+        self.isRunning = isRunning && self.remainingSeconds > 0
+    }
+
+    public var formattedRemaining: String {
+        let minutes = remainingSeconds / 60
+        let seconds = remainingSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+
+    public mutating func start() {
+        if remainingSeconds == 0 {
+            remainingSeconds = durationSeconds
+        }
+        isRunning = true
+    }
+
+    public mutating func pause() {
+        isRunning = false
+    }
+
+    public mutating func reset() {
+        remainingSeconds = durationSeconds
+        isRunning = false
+    }
+
+    public mutating func selectDuration(seconds: Int) {
+        durationSeconds = PracticeTimer.clampedDuration(seconds)
+        remainingSeconds = durationSeconds
+        isRunning = false
+    }
+
+    public mutating func tick(seconds: Int = 1) {
+        guard isRunning, seconds > 0 else {
+            return
+        }
+
+        remainingSeconds = max(0, remainingSeconds - seconds)
+        if remainingSeconds == 0 {
+            isRunning = false
+        }
+    }
+
+    private static func clampedDuration(_ seconds: Int) -> Int {
+        min(maximumDurationSeconds, max(minimumDurationSeconds, seconds))
+    }
+}

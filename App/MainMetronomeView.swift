@@ -61,17 +61,19 @@ struct MainMetronomeView: View {
     }
 
     private var playTab: some View {
-        VStack(spacing: 24) {
-            header
-            bpmDisplay
-            transportControls
-            tempoControls
-            patternSummary
-            visualPulse
-            Spacer(minLength: 0)
+        ScrollView {
+            VStack(spacing: 20) {
+                header
+                bpmDisplay
+                transportControls
+                tempoControls
+                patternSummary
+                practicePanel
+                visualPulse
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
         }
-        .padding(24)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
     }
 
@@ -308,6 +310,63 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, minHeight: 64)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .accessibilityElement(children: .combine)
+    }
+
+    private var practicePanel: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Practice")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(viewModel.practiceTimer.formattedRemaining)
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .minimumScaleFactor(0.75)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Practice timer \(viewModel.practiceTimer.formattedRemaining)")
+
+                Button {
+                    viewModel.togglePracticeTimer()
+                } label: {
+                    Label(viewModel.practiceTimer.isRunning ? "Pause" : "Start", systemImage: viewModel.practiceTimer.isRunning ? "pause.fill" : "play.fill")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.borderedProminent)
+                .accessibilityLabel(viewModel.practiceTimer.isRunning ? "Pause practice timer" : "Start practice timer")
+
+                Button {
+                    viewModel.resetPracticeTimer()
+                } label: {
+                    Label("Reset", systemImage: "arrow.counterclockwise")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Reset practice timer")
+            }
+
+            HStack(spacing: 8) {
+                practiceDurationButton(minutes: 5)
+                practiceDurationButton(minutes: 10)
+                practiceDurationButton(minutes: 20)
+            }
+        }
+        .padding(12)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private func practiceDurationButton(minutes: Int) -> some View {
+        Button("\(minutes)m") {
+            viewModel.setPracticeDuration(minutes: minutes)
+        }
+        .font(.subheadline.weight(.semibold))
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .buttonStyle(.bordered)
+        .accessibilityLabel("Set practice timer to \(minutes) minutes")
     }
 
     private var patternEditor: some View {
@@ -608,12 +667,14 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var isPlaying = false
     @Published var pulseIsActive = false
     @Published var dataTransferMessage: String?
+    @Published var practiceTimer = PracticeTimer(durationSeconds: 600)
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
     private var library = MetronomeLibrary.defaultLibrary()
     private var tapTimes: [Date] = []
     private var pulseResetTask: Task<Void, Never>?
+    private var practiceTickerTask: Task<Void, Never>?
 
     init(
         audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine(),
@@ -820,6 +881,50 @@ final class MainMetronomeViewModel: ObservableObject {
             activeSetlist = library.activeSetlist
             await saveLibrarySnapshot()
         } catch {
+        }
+    }
+
+    func togglePracticeTimer() {
+        if practiceTimer.isRunning {
+            practiceTimer.pause()
+            practiceTickerTask?.cancel()
+            practiceTickerTask = nil
+            return
+        }
+
+        practiceTimer.start()
+        startPracticeTicker()
+    }
+
+    func resetPracticeTimer() {
+        practiceTickerTask?.cancel()
+        practiceTickerTask = nil
+        practiceTimer.reset()
+    }
+
+    func setPracticeDuration(minutes: Int) {
+        practiceTickerTask?.cancel()
+        practiceTickerTask = nil
+        practiceTimer.selectDuration(seconds: minutes * 60)
+    }
+
+    private func startPracticeTicker() {
+        practiceTickerTask?.cancel()
+        practiceTickerTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                if Task.isCancelled {
+                    return
+                }
+
+                await MainActor.run {
+                    self?.practiceTimer.tick()
+                    if self?.practiceTimer.isRunning == false {
+                        self?.practiceTickerTask?.cancel()
+                        self?.practiceTickerTask = nil
+                    }
+                }
+            }
         }
     }
 
