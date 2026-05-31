@@ -1,0 +1,19 @@
+# Xcode
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Package.resolved
+
+# macOS
+.DS_Store
+
+# Generated audio artifacts
+Audio/Generated/
+Docs/Provenance/render-log-*.md
+Docs/Provenance/asset-hashes.csv
