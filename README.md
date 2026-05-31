@@ -33,8 +33,9 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Generated app project includes background audio mode for lock-screen practice/live use
 - Local JSON persistence for selected pattern, pattern library, and setlists
 - Bounded local library snapshots before overwrites/imports
+- Latest local library snapshot restore
 - Versioned local library export/import support
-- Settings Data controls for library export/import
+- Settings Data controls for library export/import and latest snapshot restore
 - XCTest coverage for model and scheduler behavior
 - Accessibility-first UI and docs
 

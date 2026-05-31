@@ -6,7 +6,7 @@
 - Research-backed product and architecture docs exist under `Docs`.
 - Core rhythm models are implemented in `Sources/RhythmModel`.
 - Audio engine protocols and the AVFoundation click engine are in `Sources/AudioEngine`.
-- Local JSON persistence and bounded library snapshots live in `Sources/Persistence`.
+- Local JSON persistence, bounded library snapshots, and latest snapshot restore live in `Sources/Persistence`.
 - The generated app target includes the background audio mode.
 - XCTest coverage exists for rhythm models, audio scheduling, persistence, and practice timer behavior.
 - SwiftUI app UI exists under `App` with Play, Edit, Patterns, Setlist, and Settings tabs.

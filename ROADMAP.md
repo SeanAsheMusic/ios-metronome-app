@@ -10,6 +10,7 @@
 - Direct numeric BPM entry.
 - Local export/import bundles.
 - Bounded local library snapshots.
+- Latest local snapshot restore.
 - Sound family picker with synthesized presets.
 - Clave and bossa groove template foundation.
 - Background audio app mode.

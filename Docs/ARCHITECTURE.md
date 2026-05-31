@@ -18,7 +18,7 @@
 | `App` | SwiftUI app entry and performance play screen. |
 | `PatternEditor` | Future beat/accent/grouping editing views. |
 | `Setlists` | Future setlist library and reorder workflows. |
-| `Persistence` | Future local store, migration, snapshots, export/import. |
+| `Persistence` | Local store, migration boundary, snapshots, latest snapshot restore, and export/import. |
 | `SoundLibrary` | Synthesized click preset notes and provenance manifest. |
 | `Practice` | Practice timers, future mute trainers, tempo ladders, and local-only analytics. |
 | `RhythmModel.GrooveTemplate` | Built-in 16-step clave and bossa template foundation for future lane-based groove modes. |
@@ -31,4 +31,4 @@ SwiftUI views should read observable app state, mutate domain models through foc
 
 ## Persistence Direction
 
-Patterns, songs, profiles, setlists, attachments, practice sessions, and preferences should be stored locally with explicit schema versions. Export/import should be designed before optional iCloud so users always have account-free recovery.
+Patterns, songs, profiles, setlists, attachments, practice sessions, and preferences should be stored locally with explicit schema versions. Latest snapshot restore and export/import should exist before optional iCloud so users always have account-free recovery.

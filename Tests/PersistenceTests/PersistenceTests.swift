@@ -210,6 +210,37 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(snapshots.count, 2)
     }
 
+    func testStoreRestoreLatestSnapshotReplacesCurrentLibrary() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        var originalLibrary = MetronomeLibrary.defaultLibrary()
+        var originalPattern = originalLibrary.selectedPattern
+        originalPattern.bpm = 72
+        originalLibrary.updateSelectedPattern(originalPattern)
+
+        var updatedLibrary = originalLibrary
+        var updatedPattern = updatedLibrary.selectedPattern
+        updatedPattern.bpm = 180
+        updatedLibrary.updateSelectedPattern(updatedPattern)
+
+        try await store.save(originalLibrary)
+        try await store.save(updatedLibrary)
+
+        let restoredLibrary = try await store.restoreLatestSnapshot()
+
+        XCTAssertEqual(restoredLibrary?.selectedPattern.bpm, 72)
+        XCTAssertEqual(try await store.load().selectedPattern.bpm, 72)
+    }
+
+    func testStoreRestoreLatestSnapshotReturnsNilWhenMissing() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+
+        let restoredLibrary = try await store.restoreLatestSnapshot()
+
+        XCTAssertNil(restoredLibrary)
+    }
+
     func testStoreExportsPortableLibraryDocument() async throws {
         let fileURL = temporaryFileURL()
         let store = MetronomeLibraryStore(fileURL: fileURL)

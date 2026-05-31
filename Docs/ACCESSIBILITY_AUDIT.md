@@ -17,7 +17,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 | Edit | Implemented in source | Pattern name, meter, subdivision, and beat accent controls are labeled. Beat buttons announce the beat number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, and groove template creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, and remove controls have labels that include the affected item title. |
-| Settings | Implemented in source | Click preset, volume, accent boost, audio output status, refresh, export, import, and import/export result messages have labels. |
+| Settings | Implemented in source | Click preset, volume, accent boost, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
 | Dynamic Type | Source likely supports core flow | Most controls use SwiftUI text styles, flexible frames, scroll views, and minimum scale factors. Needs simulator/device verification at largest accessibility sizes. |
 | Touch targets | Implemented in source | Primary controls, beat cells, pattern actions, groove buttons, practice presets, settings refresh, and setlist reorder/remove controls are at least 44 pt in source. |
 | Color and contrast | Source likely supports | System colors and semantic secondary/accent colors are used. Needs high-contrast and dark-mode visual review. |
@@ -62,7 +62,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 ### Settings
 
-- Sound preset, master volume, accent boost, audio output status, refresh, export, and import controls are labeled.
+- Sound preset, master volume, accent boost, audio output status, refresh, export, import, and latest snapshot restore controls are labeled.
 - Audio output status combines route name, latency risk, and guidance message for VoiceOver users.
 - Import/export result messages are labeled when visible.
 

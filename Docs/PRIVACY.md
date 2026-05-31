@@ -20,7 +20,7 @@ Patterns, setlists, preferences, and future practice logs should remain on devic
 
 ## Current Storage
 
-The current app stores the local library as `MetronomeLibrary.json` in the app documents directory. It also keeps bounded local JSON snapshots in `MetronomeLibrarySnapshots` before overwrites and imports. These files contain saved patterns, setlists, selected pattern ID, and audio settings. No network transfer is implemented.
+The current app stores the local library as `MetronomeLibrary.json` in the app documents directory. It also keeps bounded local JSON snapshots in `MetronomeLibrarySnapshots` before overwrites and imports, and Settings can restore the latest local snapshot. These files contain saved patterns, setlists, selected pattern ID, and audio settings. No network transfer is implemented.
 
 ## Privacy Manifest
 

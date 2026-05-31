@@ -258,6 +258,18 @@ public actor MetronomeLibraryStore {
         return library
     }
 
+    public func restoreLatestSnapshot() throws -> MetronomeLibrary? {
+        guard let latestSnapshotURL = try snapshotFileURLs().first else {
+            return nil
+        }
+
+        let data = try Data(contentsOf: latestSnapshotURL)
+        let library = try decoder.decode(MetronomeLibrary.self, from: data)
+        try validate(library)
+        try save(library)
+        return library
+    }
+
     public func snapshotFileURLs() throws -> [URL] {
         guard FileManager.default.fileExists(atPath: snapshotDirectoryURL.path) else {
             return []

@@ -11,6 +11,7 @@ struct MainMetronomeView: View {
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
+    @State private var isConfirmingSnapshotRestore = false
 
     var body: some View {
         TabView {
@@ -62,6 +63,16 @@ struct MainMetronomeView: View {
         }
         .fullScreenCover(isPresented: $isShowingStagePulse) {
             StagePulseView(viewModel: viewModel)
+        }
+        .alert("Restore Latest Snapshot", isPresented: $isConfirmingSnapshotRestore) {
+            Button("Restore", role: .destructive) {
+                Task {
+                    await viewModel.restoreLatestLibrarySnapshot()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This replaces the current library with the most recent local snapshot. The current library is snapshotted first.")
         }
     }
 
@@ -242,6 +253,15 @@ struct MainMetronomeView: View {
                         .buttonStyle(.bordered)
                         .accessibilityLabel("Import library")
                     }
+
+                    Button {
+                        isConfirmingSnapshotRestore = true
+                    } label: {
+                        Label("Restore Latest Snapshot", systemImage: "arrow.uturn.backward")
+                            .frame(maxWidth: .infinity, minHeight: 48)
+                    }
+                    .buttonStyle(.bordered)
+                    .accessibilityLabel("Restore latest local library snapshot")
 
                     if let message = viewModel.dataTransferMessage {
                         Text(message)
@@ -1407,6 +1427,26 @@ final class MainMetronomeViewModel: ObservableObject {
             dataTransferMessage = "Library imported."
         } catch {
             dataTransferMessage = "Import failed."
+        }
+    }
+
+    func restoreLatestLibrarySnapshot() async {
+        guard let libraryStore else {
+            dataTransferMessage = "No local snapshots available."
+            return
+        }
+
+        do {
+            guard let restoredLibrary = try await libraryStore.restoreLatestSnapshot() else {
+                dataTransferMessage = "No local snapshots available."
+                return
+            }
+
+            await stopTransport()
+            await applyLibrary(restoredLibrary)
+            dataTransferMessage = "Latest local snapshot restored."
+        } catch {
+            dataTransferMessage = "Snapshot restore failed."
         }
     }
 
