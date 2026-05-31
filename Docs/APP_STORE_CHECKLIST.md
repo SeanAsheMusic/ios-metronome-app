@@ -35,6 +35,8 @@ The app target includes `PrivacyInfo.xcprivacy` with no tracking, no collected d
 
 ## TestFlight
 
+Use `Docs/DEVICE_VALIDATION_RUNBOOK.md` for the detailed pass/fail matrix and evidence to collect.
+
 - Smoke test install, cold launch, play screen, pattern defaults, setlist ordering.
 - Accessibility pass with VoiceOver, Dynamic Type, Reduce Motion, and high contrast.
 - Background audio smoke test with screen locked and app backgrounded.

@@ -11,11 +11,12 @@
 - XCTest coverage exists for rhythm models, audio scheduling, persistence, and practice timer behavior.
 - SwiftUI app UI exists under `App` with Play, Edit, Patterns, Setlist, and Settings tabs.
 - `Docs/ACCESSIBILITY_AUDIT.md` records the source-level accessibility pass and the remaining device checklist.
+- `Docs/DEVICE_VALIDATION_RUNBOOK.md` records the full device-validation pass/fail matrix.
 - `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, `Persistence`, and test targets.
 
 ## Next Engineering Task
 
-Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes, and test playback plus the accessibility checklist on a real device and representative simulators.
+Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes, and execute `Docs/DEVICE_VALIDATION_RUNBOOK.md` on real devices and representative simulators.
 
 ## Do Not Do Next
 

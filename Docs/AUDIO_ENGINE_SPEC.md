@@ -53,6 +53,8 @@ Haptics and visuals are follower channels. They should subscribe to scheduled be
 
 The audio module includes `AudioTimingRecorder` and `AudioTimingSummary` so device runs can capture scheduled-vs-observed host-time offset and peak-to-peak jitter while playback is running.
 
+Use `Docs/DEVICE_VALIDATION_RUNBOOK.md` to record device, route, timing summary, and pass/fail evidence.
+
 - Ten-minute drift tests at 40, 120, and 240 BPM.
 - Tempo-change transition tests.
 - Start-to-first-click latency tests.
