@@ -10,12 +10,13 @@
 - The generated app target includes the background audio mode.
 - XCTest coverage exists for rhythm models, audio scheduling, persistence, and practice timer behavior.
 - SwiftUI app UI exists under `App` with Play, Edit, Patterns, Setlist, and Settings tabs.
+- `Docs/ACCESSIBILITY_AUDIT.md` records the source-level accessibility pass and the remaining device checklist.
 - `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, `Persistence`, and test targets.
 
 ## Next Engineering Task
 
-Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes, and test playback on a real device plus representative simulators.
+Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the shared schemes, and test playback plus the accessibility checklist on a real device and representative simulators.
 
 ## Do Not Do Next
 
-Do not start with tuner, accounts, cloud sync, subscriptions, ads, Apple Watch, Ableton Link, or MIDI. The next valuable work is full Xcode/device validation, timing measurement, and polish on the core metronome flows.
+Do not start with tuner, accounts, cloud sync, subscriptions, ads, Apple Watch, Ableton Link, or MIDI. The next valuable work is full Xcode/device validation, timing measurement, accessibility verification, and polish on the core metronome flows.

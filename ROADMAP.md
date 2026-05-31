@@ -16,12 +16,13 @@
 - Fullscreen visual pulse mode.
 - Audible count-in.
 - Audio timing measurement harness.
-- Accessibility audit.
+- Source-level accessibility audit.
 
 ## V1.1
 
 - Pattern editor with per-beat accent/mute controls.
 - Exportable click-render verification assets.
+- Device VoiceOver and Accessibility Inspector audit.
 - Full clave mode.
 
 ## Later

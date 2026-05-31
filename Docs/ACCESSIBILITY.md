@@ -9,6 +9,10 @@
 - Reduce Motion support for pulse animation; the visual pulse no longer scales or animates when Reduce Motion is enabled.
 - Future beat grid controls must expose beat number, subdivision position, accent level, and muted state.
 
+## Current Audit
+
+The current source-level audit lives in `Docs/ACCESSIBILITY_AUDIT.md`. It records implemented accessibility labels and source-level layout support while separating that work from the remaining Accessibility Inspector, VoiceOver, Dynamic Type, high-contrast, and physical-device verification.
+
 ## Product Position
 
 Accessibility is a differentiator. Several competitors either do not declare accessibility features or expose uneven support. This app should let musicians operate the core metronome without visual precision or tiny controls.

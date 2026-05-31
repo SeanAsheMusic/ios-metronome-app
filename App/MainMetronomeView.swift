@@ -201,7 +201,7 @@ struct MainMetronomeView: View {
                             } label: {
                                 Label("Refresh", systemImage: "arrow.clockwise")
                                     .labelStyle(.iconOnly)
-                                    .frame(width: 40, height: 40)
+                                    .frame(width: 44, height: 44)
                             }
                             .buttonStyle(.bordered)
                             .accessibilityLabel("Refresh audio output")
@@ -298,7 +298,7 @@ struct MainMetronomeView: View {
                     }
                 } label: {
                     Label("Set", systemImage: "checkmark")
-                        .frame(minWidth: 72, minHeight: 40)
+                        .frame(minWidth: 72, minHeight: 44)
                 }
                 .buttonStyle(.bordered)
                 .accessibilityLabel("Set tempo")
@@ -471,7 +471,7 @@ struct MainMetronomeView: View {
             viewModel.setPracticeDuration(minutes: minutes)
         }
         .font(.subheadline.weight(.semibold))
-        .frame(maxWidth: .infinity, minHeight: 40)
+        .frame(maxWidth: .infinity, minHeight: 44)
         .buttonStyle(.bordered)
         .accessibilityLabel("Set practice timer to \(minutes) minutes")
     }
@@ -598,7 +598,7 @@ struct MainMetronomeView: View {
                                 Text(template.displayName)
                                     .font(.caption.weight(.semibold))
                                     .lineLimit(1)
-                                    .frame(width: 126, height: 40)
+                                    .frame(width: 126, height: 44)
                             }
                             .buttonStyle(.bordered)
                             .accessibilityLabel("Add \(template.displayName) groove")
@@ -709,7 +709,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label("Earlier", systemImage: "chevron.left")
                         .labelStyle(.iconOnly)
-                        .frame(width: 34, height: 34)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.bordered)
                 .disabled(offset == 0)
@@ -722,7 +722,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label("Later", systemImage: "chevron.right")
                         .labelStyle(.iconOnly)
-                        .frame(width: 34, height: 34)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.bordered)
                 .disabled(offset == viewModel.activeSetlist.items.count - 1)
@@ -735,7 +735,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label("Remove", systemImage: "trash")
                         .labelStyle(.iconOnly)
-                        .frame(width: 34, height: 34)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.bordered)
                 .tint(.red)
