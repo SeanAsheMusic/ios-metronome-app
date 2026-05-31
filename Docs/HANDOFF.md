@@ -7,11 +7,12 @@
 - Core rhythm models are implemented in `Sources/RhythmModel`.
 - Audio engine protocols are in `Sources/AudioEngine`.
 - XCTest coverage exists in `Tests/RhythmModelTests`.
-- SwiftUI app skeleton exists under `App` and is ready to add to an Xcode iOS target.
+- SwiftUI app skeleton exists under `App`.
+- `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, and `RhythmModelTests` targets.
 
 ## Next Engineering Task
 
-Create a real Xcode iOS app target that links `RhythmModel` and `AudioEngine`, adds the files under `App`, configures iOS 17+ deployment, and enables background audio only when the AVFoundation implementation is ready.
+Open `Metronome.xcodeproj` in Xcode, set the Apple development team, run the `RhythmModelTests` target, and then start the AVFoundation timing prototype with measurement hooks.
 
 ## Do Not Do Next
 

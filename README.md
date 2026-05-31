@@ -33,10 +33,14 @@ Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sh
 
 ## Build And Test
 
-This environment has Swift but not a full active Xcode installation. The compile-tested layer is a Swift package:
+The repository includes a generated Xcode project and a Swift package manifest.
+
+```sh
+xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+This environment has Swift but not a full active Xcode installation, so local test execution currently needs Xcode selected. The model package can also be tested with:
 
 ```sh
 swift test
 ```
-
-To turn the `App` folder into a runnable iOS target, open the folder in Xcode, create a SwiftUI iOS app target, add the files under `App`, and link the local `RhythmModel` and `AudioEngine` package targets.
