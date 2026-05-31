@@ -17,3 +17,7 @@ Optional iCloud sync may be considered later, but it must be additive. The app s
 ## Data Handling
 
 Patterns, setlists, preferences, and future practice logs should remain on device by default. If export/import is implemented, exported files should be user-initiated and human-recoverable where practical.
+
+## Current Storage
+
+The current app stores the local library as `MetronomeLibrary.json` in the app documents directory. It contains saved patterns, setlists, selected pattern ID, and audio settings. No network transfer is implemented.

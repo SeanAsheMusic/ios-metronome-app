@@ -7,6 +7,8 @@ require 'fileutils'
 PROJECT_NAME = 'Metronome'
 PROJECT_PATH = "#{PROJECT_NAME}.xcodeproj"
 DEPLOYMENT_TARGET = '17.0'
+MARKETING_VERSION = '0.1.0'
+CURRENT_PROJECT_VERSION = '1'
 
 FileUtils.rm_rf(PROJECT_PATH)
 
@@ -89,6 +91,8 @@ end
     config.build_settings['CODE_SIGN_STYLE'] = 'Automatic'
     config.build_settings['DEVELOPMENT_TEAM'] = ''
     config.build_settings['GENERATE_INFOPLIST_FILE'] = 'YES'
+    config.build_settings['MARKETING_VERSION'] = MARKETING_VERSION
+    config.build_settings['CURRENT_PROJECT_VERSION'] = CURRENT_PROJECT_VERSION
   end
 end
 
@@ -106,7 +110,16 @@ end
 
 app_target.build_configurations.each do |config|
   config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.seanashe.metronome'
+  config.build_settings['PRODUCT_NAME'] = 'Pulsecraft'
+  config.build_settings['INFOPLIST_KEY_CFBundleDisplayName'] = 'Pulsecraft'
+  config.build_settings['INFOPLIST_KEY_LSApplicationCategoryType'] = 'public.app-category.music'
+  config.build_settings['INFOPLIST_KEY_NSHumanReadableCopyright'] = 'Copyright © 2026 Sean Ashe Music'
+  config.build_settings['INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents'] = 'YES'
+  config.build_settings['INFOPLIST_KEY_UILaunchScreen_Generation'] = 'YES'
+  config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations'] = 'UIInterfaceOrientationPortrait'
+  config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad'] = 'UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight'
   config.build_settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
+  config.build_settings['ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'] = 'AccentColor'
 end
 
 rhythm_tests_target.build_configurations.each do |config|

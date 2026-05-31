@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- App name placeholder: `Pulsecraft`, `Stage Click`, or `Professional Metronome`.
+- App name: `Pulsecraft`.
 - Subtitle ideas: `Precision practice, no account`, `Stage-ready rhythm tools`, `A serious metronome for musicians`.
 - Category: Music.
 - Age rating: likely 4+ unless future user-generated sharing changes content risk.
@@ -13,7 +13,7 @@
 - Pattern accents/subdivisions.
 - Setlist ordering.
 - Accessibility-friendly large text or high-contrast example.
-- Future synthesized sound selection once implemented.
+- Synthesized sound selection.
 
 ## App Preview Ideas
 

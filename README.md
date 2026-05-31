@@ -1,4 +1,4 @@
-# iOS Metronome App
+# Pulsecraft
 
 A native SwiftUI metronome foundation for serious musicians, educators, drummers, guitarists, performers, and students.
 
