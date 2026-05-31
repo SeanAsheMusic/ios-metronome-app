@@ -4,7 +4,7 @@ Setlist workflow has started on the main play screen.
 
 Current behavior:
 
-- Add the selected pattern to the active setlist.
+- Add the selected pattern to the active setlist from the Setlist tab.
 - Select a setlist item to make its pattern active.
 - Move setlist items earlier or later.
 - Remove setlist items.

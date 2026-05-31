@@ -7,25 +7,82 @@ struct MainMetronomeView: View {
     @StateObject private var viewModel = MainMetronomeViewModel()
 
     var body: some View {
+        TabView {
+            playTab
+                .tabItem {
+                    Label("Play", systemImage: "metronome")
+                }
+
+            editTab
+                .tabItem {
+                    Label("Edit", systemImage: "slider.horizontal.3")
+                }
+
+            libraryTab
+                .tabItem {
+                    Label("Patterns", systemImage: "music.note.list")
+                }
+
+            setlistTab
+                .tabItem {
+                    Label("Setlist", systemImage: "list.bullet.rectangle")
+                }
+        }
+        .preferredColorScheme(.dark)
+        .task {
+            await viewModel.prepare()
+        }
+    }
+
+    private var playTab: some View {
         VStack(spacing: 24) {
             header
             bpmDisplay
             transportControls
             tempoControls
             patternSummary
-            patternEditor
-            patternLibrary
-            setlistPanel
             visualPulse
             Spacer(minLength: 0)
         }
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
-        .preferredColorScheme(.dark)
-        .task {
-            await viewModel.prepare()
+    }
+
+    private var editTab: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                header
+                patternEditor
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
         }
+        .background(Color(.systemBackground))
+    }
+
+    private var libraryTab: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                header
+                patternLibrary
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(.systemBackground))
+    }
+
+    private var setlistTab: some View {
+        ScrollView {
+            VStack(spacing: 20) {
+                header
+                setlistPanel
+            }
+            .padding(24)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(.systemBackground))
     }
 
     private var header: some View {
@@ -207,6 +264,20 @@ struct MainMetronomeView: View {
                 Text("Patterns")
                     .font(.headline)
                 Spacer()
+                Button {
+                    Task {
+                        await viewModel.deleteCurrentPattern()
+                    }
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(.bordered)
+                .tint(.red)
+                .disabled(!viewModel.canDeleteCurrentPattern)
+                .accessibilityLabel("Delete current pattern")
+
                 Button {
                     Task {
                         await viewModel.duplicateCurrentPattern()
@@ -543,6 +614,28 @@ final class MainMetronomeViewModel: ObservableObject {
         do {
             let duplicate = try library.duplicateSelectedPattern()
             pattern = duplicate
+            patternNameDraft = pattern.name
+            patterns = library.patterns
+            activeSetlist = library.activeSetlist
+            tapTimes.removeAll()
+            try await audioEngine.prepare(pattern: pattern)
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    var canDeleteCurrentPattern: Bool {
+        patterns.count > 1
+    }
+
+    func deleteCurrentPattern() async {
+        guard canDeleteCurrentPattern else {
+            return
+        }
+
+        do {
+            try library.deletePattern(id: pattern.id)
+            pattern = library.selectedPattern
             patternNameDraft = pattern.name
             patterns = library.patterns
             activeSetlist = library.activeSetlist

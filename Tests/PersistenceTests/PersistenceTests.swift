@@ -69,6 +69,16 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(library.patterns.count, 2)
     }
 
+    func testLibraryDeletePatternRemovesSetlistReferences() throws {
+        var library = MetronomeLibrary.defaultLibrary()
+        let deletedID = library.selectedPatternID
+        library.appendSelectedPatternToActiveSetlist()
+
+        try library.deletePattern(id: deletedID)
+
+        XCTAssertFalse(library.activeSetlist.items.contains { $0.patternID == deletedID })
+    }
+
     func testLibraryDoesNotDeleteLastPattern() throws {
         var library = MetronomeLibrary.defaultLibrary()
         for pattern in library.patterns.dropFirst() {

@@ -271,6 +271,11 @@ public struct Setlist: Identifiable, Codable, Equatable, Sendable {
         items = Setlist.normalize(items)
     }
 
+    public mutating func removeItems(for patternID: Pattern.ID) {
+        items.removeAll { $0.patternID == patternID }
+        items = Setlist.normalize(items)
+    }
+
     public mutating func move(from source: Int, to destination: Int) throws {
         guard items.indices.contains(source), destination >= 0, destination <= items.count else {
             throw MetronomeValidationError.invalidSetlistMove

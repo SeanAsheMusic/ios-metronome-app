@@ -76,6 +76,9 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         }
 
         patterns.removeAll { $0.id == id }
+        for index in setlists.indices {
+            setlists[index].removeItems(for: id)
+        }
         if selectedPatternID == id || !patterns.contains(where: { $0.id == selectedPatternID }) {
             selectedPatternID = patterns[0].id
         }
