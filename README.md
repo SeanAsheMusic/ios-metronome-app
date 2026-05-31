@@ -26,6 +26,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Large performance SwiftUI play surface wired to playback state
 - Visual pulse driven by scheduled beat events
 - Reduce Motion-aware visual pulse
+- Full-screen stage pulse mode
 - Synthesized click engine foundation using AVFoundation
 - Generated app project includes background audio mode for lock-screen practice/live use
 - Local JSON persistence for selected pattern, pattern library, and setlists

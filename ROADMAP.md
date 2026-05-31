@@ -13,13 +13,13 @@
 - Sound family picker with synthesized presets.
 - Clave and bossa groove template foundation.
 - Background audio app mode.
+- Fullscreen visual pulse mode.
 - Physical-device audio measurement harness.
 - Accessibility audit.
 
 ## V1.1
 
 - Pattern editor with per-beat accent/mute controls.
-- Fullscreen visual pulse modes.
 - Count-in.
 - Exportable click-render verification assets.
 - Full clave mode.

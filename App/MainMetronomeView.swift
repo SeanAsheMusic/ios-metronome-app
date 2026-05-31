@@ -10,6 +10,7 @@ struct MainMetronomeView: View {
     @State private var exportDocument = LibraryExportDocument(data: Data())
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
+    @State private var isShowingStagePulse = false
 
     var body: some View {
         TabView {
@@ -59,6 +60,9 @@ struct MainMetronomeView: View {
                 await viewModel.handleImportResult(result)
             }
         }
+        .fullScreenCover(isPresented: $isShowingStagePulse) {
+            StagePulseView(viewModel: viewModel)
+        }
     }
 
     private var playTab: some View {
@@ -71,6 +75,7 @@ struct MainMetronomeView: View {
                 patternSummary
                 practicePanel
                 visualPulse
+                stagePulseButton
             }
             .padding(24)
             .frame(maxWidth: .infinity)
@@ -719,6 +724,17 @@ struct MainMetronomeView: View {
             .accessibilityLabel("Visual pulse")
             .accessibilityValue(viewModel.pulseIsActive ? "Active" : (reduceMotion ? "Inactive, reduced motion" : "Inactive"))
     }
+
+    private var stagePulseButton: some View {
+        Button {
+            isShowingStagePulse = true
+        } label: {
+            Label("Stage", systemImage: "rectangle.expand.vertical")
+                .frame(maxWidth: .infinity, minHeight: 48)
+        }
+        .buttonStyle(.bordered)
+        .accessibilityLabel("Open stage pulse")
+    }
 }
 
 @MainActor
@@ -1287,6 +1303,65 @@ final class MainMetronomeViewModel: ObservableObject {
 
 #Preview {
     MainMetronomeView()
+}
+
+struct StagePulseView: View {
+    @ObservedObject var viewModel: MainMetronomeViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        GeometryReader { proxy in
+            let diameter = min(max(min(proxy.size.width, proxy.size.height) * 0.58, 180), 520)
+
+            ZStack(alignment: .topTrailing) {
+                Color(.systemBackground)
+                    .ignoresSafeArea()
+
+                VStack(spacing: 24) {
+                    Spacer(minLength: 24)
+
+                    VStack(spacing: 8) {
+                        Text(viewModel.pattern.name)
+                            .font(.title2.weight(.semibold))
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .minimumScaleFactor(0.75)
+
+                        Text("\(viewModel.pattern.bpm) BPM · \(viewModel.pattern.meter.displayName)")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 24)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Pattern \(viewModel.pattern.name), \(viewModel.pattern.bpm) beats per minute, meter \(viewModel.pattern.meter.displayName)")
+
+                    Circle()
+                        .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.24))
+                        .frame(width: diameter, height: diameter)
+                        .scaleEffect(reduceMotion ? 1.0 : (viewModel.pulseIsActive ? 1.0 : 0.72))
+                        .animation(reduceMotion ? nil : .snappy(duration: 0.18), value: viewModel.pulseIsActive)
+                        .accessibilityLabel("Stage visual pulse")
+                        .accessibilityValue(viewModel.pulseIsActive ? "Active" : (reduceMotion ? "Inactive, reduced motion" : "Inactive"))
+
+                    Spacer(minLength: 24)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Button {
+                    dismiss()
+                } label: {
+                    Label("Close", systemImage: "xmark")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 48, height: 48)
+                }
+                .buttonStyle(.bordered)
+                .padding(20)
+                .accessibilityLabel("Close stage pulse")
+            }
+        }
+        .preferredColorScheme(.dark)
+    }
 }
 
 struct LibraryExportDocument: FileDocument {

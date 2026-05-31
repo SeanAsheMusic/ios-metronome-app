@@ -31,6 +31,7 @@ The Swift package includes XCTest coverage for:
 - Direct BPM entry uses the same 30-300 validation as button and tap-tempo changes.
 - Clave and bossa groove templates, including 16-step scheduling intervals and muted steps.
 - Visual pulse respects the Reduce Motion environment setting.
+- Full-screen stage pulse follows the same playback pulse state.
 
 Run with:
 

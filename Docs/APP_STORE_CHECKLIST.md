@@ -9,7 +9,7 @@
 
 ## Screenshots
 
-- Large Play screen with BPM and visual pulse.
+- Large Play screen with BPM, visual pulse, and full-screen stage pulse.
 - Pattern accents/subdivisions.
 - Setlist ordering.
 - Accessibility-friendly large text or high-contrast example.
