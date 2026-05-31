@@ -113,6 +113,10 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
     public var soundPreset: ClickSoundPreset
     public var masterGain: Double
     public var accentBoost: Double
+    public var downbeatGain: Double
+    public var beatGain: Double
+    public var subdivisionGain: Double
+    public var cueGain: Double
     public var humanizationAmount: Double
     public var rhythmTrainer: RhythmTrainerSettings
 
@@ -120,12 +124,20 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
         soundPreset: ClickSoundPreset = .classic,
         masterGain: Double = 0.8,
         accentBoost: Double = 1.0,
+        downbeatGain: Double = 1.0,
+        beatGain: Double = 1.0,
+        subdivisionGain: Double = 1.0,
+        cueGain: Double = 1.0,
         humanizationAmount: Double = 0.0,
         rhythmTrainer: RhythmTrainerSettings = RhythmTrainerSettings()
     ) {
         self.soundPreset = soundPreset
         self.masterGain = min(1.0, max(0.0, masterGain))
         self.accentBoost = min(1.5, max(0.5, accentBoost))
+        self.downbeatGain = Self.clampRoleGain(downbeatGain)
+        self.beatGain = Self.clampRoleGain(beatGain)
+        self.subdivisionGain = Self.clampRoleGain(subdivisionGain)
+        self.cueGain = Self.clampRoleGain(cueGain)
         self.humanizationAmount = min(1.0, max(0.0, humanizationAmount))
         self.rhythmTrainer = rhythmTrainer
     }
@@ -138,6 +150,10 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
         case soundPreset
         case masterGain
         case accentBoost
+        case downbeatGain
+        case beatGain
+        case subdivisionGain
+        case cueGain
         case humanizationAmount
         case rhythmTrainer
     }
@@ -148,6 +164,10 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
             soundPreset: try container.decodeIfPresent(ClickSoundPreset.self, forKey: .soundPreset) ?? .classic,
             masterGain: try container.decodeIfPresent(Double.self, forKey: .masterGain) ?? 0.8,
             accentBoost: try container.decodeIfPresent(Double.self, forKey: .accentBoost) ?? 1.0,
+            downbeatGain: try container.decodeIfPresent(Double.self, forKey: .downbeatGain) ?? 1.0,
+            beatGain: try container.decodeIfPresent(Double.self, forKey: .beatGain) ?? 1.0,
+            subdivisionGain: try container.decodeIfPresent(Double.self, forKey: .subdivisionGain) ?? 1.0,
+            cueGain: try container.decodeIfPresent(Double.self, forKey: .cueGain) ?? 1.0,
             humanizationAmount: try container.decodeIfPresent(Double.self, forKey: .humanizationAmount) ?? 0.0,
             rhythmTrainer: try container.decodeIfPresent(RhythmTrainerSettings.self, forKey: .rhythmTrainer) ?? RhythmTrainerSettings()
         )
@@ -158,8 +178,16 @@ public struct MetronomeAudioSettings: Codable, Equatable, Sendable {
         try container.encode(soundPreset, forKey: .soundPreset)
         try container.encode(masterGain, forKey: .masterGain)
         try container.encode(accentBoost, forKey: .accentBoost)
+        try container.encode(downbeatGain, forKey: .downbeatGain)
+        try container.encode(beatGain, forKey: .beatGain)
+        try container.encode(subdivisionGain, forKey: .subdivisionGain)
+        try container.encode(cueGain, forKey: .cueGain)
         try container.encode(humanizationAmount, forKey: .humanizationAmount)
         try container.encode(rhythmTrainer, forKey: .rhythmTrainer)
+    }
+
+    private static func clampRoleGain(_ value: Double) -> Double {
+        min(1.0, max(0.0, value))
     }
 }
 
@@ -822,12 +850,16 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         let profile = ClickProfile.profile(for: settings.soundPreset)
         let masterGain = Float(settings.masterGain)
         let accentBoost = Float(settings.accentBoost)
+        let downbeatGain = Float(settings.downbeatGain)
+        let beatGain = Float(settings.beatGain)
+        let subdivisionGain = Float(settings.subdivisionGain)
+        let cueGain = Float(settings.cueGain)
 
         return [
-            .downbeat: try makeClickBuffer(format: format, frequency: profile.downbeatFrequency, duration: profile.downbeatDuration, gain: min(1.0, profile.downbeatGain * masterGain * accentBoost), decayPower: profile.decayPower),
-            .beat: try makeClickBuffer(format: format, frequency: profile.beatFrequency, duration: profile.beatDuration, gain: profile.beatGain * masterGain, decayPower: profile.decayPower),
-            .subdivision: try makeClickBuffer(format: format, frequency: profile.subdivisionFrequency, duration: profile.subdivisionDuration, gain: profile.subdivisionGain * masterGain, decayPower: profile.decayPower),
-            .cue: try makeClickBuffer(format: format, frequency: profile.cueFrequency, duration: profile.cueDuration, gain: profile.cueGain * masterGain, decayPower: profile.decayPower),
+            .downbeat: try makeClickBuffer(format: format, frequency: profile.downbeatFrequency, duration: profile.downbeatDuration, gain: min(1.0, profile.downbeatGain * masterGain * accentBoost * downbeatGain), decayPower: profile.decayPower),
+            .beat: try makeClickBuffer(format: format, frequency: profile.beatFrequency, duration: profile.beatDuration, gain: profile.beatGain * masterGain * beatGain, decayPower: profile.decayPower),
+            .subdivision: try makeClickBuffer(format: format, frequency: profile.subdivisionFrequency, duration: profile.subdivisionDuration, gain: profile.subdivisionGain * masterGain * subdivisionGain, decayPower: profile.decayPower),
+            .cue: try makeClickBuffer(format: format, frequency: profile.cueFrequency, duration: profile.cueDuration, gain: profile.cueGain * masterGain * cueGain, decayPower: profile.decayPower),
             .muted: try makeClickBuffer(format: format, frequency: 200, duration: 0.004, gain: 0.0)
         ]
     }

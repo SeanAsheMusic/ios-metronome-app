@@ -30,6 +30,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Subdivision editing | Eighth, triplet, and sixteenth subdivision steps can be muted or accented from the editor. | Device note. |
 | Mixed subdivisions | Different subdivisions per beat, including quintuplets, play at the expected spacing. | Device note. |
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
+| Role mixer | Downbeat, beat, subdivision, and count-in cue level controls audibly rebalance the click without changing pattern timing. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
 | Traditional and bell clave feels | Son, rumba, bossa, 6/8 bell, and 12/8 bell templates create playable syncopated patterns. | Device note. |

@@ -183,6 +183,43 @@ struct MainMetronomeView: View {
                         .accessibilityLabel("Accent boost")
                     }
 
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Mixer")
+                            .font(.subheadline.weight(.semibold))
+
+                        mixerSlider(
+                            title: "Downbeat",
+                            value: viewModel.audioSettings.downbeatGain,
+                            accessibilityLabel: "Downbeat level"
+                        ) { value in
+                            await viewModel.updateDownbeatGain(value)
+                        }
+
+                        mixerSlider(
+                            title: "Beat",
+                            value: viewModel.audioSettings.beatGain,
+                            accessibilityLabel: "Beat level"
+                        ) { value in
+                            await viewModel.updateBeatGain(value)
+                        }
+
+                        mixerSlider(
+                            title: "Subdivision",
+                            value: viewModel.audioSettings.subdivisionGain,
+                            accessibilityLabel: "Subdivision level"
+                        ) { value in
+                            await viewModel.updateSubdivisionGain(value)
+                        }
+
+                        mixerSlider(
+                            title: "Count-in",
+                            value: viewModel.audioSettings.cueGain,
+                            accessibilityLabel: "Count-in cue level"
+                        ) { value in
+                            await viewModel.updateCueGain(value)
+                        }
+                    }
+
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Human Feel")
@@ -515,6 +552,36 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, minHeight: 64)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .accessibilityElement(children: .combine)
+    }
+
+    private func mixerSlider(
+        title: String,
+        value: Double,
+        accessibilityLabel: String,
+        update: @escaping (Double) async -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text("\(Int((value * 100).rounded()))%")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+
+            Slider(value: Binding(
+                get: { value },
+                set: { newValue in
+                    Task {
+                        await update(newValue)
+                    }
+                }
+            ), in: 0...1)
+            .accessibilityLabel(accessibilityLabel)
+            .accessibilityValue("\(Int((value * 100).rounded())) percent")
+        }
     }
 
     private func timingMetric(title: String, value: String) -> some View {
@@ -1850,6 +1917,30 @@ final class MainMetronomeViewModel: ObservableObject {
     func updateAccentBoost(_ value: Double) async {
         var settings = audioSettings
         settings.accentBoost = value
+        await updateAudioSettings(settings)
+    }
+
+    func updateDownbeatGain(_ value: Double) async {
+        var settings = audioSettings
+        settings.downbeatGain = value
+        await updateAudioSettings(settings)
+    }
+
+    func updateBeatGain(_ value: Double) async {
+        var settings = audioSettings
+        settings.beatGain = value
+        await updateAudioSettings(settings)
+    }
+
+    func updateSubdivisionGain(_ value: Double) async {
+        var settings = audioSettings
+        settings.subdivisionGain = value
+        await updateAudioSettings(settings)
+    }
+
+    func updateCueGain(_ value: Double) async {
+        var settings = audioSettings
+        settings.cueGain = value
         await updateAudioSettings(settings)
     }
 

@@ -162,7 +162,15 @@ final class PersistenceTests: XCTestCase {
 
     func testLibraryUpdatesAudioSettings() {
         var library = MetronomeLibrary.defaultLibrary()
-        let settings = MetronomeAudioSettings(soundPreset: .wood, masterGain: 0.35, accentBoost: 1.25)
+        let settings = MetronomeAudioSettings(
+            soundPreset: .wood,
+            masterGain: 0.35,
+            accentBoost: 1.25,
+            downbeatGain: 0.9,
+            beatGain: 0.8,
+            subdivisionGain: 0.45,
+            cueGain: 0.6
+        )
 
         library.updateAudioSettings(settings)
 

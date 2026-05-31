@@ -27,10 +27,22 @@ final class AudioEngineTests: XCTestCase {
     }
 
     func testAudioSettingsClampValues() {
-        let settings = MetronomeAudioSettings(masterGain: 2.0, accentBoost: 0.1, humanizationAmount: 2.0)
+        let settings = MetronomeAudioSettings(
+            masterGain: 2.0,
+            accentBoost: 0.1,
+            downbeatGain: 2.0,
+            beatGain: -1.0,
+            subdivisionGain: 1.4,
+            cueGain: -0.2,
+            humanizationAmount: 2.0
+        )
 
         XCTAssertEqual(settings.masterGain, 1.0)
         XCTAssertEqual(settings.accentBoost, 0.5)
+        XCTAssertEqual(settings.downbeatGain, 1.0)
+        XCTAssertEqual(settings.beatGain, 0.0)
+        XCTAssertEqual(settings.subdivisionGain, 1.0)
+        XCTAssertEqual(settings.cueGain, 0.0)
         XCTAssertEqual(settings.humanizationAmount, 1.0)
         XCTAssertEqual(settings.humanizationWarning, "High human feel intentionally makes the click inaccurate.")
     }
@@ -45,8 +57,29 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(settings.soundPreset, .wood)
         XCTAssertEqual(settings.masterGain, 0.5)
         XCTAssertEqual(settings.accentBoost, 1.1)
+        XCTAssertEqual(settings.downbeatGain, 1.0)
+        XCTAssertEqual(settings.beatGain, 1.0)
+        XCTAssertEqual(settings.subdivisionGain, 1.0)
+        XCTAssertEqual(settings.cueGain, 1.0)
         XCTAssertEqual(settings.humanizationAmount, 0.0)
         XCTAssertEqual(settings.rhythmTrainer, RhythmTrainerSettings())
+    }
+
+    func testAudioSettingsEncodeRoleMixerLevels() throws {
+        let settings = MetronomeAudioSettings(
+            downbeatGain: 0.9,
+            beatGain: 0.7,
+            subdivisionGain: 0.4,
+            cueGain: 0.6
+        )
+
+        let data = try JSONEncoder().encode(settings)
+        let decoded = try JSONDecoder().decode(MetronomeAudioSettings.self, from: data)
+
+        XCTAssertEqual(decoded.downbeatGain, 0.9)
+        XCTAssertEqual(decoded.beatGain, 0.7)
+        XCTAssertEqual(decoded.subdivisionGain, 0.4)
+        XCTAssertEqual(decoded.cueGain, 0.6)
     }
 
     func testRhythmTrainerFixedBarsMutesSilentCycle() {

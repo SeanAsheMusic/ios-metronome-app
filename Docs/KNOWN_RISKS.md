@@ -8,6 +8,7 @@
 | App Store signing and physical-device validation are not complete | Simulator builds can pass while device-only issues remain | Set a development team in Xcode, run the shared schemes on hardware, and record results in `Docs/DEVICE_VALIDATION_RUNBOOK.md`. |
 | Bluetooth and AirPlay latency | Users may perceive the click as late | Settings labels wireless routes with a latency warning; measure per route before precision claims. |
 | Audio interruptions and route changes | Playback can stop or restart unexpectedly during calls, Siri, output changes, or media-service resets | The AV engine observes interruptions, route changes, and media-service resets, but physical-device validation is still required. |
+| Role-level mixer can hide essential pulses | Users may accidentally mute the audible reference for a practice pattern | Keep per-step visual editing intact, preserve Settings reset/import recovery, and validate common mixer settings on device. |
 | Over-scoping v1 | Core metronome quality could suffer | Keep tuner, Watch, cloud, MIDI, Link, AI, and analytics deferred. |
 | Accessibility gaps in custom rhythm UI | Beat grids can become unusable with assistive tech | Treat beat cells as labeled controls, test VoiceOver and Dynamic Type early. |
 | Imported/copied click assets | App Review or rights risk | Synthesize all click sounds and keep `SoundLibrary/PROVENANCE.md` updated with source-controlled parameters. |
