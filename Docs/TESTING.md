@@ -24,6 +24,7 @@ The Swift package includes XCTest coverage for:
 - Setlist item add, select, move, and remove operations.
 - Audio settings clamping and persistence.
 - Portable library export/import and raw-library recovery import.
+- Settings data export/import UI plumbing.
 
 Run with:
 

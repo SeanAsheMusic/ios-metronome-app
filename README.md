@@ -23,6 +23,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Synthesized click engine foundation using AVFoundation
 - Local JSON persistence for selected pattern, pattern library, and setlists
 - Versioned local library export/import support
+- Settings Data controls for library export/import
 - XCTest coverage for model and scheduler behavior
 - Accessibility-first UI and docs
 

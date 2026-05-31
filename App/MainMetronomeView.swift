@@ -1,10 +1,14 @@
 import SwiftUI
+import UniformTypeIdentifiers
 import AudioEngine
 import Persistence
 import RhythmModel
 
 struct MainMetronomeView: View {
     @StateObject private var viewModel = MainMetronomeViewModel()
+    @State private var exportDocument = LibraryExportDocument(data: Data())
+    @State private var isExportingLibrary = false
+    @State private var isImportingLibrary = false
 
     var body: some View {
         TabView {
@@ -36,6 +40,23 @@ struct MainMetronomeView: View {
         .preferredColorScheme(.dark)
         .task {
             await viewModel.prepare()
+        }
+        .fileExporter(
+            isPresented: $isExportingLibrary,
+            document: exportDocument,
+            contentType: .json,
+            defaultFilename: "Pulsecraft-Library.json"
+        ) { result in
+            viewModel.handleExportResult(result)
+        }
+        .fileImporter(
+            isPresented: $isImportingLibrary,
+            allowedContentTypes: [.json],
+            allowsMultipleSelection: false
+        ) { result in
+            Task {
+                await viewModel.handleImportResult(result)
+            }
         }
     }
 
@@ -140,6 +161,45 @@ struct MainMetronomeView: View {
                             }
                         ), in: 0.5...1.5)
                         .accessibilityLabel("Accent boost")
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Data")
+                        .font(.headline)
+
+                    HStack(spacing: 12) {
+                        Button {
+                            Task {
+                                if let data = await viewModel.makeLibraryExportData() {
+                                    exportDocument = LibraryExportDocument(data: data)
+                                    isExportingLibrary = true
+                                }
+                            }
+                        } label: {
+                            Label("Export", systemImage: "square.and.arrow.up")
+                                .frame(maxWidth: .infinity, minHeight: 48)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Export library")
+
+                        Button {
+                            isImportingLibrary = true
+                        } label: {
+                            Label("Import", systemImage: "square.and.arrow.down")
+                                .frame(maxWidth: .infinity, minHeight: 48)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Import library")
+                    }
+
+                    if let message = viewModel.dataTransferMessage {
+                        Text(message)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .accessibilityLabel(message)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -547,6 +607,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var audioSettings = MetronomeAudioSettings()
     @Published var isPlaying = false
     @Published var pulseIsActive = false
+    @Published var dataTransferMessage: String?
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -653,6 +714,18 @@ final class MainMetronomeViewModel: ObservableObject {
             try? await libraryStore.save(library)
         }
         try? await audioEngine.updateSettings(audioSettings)
+    }
+
+    private func applyLibrary(_ library: MetronomeLibrary) async {
+        self.library = library
+        pattern = library.selectedPattern
+        patternNameDraft = pattern.name
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        audioSettings = library.audioSettings
+        tapTimes.removeAll()
+        try? await audioEngine.updateSettings(audioSettings)
+        try? await audioEngine.prepare(pattern: pattern)
     }
 
     private func saveSelectedPattern() {
@@ -858,6 +931,67 @@ final class MainMetronomeViewModel: ObservableObject {
         try? await libraryStore.save(library)
     }
 
+    func makeLibraryExportData() async -> Data? {
+        do {
+            let data: Data
+            if let libraryStore {
+                data = try await libraryStore.exportLibrary()
+            } else {
+                let encoder = JSONEncoder()
+                encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+                data = try encoder.encode(MetronomeLibraryExport(library: library))
+            }
+            dataTransferMessage = "Library export ready."
+            return data
+        } catch {
+            dataTransferMessage = "Export failed."
+            return nil
+        }
+    }
+
+    func handleExportResult(_ result: Result<URL, Error>) {
+        switch result {
+        case .success:
+            dataTransferMessage = "Library exported."
+        case .failure:
+            dataTransferMessage = "Export canceled or failed."
+        }
+    }
+
+    func handleImportResult(_ result: Result<[URL], Error>) async {
+        do {
+            guard let url = try result.get().first else {
+                dataTransferMessage = "No import file selected."
+                return
+            }
+
+            let didAccess = url.startAccessingSecurityScopedResource()
+            defer {
+                if didAccess {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
+
+            let data = try Data(contentsOf: url)
+            let importedLibrary: MetronomeLibrary
+            if let libraryStore {
+                importedLibrary = try await libraryStore.importLibrary(from: data)
+            } else {
+                let decoder = JSONDecoder()
+                if let exported = try? decoder.decode(MetronomeLibraryExport.self, from: data) {
+                    importedLibrary = exported.library
+                } else {
+                    importedLibrary = try decoder.decode(MetronomeLibrary.self, from: data)
+                }
+            }
+
+            await applyLibrary(importedLibrary)
+            dataTransferMessage = "Library imported."
+        } catch {
+            dataTransferMessage = "Import failed."
+        }
+    }
+
     private func handleBeat(_: ScheduledBeatEvent) {
         pulseResetTask?.cancel()
         pulseIsActive = true
@@ -873,4 +1007,24 @@ final class MainMetronomeViewModel: ObservableObject {
 
 #Preview {
     MainMetronomeView()
+}
+
+struct LibraryExportDocument: FileDocument {
+    static var readableContentTypes: [UTType] {
+        [.json]
+    }
+
+    var data: Data
+
+    init(data: Data) {
+        self.data = data
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        data = configuration.file.regularFileContents ?? Data()
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
+    }
 }
