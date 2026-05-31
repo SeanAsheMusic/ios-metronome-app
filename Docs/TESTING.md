@@ -1,6 +1,6 @@
 # Testing
 
-## Current Coverage
+## Current Automated Coverage
 
 The Swift package includes XCTest coverage for:
 
@@ -34,7 +34,6 @@ The Swift package includes XCTest coverage for:
 - Full-screen stage pulse follows the same playback pulse state.
 - Audio engine one-shot cue events for count-in.
 - Audio timing summary and bounded timing measurement recorder behavior.
-- Source-level accessibility audit covering Play, Stage Pulse, Edit, Patterns, Setlist, Settings, Reduce Motion, touch targets, and manual verification gaps.
 
 Run with:
 
@@ -53,12 +52,18 @@ swift test
 
 The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, `Persistence`, and `Metronome` schemes. Use the dedicated schemes for module tests once full Xcode is active.
 
+## Current Source Audits
+
+- `Docs/ACCESSIBILITY_AUDIT.md` covers Play, Stage Pulse, Edit, Patterns, Setlist, Settings, Reduce Motion, touch targets, and manual verification gaps.
+- The production AV engine observes audio-session interruptions and route changes, with device validation still required.
+
 ## Future Test Layers
 
 - Rhythm model property tests for odd meters and grouping.
 - Persistence migration tests for every schema version.
 - Audio drift and jitter tests on physical devices using the timing recorder plus external observation where possible.
 - Route-change tests for speaker, wired headphones, Bluetooth, and AirPlay.
+- Interruption tests for phone calls, Siri, Control Center audio, headphones disconnect, and media-service reset.
 - SwiftUI snapshot tests for Dynamic Type, RTL, dark mode, and compact iPhone screens.
 - Accessibility Inspector and on-device VoiceOver flows using `Docs/ACCESSIBILITY_AUDIT.md` as the checklist.
 

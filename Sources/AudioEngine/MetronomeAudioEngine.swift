@@ -137,6 +137,11 @@ public enum AudioLatencyRisk: String, Codable, Equatable, Sendable {
     }
 }
 
+public enum AudioSessionInterruptionEvent: Equatable, Sendable {
+    case began
+    case ended(shouldResume: Bool)
+}
+
 public struct AudioRouteOutput: Codable, Equatable, Sendable {
     public let portType: String
     public let name: String
@@ -319,11 +324,24 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     private var isGraphConfigured = false
     private var settings = MetronomeAudioSettings()
     private let timingRecorder = AudioTimingRecorder()
+#if os(iOS)
+    private var sessionObserverTokens: [NSObjectProtocol] = []
+#endif
+    private var shouldResumeAfterInterruption = false
 
     public init() {}
 
+    deinit {
+#if os(iOS)
+        for token in sessionObserverTokens {
+            NotificationCenter.default.removeObserver(token)
+        }
+#endif
+    }
+
     public func prepare(pattern: Pattern) async throws {
         preparedPattern = pattern
+        installSessionObserversIfNeeded()
 
         if clickBuffers.isEmpty {
             clickBuffers = try makeClickBuffers(settings: settings)
@@ -346,6 +364,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             clickBuffers = try makeClickBuffers(settings: settings)
         }
 
+        installSessionObserversIfNeeded()
         try configureSession()
 
         if !audioEngine.isRunning {
@@ -364,6 +383,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
     }
 
     public func stop() async {
+        shouldResumeAfterInterruption = false
         isRunning = false
         playbackTask?.cancel()
         playbackTask = nil
@@ -378,6 +398,7 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
             clickBuffers = try makeClickBuffers(settings: settings)
         }
 
+        installSessionObserversIfNeeded()
         if !isGraphConfigured {
             try await prepare(pattern: pattern)
         }
@@ -435,6 +456,105 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
 
     public func resetTimingMeasurements() async {
         await timingRecorder.reset()
+    }
+
+    public static func interruptionEvent(from userInfo: [AnyHashable: Any]) -> AudioSessionInterruptionEvent? {
+#if os(iOS)
+        guard
+            let typeRawValue = userInfo[AVAudioSessionInterruptionTypeKey] as? UInt,
+            let type = AVAudioSession.InterruptionType(rawValue: typeRawValue)
+        else {
+            return nil
+        }
+
+        switch type {
+        case .began:
+            return .began
+        case .ended:
+            let optionsRawValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            let options = AVAudioSession.InterruptionOptions(rawValue: optionsRawValue)
+            return .ended(shouldResume: options.contains(.shouldResume))
+        @unknown default:
+            return nil
+        }
+#else
+        return nil
+#endif
+    }
+
+    private func installSessionObserversIfNeeded() {
+#if os(iOS)
+        guard sessionObserverTokens.isEmpty else {
+            return
+        }
+
+        let center = NotificationCenter.default
+        let interruptionToken = center.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: nil
+        ) { [weak self] notification in
+            guard
+                let event = Self.interruptionEvent(from: notification.userInfo ?? [:])
+            else {
+                return
+            }
+            Task {
+                await self?.handleInterruption(event)
+            }
+        }
+
+        let routeChangeToken = center.addObserver(
+            forName: AVAudioSession.routeChangeNotification,
+            object: AVAudioSession.sharedInstance(),
+            queue: nil
+        ) { [weak self] _ in
+            Task {
+                await self?.handleRouteChange()
+            }
+        }
+
+        sessionObserverTokens = [interruptionToken, routeChangeToken]
+#endif
+    }
+
+    private func handleInterruption(_ event: AudioSessionInterruptionEvent) async {
+        switch event {
+        case .began:
+            shouldResumeAfterInterruption = isRunning
+            isRunning = false
+            playbackTask?.cancel()
+            playbackTask = nil
+            player.stop()
+            audioEngine.pause()
+        case let .ended(shouldResume):
+            guard shouldResumeAfterInterruption else {
+                return
+            }
+            shouldResumeAfterInterruption = false
+            guard shouldResume else {
+                return
+            }
+            try? await start()
+        }
+    }
+
+    private func handleRouteChange() async {
+        guard isRunning else {
+            return
+        }
+
+        do {
+            try configureSession()
+            if !audioEngine.isRunning {
+                try audioEngine.start()
+            }
+            if !player.isPlaying {
+                player.play()
+            }
+        } catch {
+            await stop()
+        }
     }
 
     private func runPlaybackLoop() async {
