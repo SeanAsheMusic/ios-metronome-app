@@ -32,6 +32,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
+| Traditional and bell clave feels | Son, rumba, bossa, 6/8 bell, and 12/8 bell templates create playable syncopated patterns. | Device note. |
 | Odd-meter clave feels | 5/8, 7/8, 9/8, and 11/8 Clave Mode templates create playable syncopated patterns. | Device note. |
 | Swing templates | Jazz 2 and 4, swing eighths, shuffle, and half-time shuffle templates play with the expected feel. | Device note. |
 | Polyrhythm templates | 3:2, 3:4, 4:3, 5:4, 5:3, and 7:4 patterns expose the primary and cross pulses clearly. | Device note. |
@@ -106,6 +107,7 @@ Before submission, attach or preserve:
 - Device and iOS version matrix.
 - Test scheme results.
 - Timing summary values.
+- Screenshot or notes from the Settings timing summary after reset and after each run.
 - Accessibility notes and screenshots.
 - Background/interruption notes.
 - Privacy manifest confirmation.

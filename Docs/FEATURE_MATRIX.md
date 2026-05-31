@@ -2,7 +2,7 @@
 
 | Area | Soundbrenner | Tempo | TonalEnergy | Pro Metronome | Our V1 | Priority |
 |---|---|---|---|---|---|---|
-| Core metronome | Strong | Strong | Strong | Strong | Playable foundation | V1 |
+| Core metronome | Strong | Strong | Strong | Strong | Playable AVFoundation foundation | V1 |
 | Large performance UI | Good | Good | Mixed | Stage mode | Match and simplify | V1 |
 | Tap tempo | Yes | Yes | Yes | Yes | Basic recent-tap implementation | V1 |
 | Custom meters | Good | Strong | Good | Good | Foundation | V1 |
@@ -14,8 +14,8 @@
 | No ads/subscription core | Subscription present | Paid app | Paid app | Ads/upsells reported | No ads/no subs | V1 |
 | Tuner | Yes | No | Strong | No | Ignore | Later/no |
 | Practice timer | Yes | Coach modes | Strong | Trainer | Quiet/local only | V1 |
-| Clave/groove modes | Limited | Limited | Limited | Limited | Template foundation | V1 |
-| Gap/random silence | Limited | Coach | Assistant | Trainer | Improve | Later |
+| Clave/groove modes | Limited | Limited | Limited | Limited | Traditional, bell, odd-meter, and mixer template foundation | V1 |
+| Gap/random silence | Limited | Coach | Assistant | Trainer | Fixed and random silent-bar Rhythm Trainer | V1 |
 | MIDI/Link | No/varies | No/varies | No/varies | Link | Defer | Later |
 
 ## Complaint Opportunities

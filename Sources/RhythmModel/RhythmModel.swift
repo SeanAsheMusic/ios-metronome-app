@@ -212,12 +212,16 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
     case bossaClave32
     case bossaClave23
     case bembeBell68
+    case afroCubanBell68
     case fiveEightTwoThree
     case fiveEightThreeTwo
     case sevenEightTwoTwoThree
+    case sevenEightTwoThreeTwo
     case sevenEightThreeTwoTwo
+    case nineEightThreeThreeThree
     case nineEightTwoTwoTwoThree
     case elevenEightThreeThreeTwoThree
+    case twelveEightBell
 
     public var displayName: String {
         switch self {
@@ -228,19 +232,24 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
         case .bossaClave32: "Bossa 3:2"
         case .bossaClave23: "Bossa 2:3"
         case .bembeBell68: "Bembe 6/8"
+        case .afroCubanBell68: "Afro-Cuban 6/8"
         case .fiveEightTwoThree: "5/8 2-3"
         case .fiveEightThreeTwo: "5/8 3-2"
         case .sevenEightTwoTwoThree: "7/8 2-2-3"
+        case .sevenEightTwoThreeTwo: "7/8 2-3-2"
         case .sevenEightThreeTwoTwo: "7/8 3-2-2"
+        case .nineEightThreeThreeThree: "9/8 3-3-3"
         case .nineEightTwoTwoTwoThree: "9/8 2-2-2-3"
         case .elevenEightThreeThreeTwoThree: "11/8 3-3-2-3"
+        case .twelveEightBell: "12/8 Bell"
         }
     }
 
     public var defaultBPM: Int {
         switch self {
         case .bossaClave32, .bossaClave23: 132
-        case .fiveEightTwoThree, .fiveEightThreeTwo, .sevenEightTwoTwoThree, .sevenEightThreeTwoTwo, .nineEightTwoTwoTwoThree, .elevenEightThreeThreeTwoThree: 108
+        case .fiveEightTwoThree, .fiveEightThreeTwo, .sevenEightTwoTwoThree, .sevenEightTwoThreeTwo, .sevenEightThreeTwoTwo, .nineEightThreeThreeThree, .nineEightTwoTwoTwoThree, .elevenEightThreeThreeTwoThree: 108
+        case .twelveEightBell: 92
         default: 96
         }
     }
@@ -249,7 +258,7 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
         switch self {
         case .sonClave32, .sonClave23, .rumbaClave32, .rumbaClave23, .bossaClave32, .bossaClave23:
             .fourFour
-        case .bembeBell68:
+        case .bembeBell68, .afroCubanBell68:
             .sixEight
         case .fiveEightTwoThree:
             try! Meter(beatsPerBar: 5, beatUnit: 8, grouping: [2, 3])
@@ -257,12 +266,18 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
             try! Meter(beatsPerBar: 5, beatUnit: 8, grouping: [3, 2])
         case .sevenEightTwoTwoThree:
             .sevenEight
+        case .sevenEightTwoThreeTwo:
+            try! Meter(beatsPerBar: 7, beatUnit: 8, grouping: [2, 3, 2])
         case .sevenEightThreeTwoTwo:
             try! Meter(beatsPerBar: 7, beatUnit: 8, grouping: [3, 2, 2])
+        case .nineEightThreeThreeThree:
+            try! Meter(beatsPerBar: 9, beatUnit: 8, grouping: [3, 3, 3])
         case .nineEightTwoTwoTwoThree:
             try! Meter(beatsPerBar: 9, beatUnit: 8, grouping: [2, 2, 2, 3])
         case .elevenEightThreeThreeTwoThree:
             try! Meter(beatsPerBar: 11, beatUnit: 8, grouping: [3, 3, 2, 3])
+        case .twelveEightBell:
+            try! Meter(beatsPerBar: 12, beatUnit: 8, grouping: [3, 3, 3, 3])
         }
     }
 
@@ -286,12 +301,16 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
         case .bossaClave32: [0, 3, 6, 10, 13]
         case .bossaClave23: [0, 3, 7, 10, 13]
         case .bembeBell68: [0, 3, 5, 7, 10]
+        case .afroCubanBell68: [0, 3, 6, 8, 10]
         case .fiveEightTwoThree: [0, 3, 6, 8]
         case .fiveEightThreeTwo: [0, 3, 5, 8]
         case .sevenEightTwoTwoThree: [0, 3, 6, 8, 11]
+        case .sevenEightTwoThreeTwo: [0, 3, 6, 9, 11]
         case .sevenEightThreeTwoTwo: [0, 3, 5, 8, 11]
+        case .nineEightThreeThreeThree: [0, 3, 6, 9, 12, 15]
         case .nineEightTwoTwoTwoThree: [0, 3, 6, 9, 12, 15]
         case .elevenEightThreeThreeTwoThree: [0, 3, 6, 10, 13, 16, 19]
+        case .twelveEightBell: [0, 3, 6, 10, 12, 15, 18, 22]
         }
     }
 }

@@ -256,6 +256,48 @@ struct MainMetronomeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 VStack(alignment: .leading, spacing: 14) {
+                    Text("Timing")
+                        .font(.headline)
+
+                    HStack(spacing: 10) {
+                        timingMetric(title: "Samples", value: "\(viewModel.timingSummary.sampleCount)")
+                        timingMetric(title: "Avg Offset", value: viewModel.averageTimingOffsetText)
+                        timingMetric(title: "Jitter", value: viewModel.peakToPeakJitterText)
+                    }
+
+                    HStack(spacing: 12) {
+                        Button {
+                            Task {
+                                await viewModel.refreshTimingSummary()
+                            }
+                        } label: {
+                            Label("Refresh", systemImage: "waveform.path.ecg")
+                                .frame(maxWidth: .infinity, minHeight: 48)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Refresh timing summary")
+
+                        Button {
+                            Task {
+                                await viewModel.resetTimingMeasurements()
+                            }
+                        } label: {
+                            Label("Reset", systemImage: "arrow.counterclockwise")
+                                .frame(maxWidth: .infinity, minHeight: 48)
+                        }
+                        .buttonStyle(.bordered)
+                        .accessibilityLabel("Reset timing measurements")
+                    }
+
+                    Text("Use this only as a device-validation aid. Precision claims still require real-device runs with Human Feel at 0%.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel("Timing validation note. Use this only as a device-validation aid. Precision claims still require real-device runs with Human Feel at 0 percent.")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                VStack(alignment: .leading, spacing: 14) {
                     Text("Data")
                         .font(.headline)
 
@@ -473,6 +515,24 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, minHeight: 64)
         .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
         .accessibilityElement(children: .combine)
+    }
+
+    private func timingMetric(title: String, value: String) -> some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+            Text(value)
+                .font(.headline.monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+        }
+        .frame(maxWidth: .infinity, minHeight: 64)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) \(value)")
     }
 
     private var practicePanel: some View {
@@ -1225,6 +1285,7 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var dataTransferMessage: String?
     @Published var practiceTimer = PracticeTimer(durationSeconds: 600)
     @Published var audioRouteStatus = AudioRouteStatus.status(for: [])
+    @Published var timingSummary = AudioTimingSummary(samples: [])
     @Published var bpmEntryDraft = "\(Pattern.defaultFourFour().bpm)"
     @Published var bpmEntryMessage: String?
     @Published var countInBars = 0
@@ -1855,6 +1916,28 @@ final class MainMetronomeViewModel: ObservableObject {
 
     func refreshAudioRouteStatus() async {
         audioRouteStatus = await audioEngine.currentRouteStatus()
+    }
+
+    func refreshTimingSummary() async {
+        timingSummary = await audioEngine.timingSummary()
+    }
+
+    func resetTimingMeasurements() async {
+        await audioEngine.resetTimingMeasurements()
+        timingSummary = await audioEngine.timingSummary()
+    }
+
+    var averageTimingOffsetText: String {
+        formatNanoseconds(timingSummary.averageOffsetNanoseconds)
+    }
+
+    var peakToPeakJitterText: String {
+        formatNanoseconds(Int64(timingSummary.peakToPeakJitterNanoseconds))
+    }
+
+    private func formatNanoseconds(_ value: Int64) -> String {
+        let milliseconds = Double(value) / 1_000_000.0
+        return String(format: "%.2f ms", milliseconds)
     }
 
     var audioRouteSymbolName: String {

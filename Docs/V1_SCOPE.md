@@ -21,7 +21,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Flattened polyrhythm templates for 3:2, 3:4, 4:3, 5:4, 5:3, and 7:4.
 - Accent levels: strong, normal, ghost, and muted.
 - Explicit per-step accent and mute editing.
-- Full son, rumba, and bossa clave templates backed by a 16-step pattern foundation.
+- Full son, rumba, bossa, 6/8 bell, 12/8 bell, and odd-meter clave templates backed by editable step-pattern foundations.
 - Clave Mode templates for traditional clave and odd-meter feels, with local mixer presets for clave, metronome click, and subdivisions.
 - Pattern defaults for 4/4, 6/8, and 7/8.
 - Stable identifiers for patterns, beats, setlists, and setlist items.
@@ -37,6 +37,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Full-screen stage pulse mode.
 - Accessibility labels and large touch targets.
 - Playable audio engine foundation and scheduling spec.
+- Settings timing summary and reset controls for device validation runs.
 - Exportable click-render verification fixtures.
 - Background audio mode in the generated app target.
 

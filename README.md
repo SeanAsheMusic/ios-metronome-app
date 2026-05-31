@@ -18,7 +18,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Mixed per-beat subdivisions, including triplets, quintuplets, sixteenths, and septuplets
 - Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle templates
 - Flattened polyrhythm templates for 3:2, 3:4, 4:3, 5:4, 5:3, and 7:4
-- Full son, rumba, and bossa clave template set
+- Full son, rumba, bossa, 6/8 bell, 12/8 bell, and odd-meter clave template set
 - Clave Mode with clave-only, click-only, clave-plus-click, and subdivision mixer presets
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved pattern switching, duplication, and groove template creation
@@ -40,6 +40,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Full-screen stage pulse mode
 - Synthesized click engine foundation using AVFoundation
 - Audio timing measurement harness for device validation
+- Settings timing summary and reset controls for device validation runs
 - Generated app project includes background audio mode for lock-screen practice/live use
 - Local JSON persistence for selected pattern, pattern library, and setlists
 - Bounded local library snapshots before overwrites/imports
@@ -75,7 +76,7 @@ xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'p
 xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
-This environment has Swift but not a full active Xcode installation, so local test execution currently needs Xcode selected. The model package can also be tested with:
+This repository has been validated with Swift package tests, Mac Catalyst Xcode tests, and iPhone 17 simulator builds/tests. The model package can also be tested with:
 
 ```sh
 swift test
