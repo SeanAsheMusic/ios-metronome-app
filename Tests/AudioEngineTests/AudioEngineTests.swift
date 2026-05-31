@@ -1,0 +1,63 @@
+import XCTest
+@testable import AudioEngine
+@testable import RhythmModel
+
+final class AudioEngineTests: XCTestCase {
+    func testBeatIntervalUsesTempo() throws {
+        let scheduler = MetronomeScheduler()
+
+        XCTAssertEqual(try scheduler.beatIntervalNanoseconds(for: 60), 1_000_000_000)
+        XCTAssertEqual(try scheduler.beatIntervalNanoseconds(for: 120), 500_000_000)
+        XCTAssertEqual(try scheduler.beatIntervalNanoseconds(for: 240), 250_000_000)
+    }
+
+    func testBeatIntervalRejectsInvalidTempo() {
+        let scheduler = MetronomeScheduler()
+
+        XCTAssertThrowsError(try scheduler.beatIntervalNanoseconds(for: 29))
+        XCTAssertThrowsError(try scheduler.beatIntervalNanoseconds(for: 301))
+    }
+
+    func testScheduleWrapsPatternBeats() throws {
+        let pattern = Pattern.defaultSevenEight(id: UUID(uuidString: "A87F4C4B-806A-4B6C-B371-7F0D1C1D7D7F")!)
+        let scheduler = MetronomeScheduler()
+
+        let schedule = try scheduler.schedule(pattern: pattern, startingAt: 1_000, beatCount: 9)
+
+        XCTAssertEqual(schedule.events.map(\.beatIndex), [0, 1, 2, 3, 4, 5, 6, 0, 1])
+        XCTAssertEqual(schedule.events[0].accent, .strong)
+        XCTAssertEqual(schedule.events[2].accent, .normal)
+        XCTAssertEqual(schedule.events[4].accent, .normal)
+        XCTAssertEqual(schedule.events[7].hostTimeNanoseconds, 1_000 + (7 * 545_454_545))
+    }
+
+    func testStubPublishesInitialBeatEvent() async throws {
+        let pattern = Pattern.defaultFourFour()
+        let engine = AudioEngineStub()
+        let recorder = BeatEventRecorder()
+
+        await engine.setEventHandler { event in
+            await recorder.record(event)
+        }
+
+        try await engine.prepare(pattern: pattern)
+        try await engine.start()
+
+        let event = await recorder.firstEvent()
+        XCTAssertEqual(event?.patternID, pattern.id)
+        XCTAssertEqual(event?.beatIndex, 0)
+        XCTAssertEqual(event?.accent, .strong)
+    }
+}
+
+private actor BeatEventRecorder {
+    private var events: [ScheduledBeatEvent] = []
+
+    func record(_ event: ScheduledBeatEvent) {
+        events.append(event)
+    }
+
+    func firstEvent() -> ScheduledBeatEvent? {
+        events.first
+    }
+}

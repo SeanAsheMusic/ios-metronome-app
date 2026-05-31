@@ -1,10 +1,9 @@
 import SwiftUI
+import AudioEngine
 import RhythmModel
 
 struct MainMetronomeView: View {
-    @State private var pattern = Pattern.defaultFourFour()
-    @State private var isPlaying = false
-    @State private var pulseIsActive = false
+    @StateObject private var viewModel = MainMetronomeViewModel()
 
     var body: some View {
         VStack(spacing: 24) {
@@ -20,28 +19,31 @@ struct MainMetronomeView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .preferredColorScheme(.dark)
+        .task {
+            await viewModel.prepare()
+        }
     }
 
     private var header: some View {
         VStack(spacing: 8) {
-            Text(pattern.name)
+            Text(viewModel.pattern.name)
                 .font(.title3.weight(.semibold))
-                .accessibilityLabel("Pattern \(pattern.name)")
+                .accessibilityLabel("Pattern \(viewModel.pattern.name)")
 
-            Text("\(pattern.meter.displayName) · \(pattern.subdivision.displayName)")
+            Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivision.displayName)")
                 .font(.headline)
                 .foregroundStyle(.secondary)
-                .accessibilityLabel("Meter \(pattern.meter.displayName), subdivision \(pattern.subdivision.displayName)")
+                .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivision.displayName)")
         }
     }
 
     private var bpmDisplay: some View {
         VStack(spacing: 4) {
-            Text("\(pattern.bpm)")
+            Text("\(viewModel.pattern.bpm)")
                 .font(.system(size: 96, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .minimumScaleFactor(0.65)
-                .accessibilityLabel("\(pattern.bpm) beats per minute")
+                .accessibilityLabel("\(viewModel.pattern.bpm) beats per minute")
 
             Text("BPM")
                 .font(.headline)
@@ -53,17 +55,19 @@ struct MainMetronomeView: View {
     private var transportControls: some View {
         HStack(spacing: 16) {
             Button {
-                isPlaying.toggle()
-                pulseIsActive = isPlaying
+                Task {
+                    await viewModel.togglePlayback()
+                }
             } label: {
-                Label(isPlaying ? "Stop" : "Play", systemImage: isPlaying ? "stop.fill" : "play.fill")
+                Label(viewModel.isPlaying ? "Stop" : "Play", systemImage: viewModel.isPlaying ? "stop.fill" : "play.fill")
                     .frame(maxWidth: .infinity, minHeight: 64)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .accessibilityLabel(isPlaying ? "Stop metronome" : "Play metronome")
+            .accessibilityLabel(viewModel.isPlaying ? "Stop metronome" : "Play metronome")
 
             Button {
+                viewModel.registerTapTempo()
             } label: {
                 Label("Tap", systemImage: "hand.tap.fill")
                     .frame(maxWidth: .infinity, minHeight: 64)
@@ -71,7 +75,7 @@ struct MainMetronomeView: View {
             .buttonStyle(.bordered)
             .controlSize(.large)
             .accessibilityLabel("Tap tempo")
-            .accessibilityHint("Tap tempo is a placeholder in this foundation.")
+            .accessibilityHint("Sets tempo from recent taps.")
         }
     }
 
@@ -88,7 +92,9 @@ struct MainMetronomeView: View {
 
     private func tempoButton(label: String, delta: Int) -> some View {
         Button(label) {
-            updateBPM(by: delta)
+            Task {
+                await viewModel.updateBPM(by: delta)
+            }
         }
         .font(.title3.weight(.semibold))
         .frame(minWidth: 64, minHeight: 56)
@@ -98,8 +104,8 @@ struct MainMetronomeView: View {
 
     private var patternSummary: some View {
         HStack(spacing: 12) {
-            summaryPill(title: "Meter", value: pattern.meter.displayName)
-            summaryPill(title: "Subdivision", value: pattern.subdivision.displayName)
+            summaryPill(title: "Meter", value: viewModel.pattern.meter.displayName)
+            summaryPill(title: "Subdivision", value: viewModel.pattern.subdivision.displayName)
         }
     }
 
@@ -118,17 +124,97 @@ struct MainMetronomeView: View {
 
     private var visualPulse: some View {
         Circle()
-            .fill(pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
+            .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
             .frame(width: 112, height: 112)
-            .scaleEffect(pulseIsActive ? 1.0 : 0.82)
-            .animation(.snappy(duration: 0.18), value: pulseIsActive)
+            .scaleEffect(viewModel.pulseIsActive ? 1.0 : 0.82)
+            .animation(.snappy(duration: 0.18), value: viewModel.pulseIsActive)
             .accessibilityLabel("Visual pulse")
-            .accessibilityValue(pulseIsActive ? "Active" : "Inactive")
+            .accessibilityValue(viewModel.pulseIsActive ? "Active" : "Inactive")
+    }
+}
+
+@MainActor
+final class MainMetronomeViewModel: ObservableObject {
+    @Published var pattern = Pattern.defaultFourFour()
+    @Published var isPlaying = false
+    @Published var pulseIsActive = false
+
+    private let audioEngine: any MetronomeAudioEngine
+    private var tapTimes: [Date] = []
+    private var pulseResetTask: Task<Void, Never>?
+
+    init(audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine()) {
+        self.audioEngine = audioEngine
     }
 
-    private func updateBPM(by delta: Int) {
+    func prepare() async {
+        await audioEngine.setEventHandler { [weak self] event in
+            await MainActor.run {
+                self?.handleBeat(event)
+            }
+        }
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func togglePlayback() async {
+        if isPlaying {
+            await audioEngine.stop()
+            pulseResetTask?.cancel()
+            pulseIsActive = false
+            isPlaying = false
+            return
+        }
+
+        do {
+            try await audioEngine.prepare(pattern: pattern)
+            try await audioEngine.start()
+            isPlaying = true
+        } catch {
+            isPlaying = false
+            pulseIsActive = false
+        }
+    }
+
+    func updateBPM(by delta: Int) async {
         let newValue = min(Pattern.maximumBPM, max(Pattern.minimumBPM, pattern.bpm + delta))
         pattern.bpm = newValue
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func registerTapTempo() {
+        let now = Date()
+        tapTimes.append(now)
+        tapTimes = tapTimes.filter { now.timeIntervalSince($0) <= 3.0 }
+
+        guard tapTimes.count >= 2 else {
+            return
+        }
+
+        let intervals = zip(tapTimes.dropFirst(), tapTimes).map { current, previous in
+            current.timeIntervalSince(previous)
+        }
+        let averageInterval = intervals.reduce(0, +) / Double(intervals.count)
+        guard averageInterval > 0 else {
+            return
+        }
+
+        let tappedBPM = Int((60.0 / averageInterval).rounded())
+        pattern.bpm = min(Pattern.maximumBPM, max(Pattern.minimumBPM, tappedBPM))
+        Task {
+            try? await audioEngine.prepare(pattern: pattern)
+        }
+    }
+
+    private func handleBeat(_: ScheduledBeatEvent) {
+        pulseResetTask?.cancel()
+        pulseIsActive = true
+
+        pulseResetTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 120_000_000)
+            await MainActor.run {
+                self?.pulseIsActive = false
+            }
+        }
     }
 }
 

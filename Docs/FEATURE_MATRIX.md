@@ -2,9 +2,9 @@
 
 | Area | Soundbrenner | Tempo | TonalEnergy | Pro Metronome | Our V1 | Priority |
 |---|---|---|---|---|---|---|
-| Core metronome | Strong | Strong | Strong | Strong | Match | V1 |
+| Core metronome | Strong | Strong | Strong | Strong | Playable foundation | V1 |
 | Large performance UI | Good | Good | Mixed | Stage mode | Match and simplify | V1 |
-| Tap tempo | Yes | Yes | Yes | Yes | Match | V1 |
+| Tap tempo | Yes | Yes | Yes | Yes | Basic recent-tap implementation | V1 |
 | Custom meters | Good | Strong | Good | Good | Foundation | V1 |
 | Subdivisions | Yes | Yes | Yes | Paid/gated in places | Core/free | V1 |
 | Accents and muting | Yes | Strong | Yes | Strong | Core/free | V1 |

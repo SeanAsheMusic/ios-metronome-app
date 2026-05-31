@@ -8,15 +8,15 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 
 - Core metronome pattern model
 - BPM validation from 30 to 300
-- Tap tempo placeholder
+- Tap tempo from recent taps
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Default 4/4, 6/8, and 7/8 patterns
 - Saved patterns and ordered setlists
-- Large performance SwiftUI play surface
-- Visual pulse placeholder
-- Sound role foundation for synthesized click families
+- Large performance SwiftUI play surface wired to playback state
+- Visual pulse driven by scheduled beat events
+- Synthesized click engine foundation using AVFoundation
 - Local persistence planning
-- XCTest coverage for model behavior
+- XCTest coverage for model and scheduler behavior
 - Accessibility-first UI and docs
 
 ## Deferred
@@ -25,11 +25,12 @@ Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sh
 
 ## Repository Shape
 
-- `Sources/RhythmModel`: Compile-tested core domain model.
-- `Sources/AudioEngine`: Protocol stubs and timing contracts. No production audio claims yet.
+- `Sources/RhythmModel`: Core domain model for patterns, meters, accents, and setlists.
+- `Sources/AudioEngine`: AVFoundation click engine, scheduler, and testable timing contracts.
 - `App`: SwiftUI app skeleton for Xcode integration.
 - `Docs`: Product, architecture, audio, privacy, testing, and App Store planning.
 - `Tests/RhythmModelTests`: XCTest coverage for the safe model layer.
+- `Tests/AudioEngineTests`: XCTest coverage for scheduling and stub event delivery.
 
 ## Build And Test
 
@@ -37,6 +38,7 @@ The repository includes a generated Xcode project and a Swift package manifest.
 
 ```sh
 xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'platform=iOS Simulator,name=iPhone 16'
+xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
 This environment has Swift but not a full active Xcode installation, so local test execution currently needs Xcode selected. The model package can also be tested with:

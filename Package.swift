@@ -11,6 +11,7 @@ let package = Package(
     targets: [
         .target(name: "RhythmModel"),
         .target(name: "AudioEngine", dependencies: ["RhythmModel"]),
-        .testTarget(name: "RhythmModelTests", dependencies: ["RhythmModel"])
+        .testTarget(name: "RhythmModelTests", dependencies: ["RhythmModel"]),
+        .testTarget(name: "AudioEngineTests", dependencies: ["AudioEngine", "RhythmModel"])
     ]
 )

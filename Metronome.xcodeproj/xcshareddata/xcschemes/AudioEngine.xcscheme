@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8966426DE40BC781A1BC889B"
-               BuildableName = "RhythmModel.framework"
-               BlueprintName = "RhythmModel"
+               BlueprintIdentifier = "286AF344FEE84412D14BF905"
+               BuildableName = "AudioEngine.framework"
+               BlueprintName = "AudioEngine"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,23 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B489C00DDBA6095D009F7DAA"
-               BuildableName = "RhythmModelTests.xctest"
-               BlueprintName = "RhythmModelTests"
+               BlueprintIdentifier = "9341E63EA4C57F85E4F3B74E"
+               BuildableName = "AudioEngineTests.xctest"
+               BlueprintName = "AudioEngineTests"
+               ReferencedContainer = "container:Metronome.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "8966426DE40BC781A1BC889B"
+               BuildableName = "RhythmModel.framework"
+               BlueprintName = "RhythmModel"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +60,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B489C00DDBA6095D009F7DAA"
-               BuildableName = "RhythmModelTests.xctest"
-               BlueprintName = "RhythmModelTests"
+               BlueprintIdentifier = "9341E63EA4C57F85E4F3B74E"
+               BuildableName = "AudioEngineTests.xctest"
+               BlueprintName = "AudioEngineTests"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </TestableReference>

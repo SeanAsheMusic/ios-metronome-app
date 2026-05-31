@@ -12,6 +12,9 @@ The Swift package includes XCTest coverage for:
 - Accent behavior.
 - Setlist ordering.
 - Codable round trip.
+- Beat interval scheduling.
+- Schedule beat wrapping.
+- Stub audio event delivery.
 
 Run with:
 
@@ -27,6 +30,8 @@ On this machine, `swift test` currently fails before compiling project code beca
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 swift test
 ```
+
+The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, and `Metronome` schemes. Use the `AudioEngine` scheme for scheduler and engine boundary tests once full Xcode is active.
 
 ## Future Test Layers
 

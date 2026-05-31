@@ -2,7 +2,7 @@
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Audio jitter or drift is not measured yet | App cannot honestly claim professional timing | Keep engine behind protocols, implement measurement before production claims. |
+| Audio jitter or drift is not measured yet | App cannot honestly claim professional timing | Current AVFoundation engine is a playable slice only; add real-device measurement before production claims. |
 | Xcode project is generated but not built in this environment | Build errors may remain hidden until full Xcode is selected | Open `Metronome.xcodeproj` in Xcode, set a development team, and run the shared schemes. |
 | Bluetooth and AirPlay latency | Users may perceive the click as late | Detect route, label risk, measure per route before claims. |
 | Over-scoping v1 | Core metronome quality could suffer | Keep tuner, Watch, cloud, MIDI, Link, AI, and analytics deferred. |
