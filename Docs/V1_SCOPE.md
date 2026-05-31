@@ -10,6 +10,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Direct numeric BPM entry.
 - Play/stop UI skeleton.
 - Tap tempo entry point.
+- Audible one- and two-bar count-in.
 - Common meters: 2/4, 3/4, 4/4, 5/4, 6/8, 7/8, 9/8, and 12/8.
 - Subdivisions: quarter, eighth, triplet, and sixteenth.
 - Accent levels: strong, normal, ghost, and muted.
@@ -45,7 +46,6 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 
 - Snapshot restore points.
 - Extended click renderer provenance for any future pre-rendered assets.
-- Count-in.
 - Tempo ladders.
 
 ## Later Candidates

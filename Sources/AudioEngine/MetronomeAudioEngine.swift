@@ -179,6 +179,7 @@ public protocol MetronomeAudioEngine: Sendable {
     func prepare(pattern: Pattern) async throws
     func start() async throws
     func stop() async
+    func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws
     func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async
     func updateSettings(_ settings: MetronomeAudioSettings) async throws
     func currentRouteStatus() async -> AudioRouteStatus
@@ -212,6 +213,17 @@ public actor AudioEngineStub: MetronomeAudioEngine {
 
     public func stop() async {
         isRunning = false
+    }
+
+    public func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws {
+        let event = ScheduledBeatEvent(
+            patternID: pattern.id,
+            beatIndex: 0,
+            accent: soundRole == .downbeat ? .strong : .normal,
+            soundRole: soundRole,
+            hostTimeNanoseconds: DispatchTime.now().uptimeNanoseconds
+        )
+        await eventHandler?(event)
     }
 
     public func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async {
@@ -289,6 +301,42 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         playbackTask = nil
         player.stop()
         audioEngine.pause()
+    }
+
+    public func playOneShot(pattern: Pattern, soundRole: ClickSoundRole) async throws {
+        preparedPattern = pattern
+
+        if clickBuffers.isEmpty {
+            clickBuffers = try makeClickBuffers(settings: settings)
+        }
+
+        if !isGraphConfigured {
+            try await prepare(pattern: pattern)
+        }
+
+        try configureSession()
+
+        if !audioEngine.isRunning {
+            try audioEngine.start()
+        }
+
+        if !player.isPlaying {
+            player.play()
+        }
+
+        let event = ScheduledBeatEvent(
+            patternID: pattern.id,
+            beatIndex: 0,
+            accent: soundRole == .downbeat ? .strong : .normal,
+            soundRole: soundRole,
+            hostTimeNanoseconds: DispatchTime.now().uptimeNanoseconds
+        )
+        play(event: event)
+        if let eventHandler {
+            Task {
+                await eventHandler(event)
+            }
+        }
     }
 
     public func setEventHandler(_ handler: (@Sendable (ScheduledBeatEvent) async -> Void)?) async {

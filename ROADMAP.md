@@ -14,13 +14,13 @@
 - Clave and bossa groove template foundation.
 - Background audio app mode.
 - Fullscreen visual pulse mode.
+- Audible count-in.
 - Physical-device audio measurement harness.
 - Accessibility audit.
 
 ## V1.1
 
 - Pattern editor with per-beat accent/mute controls.
-- Count-in.
 - Exportable click-render verification assets.
 - Full clave mode.
 

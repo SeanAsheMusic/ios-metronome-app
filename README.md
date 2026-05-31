@@ -10,6 +10,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - BPM validation from 30 to 300
 - Direct numeric BPM entry
 - Tap tempo from recent taps
+- Audible one- and two-bar count-in
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Clave and bossa groove template foundation
 - Default 4/4, 6/8, and 7/8 patterns

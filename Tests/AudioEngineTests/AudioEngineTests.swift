@@ -108,6 +108,23 @@ final class AudioEngineTests: XCTestCase {
         XCTAssertEqual(event?.beatIndex, 0)
         XCTAssertEqual(event?.accent, .strong)
     }
+
+    func testStubPublishesOneShotCueEvent() async throws {
+        let pattern = Pattern.defaultFourFour()
+        let engine = AudioEngineStub()
+        let recorder = BeatEventRecorder()
+
+        await engine.setEventHandler { event in
+            await recorder.record(event)
+        }
+
+        try await engine.playOneShot(pattern: pattern, soundRole: .cue)
+
+        let event = await recorder.firstEvent()
+        XCTAssertEqual(event?.patternID, pattern.id)
+        XCTAssertEqual(event?.soundRole, .cue)
+        XCTAssertEqual(event?.accent, .normal)
+    }
 }
 
 private actor BeatEventRecorder {

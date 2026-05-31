@@ -71,6 +71,7 @@ struct MainMetronomeView: View {
                 header
                 bpmDisplay
                 transportControls
+                countInPanel
                 tempoControls
                 patternSummary
                 practicePanel
@@ -320,12 +321,12 @@ struct MainMetronomeView: View {
                     await viewModel.togglePlayback()
                 }
             } label: {
-                Label(viewModel.isPlaying ? "Stop" : "Play", systemImage: viewModel.isPlaying ? "stop.fill" : "play.fill")
+                Label(viewModel.primaryTransportTitle, systemImage: viewModel.primaryTransportSystemImage)
                     .frame(maxWidth: .infinity, minHeight: 64)
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
-            .accessibilityLabel(viewModel.isPlaying ? "Stop metronome" : "Play metronome")
+            .accessibilityLabel(viewModel.primaryTransportAccessibilityLabel)
 
             Button {
                 viewModel.registerTapTempo()
@@ -338,6 +339,39 @@ struct MainMetronomeView: View {
             .accessibilityLabel("Tap tempo")
             .accessibilityHint("Sets tempo from recent taps.")
         }
+    }
+
+    private var countInPanel: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text("Count-in")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                if let remaining = viewModel.countInRemainingBeats {
+                    Text("\(remaining)")
+                        .font(.title3.weight(.bold))
+                        .monospacedDigit()
+                        .accessibilityLabel("\(remaining) count-in beats remaining")
+                }
+            }
+
+            Picker("Count-in", selection: Binding(
+                get: { viewModel.countInBars },
+                set: { viewModel.setCountInBars($0) }
+            )) {
+                Text("Off").tag(0)
+                Text("1 bar").tag(1)
+                Text("2 bars").tag(2)
+            }
+            .pickerStyle(.segmented)
+            .disabled(viewModel.isPlaying || viewModel.isCountingIn)
+            .accessibilityLabel("Count-in length")
+        }
+        .padding(12)
+        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     private var tempoControls: some View {
@@ -780,6 +814,9 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var audioRouteStatus = AudioRouteStatus.status(for: [])
     @Published var bpmEntryDraft = "\(Pattern.defaultFourFour().bpm)"
     @Published var bpmEntryMessage: String?
+    @Published var countInBars = 0
+    @Published var isCountingIn = false
+    @Published var countInRemainingBeats: Int?
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -787,6 +824,7 @@ final class MainMetronomeViewModel: ObservableObject {
     private var tapTimes: [Date] = []
     private var pulseResetTask: Task<Void, Never>?
     private var practiceTickerTask: Task<Void, Never>?
+    private var countInTask: Task<Void, Never>?
 
     init(
         audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine(),
@@ -808,14 +846,20 @@ final class MainMetronomeViewModel: ObservableObject {
     }
 
     func togglePlayback() async {
-        if isPlaying {
-            await audioEngine.stop()
-            pulseResetTask?.cancel()
-            pulseIsActive = false
-            isPlaying = false
+        if isPlaying || isCountingIn {
+            await stopTransport()
             return
         }
 
+        if countInBars > 0 {
+            startCountIn()
+            return
+        }
+
+        await startPlayback()
+    }
+
+    private func startPlayback() async {
         do {
             try await audioEngine.prepare(pattern: pattern)
             try await audioEngine.start()
@@ -825,6 +869,88 @@ final class MainMetronomeViewModel: ObservableObject {
             isPlaying = false
             pulseIsActive = false
         }
+    }
+
+    private func stopTransport() async {
+        countInTask?.cancel()
+        countInTask = nil
+        isCountingIn = false
+        countInRemainingBeats = nil
+        await audioEngine.stop()
+        pulseResetTask?.cancel()
+        pulseIsActive = false
+        isPlaying = false
+    }
+
+    private func startCountIn() {
+        countInTask?.cancel()
+        isCountingIn = true
+        countInRemainingBeats = max(1, countInBars * pattern.meter.beatsPerBar)
+
+        let countInPattern = pattern
+        let totalBeats = countInRemainingBeats ?? 0
+        let intervalNanoseconds = UInt64((60_000_000_000.0 / Double(pattern.bpm)).rounded())
+
+        countInTask = Task { [weak self] in
+            for offset in 0..<totalBeats {
+                if Task.isCancelled {
+                    return
+                }
+
+                let remaining = totalBeats - offset
+                await MainActor.run {
+                    self?.countInRemainingBeats = remaining
+                }
+
+                let role: ClickSoundRole = offset == 0 ? .downbeat : .cue
+                try? await self?.audioEngine.playOneShot(pattern: countInPattern, soundRole: role)
+                try? await Task.sleep(nanoseconds: intervalNanoseconds)
+            }
+
+            if Task.isCancelled {
+                return
+            }
+
+            await MainActor.run {
+                self?.isCountingIn = false
+                self?.countInRemainingBeats = nil
+            }
+            await self?.startPlayback()
+        }
+    }
+
+    func setCountInBars(_ bars: Int) {
+        guard !isPlaying, !isCountingIn else {
+            return
+        }
+        countInBars = min(2, max(0, bars))
+    }
+
+    var primaryTransportTitle: String {
+        if isPlaying {
+            return "Stop"
+        }
+        if isCountingIn {
+            return "Cancel"
+        }
+        return "Play"
+    }
+
+    var primaryTransportSystemImage: String {
+        if isPlaying || isCountingIn {
+            return "stop.fill"
+        }
+        return "play.fill"
+    }
+
+    var primaryTransportAccessibilityLabel: String {
+        if isPlaying {
+            return "Stop metronome"
+        }
+        if isCountingIn {
+            return "Cancel count-in"
+        }
+        return "Play metronome"
     }
 
     func updateBPM(by delta: Int) async {

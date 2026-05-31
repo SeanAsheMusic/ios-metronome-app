@@ -22,6 +22,8 @@ Research recommends synthesized or pre-rendered in-repo click assets. Vendor DAW
 
 Initial click families include classic, wood, bell, and mechanical synthesized presets. Accent sounds are generated from explicit parameter changes, not copied from vendor files.
 
+Count-in uses one-shot downbeat and cue roles before continuous playback starts.
+
 ## Jitter And Drift Risks
 
 - UI timers are not acceptable as the timing source.
