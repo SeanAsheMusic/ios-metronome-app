@@ -13,6 +13,7 @@ struct MainMetronomeView: View {
             transportControls
             tempoControls
             patternSummary
+            patternEditor
             patternLibrary
             visualPulse
             Spacer(minLength: 0)
@@ -125,6 +126,79 @@ struct MainMetronomeView: View {
         .accessibilityElement(children: .combine)
     }
 
+    private var patternEditor: some View {
+        VStack(spacing: 12) {
+            TextField("Pattern name", text: $viewModel.patternNameDraft)
+                .textFieldStyle(.roundedBorder)
+                .submitLabel(.done)
+                .onSubmit {
+                    Task {
+                        await viewModel.commitPatternName()
+                    }
+                }
+                .accessibilityLabel("Pattern name")
+
+            HStack(spacing: 12) {
+                Picker("Meter", selection: Binding(
+                    get: { viewModel.selectedMeterOption },
+                    set: { option in
+                        Task {
+                            await viewModel.updateMeter(option)
+                        }
+                    }
+                )) {
+                    ForEach(MainMetronomeViewModel.meterOptions) { option in
+                        Text(option.label).tag(option)
+                    }
+                }
+                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity)
+                .accessibilityLabel("Meter")
+
+                Picker("Subdivision", selection: Binding(
+                    get: { viewModel.pattern.subdivision },
+                    set: { subdivision in
+                        Task {
+                            await viewModel.updateSubdivision(subdivision)
+                        }
+                    }
+                )) {
+                    ForEach(Subdivision.allCases, id: \.self) { subdivision in
+                        Text(subdivision.displayName).tag(subdivision)
+                    }
+                }
+                .pickerStyle(.menu)
+                .frame(maxWidth: .infinity)
+                .accessibilityLabel("Subdivision")
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.pattern.beats) { beat in
+                        Button {
+                            Task {
+                                await viewModel.cycleAccent(at: beat.index)
+                            }
+                        } label: {
+                            VStack(spacing: 4) {
+                                Text("\(beat.index + 1)")
+                                    .font(.caption.weight(.bold))
+                                Text(viewModel.shortLabel(for: beat.accent))
+                                    .font(.caption2.weight(.semibold))
+                            }
+                            .frame(width: 44, height: 46)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(viewModel.tint(for: beat.accent))
+                        .accessibilityLabel("Beat \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
+                        .accessibilityHint("Cycles accent level")
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private var patternLibrary: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -192,7 +266,37 @@ struct MainMetronomeView: View {
 
 @MainActor
 final class MainMetronomeViewModel: ObservableObject {
+    struct MeterOption: Identifiable, Hashable {
+        let beatsPerBar: Int
+        let beatUnit: Int
+        let grouping: [Int]?
+
+        var id: String {
+            "\(beatsPerBar)/\(beatUnit)-\(grouping?.map(String.init).joined(separator: "-") ?? "default")"
+        }
+
+        var label: String {
+            "\(beatsPerBar)/\(beatUnit)"
+        }
+
+        var meter: Meter {
+            try! Meter(beatsPerBar: beatsPerBar, beatUnit: beatUnit, grouping: grouping)
+        }
+    }
+
+    static let meterOptions: [MeterOption] = [
+        MeterOption(beatsPerBar: 2, beatUnit: 4, grouping: nil),
+        MeterOption(beatsPerBar: 3, beatUnit: 4, grouping: nil),
+        MeterOption(beatsPerBar: 4, beatUnit: 4, grouping: nil),
+        MeterOption(beatsPerBar: 5, beatUnit: 4, grouping: nil),
+        MeterOption(beatsPerBar: 6, beatUnit: 8, grouping: [3, 3]),
+        MeterOption(beatsPerBar: 7, beatUnit: 8, grouping: [2, 2, 3]),
+        MeterOption(beatsPerBar: 9, beatUnit: 8, grouping: [3, 3, 3]),
+        MeterOption(beatsPerBar: 12, beatUnit: 8, grouping: [3, 3, 3, 3])
+    ]
+
     @Published var pattern = Pattern.defaultFourFour()
+    @Published var patternNameDraft = Pattern.defaultFourFour().name
     @Published var patterns: [Pattern] = MetronomeLibrary.defaultLibrary().patterns
     @Published var isPlaying = false
     @Published var pulseIsActive = false
@@ -277,6 +381,7 @@ final class MainMetronomeViewModel: ObservableObject {
         guard let libraryStore else {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
+            patternNameDraft = pattern.name
             patterns = library.patterns
             return
         }
@@ -285,10 +390,12 @@ final class MainMetronomeViewModel: ObservableObject {
             let loadedLibrary = try await libraryStore.load()
             library = loadedLibrary
             pattern = loadedLibrary.selectedPattern
+            patternNameDraft = pattern.name
             patterns = loadedLibrary.patterns
         } catch {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
+            patternNameDraft = pattern.name
             patterns = library.patterns
             try? await libraryStore.save(library)
         }
@@ -310,6 +417,7 @@ final class MainMetronomeViewModel: ObservableObject {
     func selectPattern(id: Pattern.ID) async {
         library.selectPattern(id: id)
         pattern = library.selectedPattern
+        patternNameDraft = pattern.name
         patterns = library.patterns
         tapTimes.removeAll()
         try? await audioEngine.prepare(pattern: pattern)
@@ -320,11 +428,73 @@ final class MainMetronomeViewModel: ObservableObject {
         do {
             let duplicate = try library.duplicateSelectedPattern()
             pattern = duplicate
+            patternNameDraft = pattern.name
             patterns = library.patterns
             tapTimes.removeAll()
             try await audioEngine.prepare(pattern: pattern)
             await saveLibrarySnapshot()
         } catch {
+        }
+    }
+
+    var selectedMeterOption: MeterOption {
+        Self.meterOptions.first { option in
+            option.meter == pattern.meter
+        } ?? Self.meterOptions[0]
+    }
+
+    func commitPatternName() async {
+        pattern.rename(to: patternNameDraft)
+        patternNameDraft = pattern.name
+        saveSelectedPattern()
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func updateMeter(_ option: MeterOption) async {
+        pattern.updateMeter(option.meter)
+        saveSelectedPattern()
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func updateSubdivision(_ subdivision: Subdivision) async {
+        pattern.updateSubdivision(subdivision)
+        saveSelectedPattern()
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func cycleAccent(at index: Int) async {
+        do {
+            try pattern.cycleAccent(at: index)
+            saveSelectedPattern()
+            try await audioEngine.prepare(pattern: pattern)
+        } catch {
+        }
+    }
+
+    func shortLabel(for accent: AccentLevel) -> String {
+        switch accent {
+        case .strong: "S"
+        case .normal: "N"
+        case .ghost: "G"
+        case .muted: "M"
+        }
+    }
+
+    func accessibilityLabel(for accent: AccentLevel) -> String {
+        switch accent {
+        case .strong: "strong accent"
+        case .normal: "normal accent"
+        case .ghost: "ghost accent"
+        case .muted: "muted"
+        }
+    }
+
+    func tint(for accent: AccentLevel) -> Color {
+        switch accent {
+        case .strong: .accentColor
+        case .normal: .blue
+        case .ghost: .secondary
+        case .muted: .gray
         }
     }
 

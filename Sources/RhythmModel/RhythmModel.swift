@@ -4,6 +4,7 @@ public enum MetronomeValidationError: Error, Equatable {
     case bpmOutOfRange(Int)
     case unsupportedMeter(Int, Int)
     case invalidGrouping
+    case invalidBeatIndex(Int)
     case emptySetlist
     case invalidSetlistMove
 }
@@ -88,6 +89,15 @@ public enum AccentLevel: String, CaseIterable, Codable, Hashable, Sendable {
     case normal
     case ghost
     case muted
+
+    public var next: AccentLevel {
+        switch self {
+        case .strong: .normal
+        case .normal: .ghost
+        case .ghost: .muted
+        case .muted: .strong
+        }
+    }
 }
 
 public enum ClickSoundRole: String, CaseIterable, Codable, Hashable, Sendable {
@@ -179,6 +189,45 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
 
     public static func defaultSevenEight(id: UUID = UUID()) -> Pattern {
         try! Pattern(id: id, name: "Default 7/8", bpm: 110, meter: .sevenEight, subdivision: .eighth)
+    }
+
+    public mutating func rename(to name: String) {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            return
+        }
+        self.name = trimmedName
+    }
+
+    public mutating func updateMeter(_ meter: Meter) {
+        self.meter = meter
+        beats = Pattern.generateBeats(for: meter)
+    }
+
+    public mutating func updateSubdivision(_ subdivision: Subdivision) {
+        self.subdivision = subdivision
+    }
+
+    public mutating func cycleAccent(at index: Int) throws {
+        guard beats.indices.contains(index) else {
+            throw MetronomeValidationError.invalidBeatIndex(index)
+        }
+
+        beats[index].accent = beats[index].accent.next
+        beats[index].soundRole = Pattern.soundRole(for: beats[index].accent, index: index)
+    }
+
+    private static func soundRole(for accent: AccentLevel, index: Int) -> ClickSoundRole {
+        switch accent {
+        case .strong:
+            index == 0 ? .downbeat : .beat
+        case .normal:
+            .beat
+        case .ghost:
+            .subdivision
+        case .muted:
+            .muted
+        }
     }
 }
 

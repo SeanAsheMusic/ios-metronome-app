@@ -68,6 +68,67 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(pattern.beats[4].accent, .normal)
     }
 
+    func testPatternRenameTrimsName() {
+        var pattern = Pattern.defaultFourFour()
+
+        pattern.rename(to: "  Verse  ")
+
+        XCTAssertEqual(pattern.name, "Verse")
+    }
+
+    func testPatternRenameIgnoresEmptyName() {
+        var pattern = Pattern.defaultFourFour()
+
+        pattern.rename(to: "   ")
+
+        XCTAssertEqual(pattern.name, "Default 4/4")
+    }
+
+    func testPatternMeterUpdateRegeneratesBeats() {
+        var pattern = Pattern.defaultFourFour()
+
+        pattern.updateMeter(.sevenEight)
+
+        XCTAssertEqual(pattern.meter, .sevenEight)
+        XCTAssertEqual(pattern.beats.count, 7)
+        XCTAssertEqual(pattern.beats[2].accent, .normal)
+        XCTAssertEqual(pattern.beats[4].accent, .normal)
+    }
+
+    func testPatternSubdivisionUpdate() {
+        var pattern = Pattern.defaultFourFour()
+
+        pattern.updateSubdivision(.sixteenth)
+
+        XCTAssertEqual(pattern.subdivision, .sixteenth)
+    }
+
+    func testPatternCyclesAccentAndSoundRole() throws {
+        var pattern = Pattern.defaultFourFour()
+
+        try pattern.cycleAccent(at: 0)
+        XCTAssertEqual(pattern.beats[0].accent, .normal)
+        XCTAssertEqual(pattern.beats[0].soundRole, .beat)
+
+        try pattern.cycleAccent(at: 0)
+        XCTAssertEqual(pattern.beats[0].accent, .ghost)
+        XCTAssertEqual(pattern.beats[0].soundRole, .subdivision)
+
+        try pattern.cycleAccent(at: 0)
+        XCTAssertEqual(pattern.beats[0].accent, .muted)
+        XCTAssertEqual(pattern.beats[0].soundRole, .muted)
+
+        try pattern.cycleAccent(at: 0)
+        XCTAssertEqual(pattern.beats[0].accent, .strong)
+        XCTAssertEqual(pattern.beats[0].soundRole, .downbeat)
+    }
+
+    func testPatternAccentRejectsInvalidIndex() {
+        var pattern = Pattern.defaultFourFour()
+
+        XCTAssertThrowsError(try pattern.cycleAccent(at: 99))
+    }
+
     func testSetlistOrderingAndMove() throws {
         let first = Pattern.defaultFourFour()
         let second = Pattern.defaultSixEight()
