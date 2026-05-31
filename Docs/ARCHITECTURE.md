@@ -23,6 +23,7 @@
 | `Practice` | Practice timers, tempo ladders, rhythm-trainer gap modes, and local-only analytics. |
 | `RhythmModel.GrooveTemplate` | Built-in 16-step son, rumba, and bossa clave templates. |
 | `RhythmModel.ClaveModeTemplate` | Traditional clave, odd-meter clave-feel templates, and flattened local mixer presets for clave, metronome click, and subdivisions. |
+| `RhythmModel.SwingTemplate` | Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle patterns backed by variable step durations. |
 | `Accessibility` | Accessibility helpers and audit notes. |
 | `DesignSystem` | Semantic spacing, typography, and control conventions. |
 

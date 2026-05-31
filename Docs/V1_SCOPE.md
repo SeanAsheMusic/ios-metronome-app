@@ -17,6 +17,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Subdivisions: quarter, eighth, triplet, quintuplet, sixteenth, and septuplet.
 - Editable subdivision-step grids for syncopations and silencing.
 - Mixed per-beat subdivision editing.
+- Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle templates.
 - Accent levels: strong, normal, ghost, and muted.
 - Explicit per-step accent and mute editing.
 - Full son, rumba, and bossa clave templates backed by a 16-step pattern foundation.
@@ -57,4 +58,4 @@ No active source-level V1.1 candidates remain beyond device/accessibility valida
 
 ## Later Candidates
 
-- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, jazz 2 and 4, swing, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, polyrhythm, song forms, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.

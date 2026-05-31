@@ -296,6 +296,31 @@ public enum ClaveModeTemplate: String, CaseIterable, Codable, Hashable, Sendable
     }
 }
 
+public enum SwingTemplate: String, CaseIterable, Codable, Hashable, Sendable {
+    case jazzTwoAndFour
+    case swingEighths
+    case shuffle
+    case halfTimeShuffle
+
+    public var displayName: String {
+        switch self {
+        case .jazzTwoAndFour: "Jazz 2 & 4"
+        case .swingEighths: "Swing Eighths"
+        case .shuffle: "Shuffle"
+        case .halfTimeShuffle: "Half-Time Shuffle"
+        }
+    }
+
+    public var defaultBPM: Int {
+        switch self {
+        case .jazzTwoAndFour: 132
+        case .swingEighths: 120
+        case .shuffle: 108
+        case .halfTimeShuffle: 84
+        }
+    }
+}
+
 public struct Beat: Identifiable, Codable, Equatable, Hashable, Sendable {
     public let id: UUID
     public let index: Int
@@ -328,6 +353,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
     public var grooveTemplate: GrooveTemplate?
     public var claveModeTemplate: ClaveModeTemplate?
     public var grooveMixerPreset: GrooveMixerPreset?
+    public var swingTemplate: SwingTemplate?
     public var perBeatSubdivisions: [Subdivision]?
     public var stepDurationsInMeterBeats: [Double]?
 
@@ -341,6 +367,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         grooveTemplate: GrooveTemplate? = nil,
         claveModeTemplate: ClaveModeTemplate? = nil,
         grooveMixerPreset: GrooveMixerPreset? = nil,
+        swingTemplate: SwingTemplate? = nil,
         perBeatSubdivisions: [Subdivision]? = nil,
         stepDurationsInMeterBeats: [Double]? = nil
     ) throws {
@@ -355,6 +382,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         self.grooveTemplate = grooveTemplate
         self.claveModeTemplate = claveModeTemplate
         self.grooveMixerPreset = grooveMixerPreset
+        self.swingTemplate = swingTemplate
         self.perBeatSubdivisions = perBeatSubdivisions
         self.stepDurationsInMeterBeats = stepDurationsInMeterBeats
     }
@@ -487,6 +515,71 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         )
     }
 
+    public static func swing(_ template: SwingTemplate, id: UUID = UUID()) -> Pattern {
+        let generated = Pattern.generateSwingBeats(for: template)
+        try! Pattern(
+            id: id,
+            name: template.displayName,
+            bpm: template.defaultBPM,
+            meter: .fourFour,
+            subdivision: template == .jazzTwoAndFour ? .quarter : .triplet,
+            beats: generated.beats,
+            swingTemplate: template,
+            stepDurationsInMeterBeats: generated.stepDurationsInMeterBeats
+        )
+    }
+
+    public static func generateSwingBeats(for template: SwingTemplate) -> (beats: [Beat], stepDurationsInMeterBeats: [Double]?) {
+        switch template {
+        case .jazzTwoAndFour:
+            let beats = [
+                Beat(index: 0, accent: .muted, soundRole: .muted),
+                Beat(index: 1, accent: .normal, soundRole: .beat),
+                Beat(index: 2, accent: .muted, soundRole: .muted),
+                Beat(index: 3, accent: .normal, soundRole: .beat)
+            ]
+            return (beats, nil)
+        case .swingEighths:
+            return (
+                (0..<8).map { index in
+                    Beat(
+                        index: index,
+                        accent: index == 0 ? .strong : (index.isMultiple(of: 2) ? .normal : .ghost),
+                        soundRole: index == 0 ? .downbeat : (index.isMultiple(of: 2) ? .beat : .subdivision)
+                    )
+                },
+                Array(repeating: [2.0 / 3.0, 1.0 / 3.0], count: 4).flatMap { $0 }
+            )
+        case .shuffle:
+            return (
+                (0..<8).map { index in
+                    Beat(
+                        index: index,
+                        accent: index == 0 ? .strong : .normal,
+                        soundRole: index == 0 ? .downbeat : .beat
+                    )
+                },
+                Array(repeating: [2.0 / 3.0, 1.0 / 3.0], count: 4).flatMap { $0 }
+            )
+        case .halfTimeShuffle:
+            let beats = (0..<12).map { index in
+                let beatInBar = index / 3
+                let stepInBeat = index % 3
+                if index == 0 {
+                    return Beat(index: index, accent: .strong, soundRole: .downbeat)
+                }
+                if stepInBeat == 0 && beatInBar == 2 {
+                    return Beat(index: index, accent: .normal, soundRole: .beat)
+                }
+                if stepInBeat == 2 {
+                    return Beat(index: index, accent: .ghost, soundRole: .subdivision)
+                }
+                return Beat(index: index, accent: .muted, soundRole: .muted)
+            }
+            return (beats, Array(repeating: 1.0 / 3.0, count: 12))
+        }
+    }
+
     public static func generateGrooveBeats(for template: GrooveTemplate) -> [Beat] {
         (0..<template.stepCount).map { index in
             let isActive = template.activeStepIndexes.contains(index)
@@ -574,6 +667,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil
+        swingTemplate = nil
         perBeatSubdivisions = nil
         stepDurationsInMeterBeats = nil
     }
@@ -584,6 +678,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil
+        swingTemplate = nil
         perBeatSubdivisions = nil
         stepDurationsInMeterBeats = nil
     }
@@ -603,6 +698,7 @@ public struct Pattern: Identifiable, Codable, Equatable, Sendable {
         grooveTemplate = nil
         claveModeTemplate = nil
         grooveMixerPreset = nil
+        swingTemplate = nil
     }
 
     public mutating func cycleAccent(at index: Int) throws {

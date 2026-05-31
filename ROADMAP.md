@@ -25,6 +25,7 @@
 - Rhythm Trainer fixed/random silent bars.
 - Human Feel timing simulation.
 - Mixed per-beat subdivision editing with tuplets.
+- Jazz 2 and 4 and swing templates.
 
 ## V1.1
 
@@ -34,7 +35,6 @@
 
 - Independent audio faders for rhythm lanes.
 - Microphone accuracy checker.
-- Jazz 2 and 4 and swing templates.
 - Gap/random silence trainers.
 - Song form mode.
 - External display.

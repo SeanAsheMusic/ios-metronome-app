@@ -35,6 +35,7 @@ The Swift package includes XCTest coverage for:
 - Direct BPM entry uses the same 30-300 validation as button and tap-tempo changes.
 - Son, rumba, and bossa clave templates, including 16-step scheduling intervals and muted steps.
 - Clave Mode mixer presets for clave-only, click-only, clave-plus-click, subdivisions, and odd-meter feel templates.
+- Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle templates.
 - Visual pulse respects the Reduce Motion environment setting.
 - Full-screen stage pulse follows the same playback pulse state.
 - Audio engine one-shot cue events for count-in.

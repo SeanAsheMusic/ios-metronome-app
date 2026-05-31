@@ -57,7 +57,7 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(duplicate.subdivision, source.subdivision)
         XCTAssertNotEqual(duplicate.id, source.id)
         XCTAssertEqual(library.selectedPatternID, duplicate.id)
-        XCTAssertEqual(library.patterns.count, 6)
+        XCTAssertEqual(library.patterns.count, 8)
     }
 
     func testLibraryDuplicatesMixedSubdivisionPattern() throws {
@@ -80,7 +80,7 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertFalse(library.patterns.contains { $0.id == deletedID })
         XCTAssertNotEqual(library.selectedPatternID, deletedID)
-        XCTAssertEqual(library.patterns.count, 4)
+        XCTAssertEqual(library.patterns.count, 6)
     }
 
     func testLibraryDeletePatternRemovesSetlistReferences() throws {

@@ -16,6 +16,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Editable subdivision-step grids for syncopation and beat silencing
 - Mixed per-beat subdivisions, including triplets, quintuplets, sixteenths, and septuplets
+- Jazz 2 and 4, swing eighth, shuffle, and half-time shuffle templates
 - Full son, rumba, and bossa clave template set
 - Clave Mode with clave-only, click-only, clave-plus-click, and subdivision mixer presets
 - Default 4/4, 6/8, and 7/8 patterns

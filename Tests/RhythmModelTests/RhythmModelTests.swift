@@ -146,6 +146,14 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(Pattern.claveMode(.elevenEightThreeThreeTwoThree, mixerPreset: .claveOnly).beats.filter { $0.soundRole != .muted }.map(\.index), [0, 3, 6, 10, 13, 16, 19])
     }
 
+    func testSwingTemplatesCoverJazzFeels() {
+        XCTAssertEqual(SwingTemplate.allCases.count, 4)
+        XCTAssertEqual(Pattern.swing(.jazzTwoAndFour).beats.filter { $0.soundRole != .muted }.map(\.index), [1, 3])
+        let swingDurations = Pattern.swing(.swingEighths).stepDurationsInMeterBeats ?? []
+        XCTAssertEqual(Array(swingDurations.prefix(4)).map { ($0 * 100).rounded() / 100 }, [0.67, 0.33, 0.67, 0.33])
+        XCTAssertEqual(Pattern.swing(.halfTimeShuffle).beats.filter { $0.soundRole != .muted }.map(\.index), [0, 2, 5, 6, 8, 11])
+    }
+
     func testPatternEditingClearsGrooveTemplateMarker() {
         var pattern = Pattern.groove(.bossaClave)
 
@@ -154,6 +162,7 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertNil(pattern.grooveTemplate)
         XCTAssertNil(pattern.claveModeTemplate)
         XCTAssertNil(pattern.grooveMixerPreset)
+        XCTAssertNil(pattern.swingTemplate)
         XCTAssertEqual(pattern.beats.count, 7)
     }
 

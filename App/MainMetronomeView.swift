@@ -906,6 +906,31 @@ struct MainMetronomeView: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Swing")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.secondary)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(SwingTemplate.allCases, id: \.self) { template in
+                            Button {
+                                Task {
+                                    await viewModel.addSwingTemplate(template)
+                                }
+                            } label: {
+                                Text(template.displayName)
+                                    .font(.caption.weight(.semibold))
+                                    .lineLimit(1)
+                                    .frame(width: 138, height: 44)
+                            }
+                            .buttonStyle(.bordered)
+                            .accessibilityLabel("Add \(template.displayName) swing pattern")
+                        }
+                    }
+                }
+            }
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(viewModel.patterns) { pattern in
@@ -1429,6 +1454,20 @@ final class MainMetronomeViewModel: ObservableObject {
         let groove = Pattern.claveMode(template, mixerPreset: selectedGrooveMixerPreset)
         library.appendPattern(groove)
         pattern = groove
+        patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
+        patterns = library.patterns
+        activeSetlist = library.activeSetlist
+        tapTimes.removeAll()
+        try? await audioEngine.prepare(pattern: pattern)
+        await saveLibrarySnapshot()
+    }
+
+    func addSwingTemplate(_ template: SwingTemplate) async {
+        let swingPattern = Pattern.swing(template)
+        library.appendPattern(swingPattern)
+        pattern = swingPattern
         patternNameDraft = pattern.name
         bpmEntryDraft = "\(pattern.bpm)"
         bpmEntryMessage = nil

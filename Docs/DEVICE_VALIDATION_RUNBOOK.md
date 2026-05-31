@@ -33,6 +33,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
 | Odd-meter clave feels | 5/8, 7/8, 9/8, and 11/8 Clave Mode templates create playable syncopated patterns. | Device note. |
+| Swing templates | Jazz 2 and 4, swing eighths, shuffle, and half-time shuffle templates play with the expected feel. | Device note. |
 | Count-in | One-bar and two-bar count-ins play cue clicks, show remaining beats, then start continuous playback. | Device note. |
 | Tempo ladder | Ladder starts from the current tempo, changes BPM after the configured number of bars, and stops at the target without overshooting. | Device note. |
 | Rhythm Trainer | Fixed silent bars and random silent bars mute whole bars while keeping the transport running. | Device note. |
