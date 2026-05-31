@@ -83,8 +83,6 @@ tests_target.build_configurations.each do |config|
   config.build_settings['TEST_HOST'] = ''
 end
 
-project.predictabilize_uuids
-project.sort
 project.save
 
 metronome_scheme = Xcodeproj::XCScheme.new
