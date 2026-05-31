@@ -8,6 +8,7 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 
 - Core metronome pattern model
 - BPM validation from 30 to 300
+- Direct numeric BPM entry
 - Tap tempo from recent taps
 - Common meters, custom grouping foundation, subdivisions, and accents
 - Default 4/4, 6/8, and 7/8 patterns

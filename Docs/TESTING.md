@@ -27,6 +27,7 @@ The Swift package includes XCTest coverage for:
 - Settings data export/import UI plumbing.
 - Practice timer formatting, duration selection, countdown, and clamping behavior.
 - Audio route latency-risk classification for wireless, built-in, and unavailable outputs.
+- Direct BPM entry uses the same 30-300 validation as button and tap-tempo changes.
 
 Run with:
 

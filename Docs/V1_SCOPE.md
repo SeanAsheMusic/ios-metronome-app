@@ -7,6 +7,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 ## Included
 
 - BPM control from 30 to 300.
+- Direct numeric BPM entry.
 - Play/stop UI skeleton.
 - Tap tempo entry point.
 - Common meters: 2/4, 3/4, 4/4, 5/4, 6/8, 7/8, 9/8, and 12/8.
@@ -38,7 +39,6 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 
 ## V1.1 Candidates
 
-- Direct numeric BPM entry.
 - Pattern editor with beat-level accent/mute gestures.
 - Snapshot restore points.
 - Basic synthesized click renderer and provenance manifest.

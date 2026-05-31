@@ -7,16 +7,18 @@
 - Local persistence implementation.
 - Pattern and setlist editing.
 - Synthesized click prototype.
+- Direct numeric BPM entry.
+- Local export/import bundles.
+- Sound family picker with synthesized presets.
 - Physical-device audio measurement harness.
 - Accessibility audit.
 
 ## V1.1
 
 - Pattern editor with per-beat accent/mute controls.
-- Local export/import bundles.
 - Fullscreen visual pulse modes.
 - Count-in.
-- Sound family picker with provenance manifests.
+- Sound provenance manifest.
 
 ## Later
 

@@ -276,6 +276,33 @@ struct MainMetronomeView: View {
             Text("BPM")
                 .font(.headline)
                 .foregroundStyle(.secondary)
+
+            HStack(spacing: 10) {
+                TextField("BPM", text: $viewModel.bpmEntryDraft)
+                    .keyboardType(.numberPad)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 96)
+                    .accessibilityLabel("Tempo entry")
+
+                Button {
+                    Task {
+                        await viewModel.commitBPMEntry()
+                    }
+                } label: {
+                    Label("Set", systemImage: "checkmark")
+                        .frame(minWidth: 72, minHeight: 40)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel("Set tempo")
+            }
+
+            if let message = viewModel.bpmEntryMessage {
+                Text(message)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .accessibilityLabel(message)
+            }
         }
         .frame(maxWidth: .infinity)
     }
@@ -709,6 +736,8 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var dataTransferMessage: String?
     @Published var practiceTimer = PracticeTimer(durationSeconds: 600)
     @Published var audioRouteStatus = AudioRouteStatus.status(for: [])
+    @Published var bpmEntryDraft = "\(Pattern.defaultFourFour().bpm)"
+    @Published var bpmEntryMessage: String?
 
     private let audioEngine: any MetronomeAudioEngine
     private let libraryStore: MetronomeLibraryStore?
@@ -759,6 +788,28 @@ final class MainMetronomeViewModel: ObservableObject {
     func updateBPM(by delta: Int) async {
         let newValue = min(Pattern.maximumBPM, max(Pattern.minimumBPM, pattern.bpm + delta))
         pattern.bpm = newValue
+        bpmEntryMessage = nil
+        saveSelectedPattern()
+        try? await audioEngine.prepare(pattern: pattern)
+    }
+
+    func commitBPMEntry() async {
+        let trimmedValue = bpmEntryDraft.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let bpm = Int(trimmedValue) else {
+            bpmEntryDraft = "\(pattern.bpm)"
+            bpmEntryMessage = "Enter a whole number from \(Pattern.minimumBPM) to \(Pattern.maximumBPM)."
+            return
+        }
+
+        guard Pattern.minimumBPM...Pattern.maximumBPM ~= bpm else {
+            bpmEntryDraft = "\(pattern.bpm)"
+            bpmEntryMessage = "Tempo must be \(Pattern.minimumBPM)-\(Pattern.maximumBPM) BPM."
+            return
+        }
+
+        pattern.bpm = bpm
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = "Tempo set to \(pattern.bpm) BPM."
         saveSelectedPattern()
         try? await audioEngine.prepare(pattern: pattern)
     }
@@ -782,6 +833,7 @@ final class MainMetronomeViewModel: ObservableObject {
 
         let tappedBPM = Int((60.0 / averageInterval).rounded())
         pattern.bpm = min(Pattern.maximumBPM, max(Pattern.minimumBPM, tappedBPM))
+        bpmEntryMessage = nil
         saveSelectedPattern()
         Task {
             try? await audioEngine.prepare(pattern: pattern)
@@ -793,6 +845,7 @@ final class MainMetronomeViewModel: ObservableObject {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
+            bpmEntryDraft = "\(pattern.bpm)"
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             audioSettings = library.audioSettings
@@ -804,6 +857,7 @@ final class MainMetronomeViewModel: ObservableObject {
             library = loadedLibrary
             pattern = loadedLibrary.selectedPattern
             patternNameDraft = pattern.name
+            bpmEntryDraft = "\(pattern.bpm)"
             patterns = loadedLibrary.patterns
             activeSetlist = loadedLibrary.activeSetlist
             audioSettings = loadedLibrary.audioSettings
@@ -811,6 +865,7 @@ final class MainMetronomeViewModel: ObservableObject {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
+            bpmEntryDraft = "\(pattern.bpm)"
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             audioSettings = library.audioSettings
@@ -824,6 +879,8 @@ final class MainMetronomeViewModel: ObservableObject {
         self.library = library
         pattern = library.selectedPattern
         patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         audioSettings = library.audioSettings
@@ -835,6 +892,7 @@ final class MainMetronomeViewModel: ObservableObject {
 
     private func saveSelectedPattern() {
         library.updateSelectedPattern(pattern)
+        bpmEntryDraft = "\(pattern.bpm)"
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         guard let libraryStore else {
@@ -851,6 +909,8 @@ final class MainMetronomeViewModel: ObservableObject {
         library.selectPattern(id: id)
         pattern = library.selectedPattern
         patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         tapTimes.removeAll()
@@ -863,6 +923,8 @@ final class MainMetronomeViewModel: ObservableObject {
             let duplicate = try library.duplicateSelectedPattern()
             pattern = duplicate
             patternNameDraft = pattern.name
+            bpmEntryDraft = "\(pattern.bpm)"
+            bpmEntryMessage = nil
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             tapTimes.removeAll()
@@ -885,6 +947,8 @@ final class MainMetronomeViewModel: ObservableObject {
             try library.deletePattern(id: pattern.id)
             pattern = library.selectedPattern
             patternNameDraft = pattern.name
+            bpmEntryDraft = "\(pattern.bpm)"
+            bpmEntryMessage = nil
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             tapTimes.removeAll()
@@ -904,6 +968,8 @@ final class MainMetronomeViewModel: ObservableObject {
         library.selectPatternFromActiveSetlist(itemID: id)
         pattern = library.selectedPattern
         patternNameDraft = pattern.name
+        bpmEntryDraft = "\(pattern.bpm)"
+        bpmEntryMessage = nil
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         try? await audioEngine.prepare(pattern: pattern)
