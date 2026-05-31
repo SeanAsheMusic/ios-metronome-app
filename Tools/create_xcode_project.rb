@@ -43,6 +43,8 @@ add_source(audio_group, audio_target, 'Sources/AudioEngine/MetronomeAudioEngine.
 add_source(persistence_group, persistence_target, 'Sources/Persistence/MetronomeLibraryStore.swift')
 add_source(app_group, app_target, 'App/MetronomeApp.swift')
 add_source(app_group, app_target, 'App/MainMetronomeView.swift')
+asset_catalog = app_group.new_file('App/Assets.xcassets')
+app_target.resources_build_phase.add_file_reference(asset_catalog)
 add_source(rhythm_tests_group, rhythm_tests_target, 'Tests/RhythmModelTests/RhythmModelTests.swift')
 add_source(audio_tests_group, audio_tests_target, 'Tests/AudioEngineTests/AudioEngineTests.swift')
 add_source(persistence_tests_group, persistence_tests_target, 'Tests/PersistenceTests/PersistenceTests.swift')

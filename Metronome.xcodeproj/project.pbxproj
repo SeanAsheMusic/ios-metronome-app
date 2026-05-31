@@ -7,135 +7,136 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		01361B3B67E2DBEFFF7AAA60 /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */; };
-		036D7D430C77094B0C285744 /* MetronomeLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10047D7D0A8F8EA4BF9A5723 /* MetronomeLibraryStore.swift */; };
-		0D3AE2E21FAEF5E9500C17AD /* PersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5FF4E53F89A73ACE8807310 /* PersistenceTests.swift */; };
-		18A5EA8C27C60FCB76989039 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
-		28D9686EA86AD0D93276F183 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
-		2A4758A1A2DB0468BEAEA0A7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		2E00808DF75ACE19EF19BD39 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD351F786BB3AE32CF2C1761 /* Persistence.framework */; };
-		2F539F507AFD18D6137A6CE3 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FD351F786BB3AE32CF2C1761 /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3292ABA1618430E0E13C0BAD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		3ACC70A86FC5B519AE47CE5E /* RhythmModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E5A008A5E7B22A6866200F5 /* RhythmModelTests.swift */; };
-		41CE496A2668A867CF7620AB /* MainMetronomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BB5DF42D2A384340FA2782 /* MainMetronomeView.swift */; };
-		49C2EE784D1925C90C0E0CBD /* AudioEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3F409CF33E9E55C8C8A910 /* AudioEngineTests.swift */; };
-		4AF55166D8337A85D7C50BBE /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */; };
-		58DA4245070115138EA667BF /* AudioEngine.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		665E42952031EF1F21566230 /* RhythmModel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		686B7BAE4CCB08C95F54E774 /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */; };
-		6D01BB6F9B3B23A18916E3DA /* MetronomeAudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42266DF4E1B6721CA66A8B95 /* MetronomeAudioEngine.swift */; };
-		75F9EEEEC311439D4CE28230 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		8CDC7DAC314E71976C652814 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
-		912FE8A9E816D2E6CE311757 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		9A8EF77D837BC7883616E95F /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */; };
-		A3954CF06F5586DC839E39AB /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD351F786BB3AE32CF2C1761 /* Persistence.framework */; };
-		C00F70465D496CE55D9EC7B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		C6E11E380E7EEF7DC3487F93 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		CA97CB3DEDB8629D5DF5AFB4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2889A628A032F0EB16B42BFC /* Foundation.framework */; };
-		CDC68CFEA8701A72F938C5D3 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
-		D5D8BE749F54B431EE7E2E56 /* RhythmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C062E4B5E3A88275C843622 /* RhythmModel.swift */; };
-		EDBF093C995D6BBB6F610746 /* MetronomeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31BAB5064741B1D033B13F0 /* MetronomeApp.swift */; };
-		F3BD9BB4045C9F1BBDF9ABDD /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
-		F84EDD6C10C976281DA7187C /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */; };
+		02DEE790FF9E305748980913 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		1330F07C3E7432331F1DF18D /* AudioEngine.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 72109E8FE256A052A092AF22 /* AudioEngine.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		181DA885D7134D81337FB76B /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		24FDF396969920062C3785F3 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 21209EE4394951D2AEF59A6F /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		349018DFC717D240D2F8EA31 /* MetronomeAudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9647E15DC45083C54D3070EA /* MetronomeAudioEngine.swift */; };
+		44D7F3F13246A70DFB64A6A4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		470EBE9D5857B2E33195B3EE /* MetronomeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4FA15A0C97E9A83EED42D52 /* MetronomeApp.swift */; };
+		4749EFD5F596573DAAC38125 /* MetronomeLibraryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38670680285E8A0FFE5A6E17 /* MetronomeLibraryStore.swift */; };
+		4BE11D376251822E552B2B1E /* RhythmModel.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5249486A6C70ABA24BD5902E /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		5CE1EAB293AA14BF0E7C3B08 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		5D67D9F4AB45406CF4C803E7 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		61C866022697FE0A7B649487 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		89A4F8178DDE26DFB716FD79 /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72109E8FE256A052A092AF22 /* AudioEngine.framework */; };
+		A2F805EB7F5CA49F528F0BEA /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		A827F564E57F387F43BC8173 /* RhythmModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E1B65203F8F5378FDBD99E /* RhythmModel.swift */; };
+		AA065692A928267AFDDD248F /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72109E8FE256A052A092AF22 /* AudioEngine.framework */; };
+		AC3FE3C9828CCC94BFD32B20 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		AFD6E3D5D8EC54F1EE0E6448 /* RhythmModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 833DBA8809B4B52EF94E4C8F /* RhythmModelTests.swift */; };
+		B3327B6F5B75C0009686D405 /* MainMetronomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E1193CE5B63638249187A91 /* MainMetronomeView.swift */; };
+		B50563BE3B6E6022798B8B9B /* PersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3EB8389A60C60E8D8F2E40 /* PersistenceTests.swift */; };
+		B787A1479EB7D5628749A9BD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F25FA7D2690AEA26966F5E9E /* Assets.xcassets */; };
+		BD39431F85DD6D72142E20F6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		C300B985E97E44D7F9B1DB15 /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72109E8FE256A052A092AF22 /* AudioEngine.framework */; };
+		C5B519C98810288F4F641395 /* AudioEngine.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 72109E8FE256A052A092AF22 /* AudioEngine.framework */; };
+		CA25A4D04718FC173A655818 /* RhythmModel.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */; };
+		D10F5563FCCF33714E1E7E85 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21209EE4394951D2AEF59A6F /* Persistence.framework */; };
+		E45DACAE107FAA20D6D6C783 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		ECD41AA0547D7A0608C249FD /* AudioEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2D0133778A1A1EB573C7E5 /* AudioEngineTests.swift */; };
+		FB5CA09C7D10FC0EDB8D79EA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4155B9444800C63C82B6C90D /* Foundation.framework */; };
+		FE96E0E4989A7B6682868861 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 21209EE4394951D2AEF59A6F /* Persistence.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		078FFFC05FE8DE3B8BDE1A12 /* PBXContainerItemProxy */ = {
+		052A0EEB81C966A0E5D6206F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = AB99BD14665ABAE84303AC36;
-			remoteInfo = AudioEngine;
-		};
-		18D73E28C52F9E8F6DEE58B0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
 			remoteInfo = RhythmModel;
 		};
-		6FB4AB8F35E04447CE935E0F /* PBXContainerItemProxy */ = {
+		181444C6FC7EC092B859858A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = AB99BD14665ABAE84303AC36;
-			remoteInfo = AudioEngine;
-		};
-		808A20040D6FA2DA5781AF79 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
-			remoteInfo = RhythmModel;
-		};
-		8232759F7D2CB20EF332AA07 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AB99BD14665ABAE84303AC36;
-			remoteInfo = AudioEngine;
-		};
-		93C46981EE166FF7E94EF0B0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
-			remoteInfo = RhythmModel;
-		};
-		B089E69E8D5037026033100B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6EE01B640F0870EA25B66EF9;
+			remoteGlobalIDString = 0987392738BECAC173CDB176;
 			remoteInfo = Persistence;
 		};
-		B1370613F0E08C3B3ACE52EA /* PBXContainerItemProxy */ = {
+		1FA820298E9C5BA5E62C9CDA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 6EE01B640F0870EA25B66EF9;
-			remoteInfo = Persistence;
-		};
-		B9CE4673CB3BBB9538C97D5C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
-			remoteInfo = RhythmModel;
-		};
-		BAB2EAA23A471F87C03A8E91 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AB99BD14665ABAE84303AC36;
+			remoteGlobalIDString = 42B66582BE0A808391329859;
 			remoteInfo = AudioEngine;
 		};
-		D5917D2E699AF18B5C10B8DF /* PBXContainerItemProxy */ = {
+		5ED2C17600352E2D819CEB03 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
 			remoteInfo = RhythmModel;
 		};
-		EF9BF9906F1083DEA0EF63ED /* PBXContainerItemProxy */ = {
+		666CB4EBBB7EABE86A1A6BFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 84BA6FED1EC409FB41C3922C /* Project object */;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 3665B99973AEF9243601F577;
+			remoteGlobalIDString = 42B66582BE0A808391329859;
+			remoteInfo = AudioEngine;
+		};
+		894551440C9BD7EA8223C6B2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0987392738BECAC173CDB176;
+			remoteInfo = Persistence;
+		};
+		9A8410555D84A06B5DF07484 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
 			remoteInfo = RhythmModel;
+		};
+		A4246AC5BADBC5784B6F80D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
+			remoteInfo = RhythmModel;
+		};
+		B6FDC0E89B6A669A76CFFA19 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
+			remoteInfo = RhythmModel;
+		};
+		BFC08B80FE702797815004EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F63C100250B52722CCE1377E;
+			remoteInfo = RhythmModel;
+		};
+		C8751F4938DF8FC94E5D2AF8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 42B66582BE0A808391329859;
+			remoteInfo = AudioEngine;
+		};
+		F306CAA96F38D5A34F05D47E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CC6707D09D69AEEC1B90CAF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 42B66582BE0A808391329859;
+			remoteInfo = AudioEngine;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		15098ACA4D34534900591281 /* Embed Frameworks */ = {
+		7F7A1E17B26394F9BEE00C17 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				665E42952031EF1F21566230 /* RhythmModel.framework in Embed Frameworks */,
-				58DA4245070115138EA667BF /* AudioEngine.framework in Embed Frameworks */,
-				2F539F507AFD18D6137A6CE3 /* Persistence.framework in Embed Frameworks */,
+				4BE11D376251822E552B2B1E /* RhythmModel.framework in Embed Frameworks */,
+				1330F07C3E7432331F1DF18D /* AudioEngine.framework in Embed Frameworks */,
+				24FDF396969920062C3785F3 /* Persistence.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -143,241 +144,243 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0E5A008A5E7B22A6866200F5 /* RhythmModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RhythmModelTests.swift; path = Tests/RhythmModelTests/RhythmModelTests.swift; sourceTree = "<group>"; };
-		10047D7D0A8F8EA4BF9A5723 /* MetronomeLibraryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeLibraryStore.swift; path = Sources/Persistence/MetronomeLibraryStore.swift; sourceTree = "<group>"; };
-		1CD1881559130B3F5BEDF24E /* AudioEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AudioEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2889A628A032F0EB16B42BFC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
-		42266DF4E1B6721CA66A8B95 /* MetronomeAudioEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeAudioEngine.swift; path = Sources/AudioEngine/MetronomeAudioEngine.swift; sourceTree = "<group>"; };
-		49E6B83D65E0AE1336AD8B3E /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C062E4B5E3A88275C843622 /* RhythmModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RhythmModel.swift; path = Sources/RhythmModel/RhythmModel.swift; sourceTree = "<group>"; };
-		597A73609554E01DFE786143 /* AudioEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5E3F409CF33E9E55C8C8A910 /* AudioEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioEngineTests.swift; path = Tests/AudioEngineTests/AudioEngineTests.swift; sourceTree = "<group>"; };
-		7078AE1D70C0F6E4C4FB2B9A /* Metronome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metronome.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A5FF4E53F89A73ACE8807310 /* PersistenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PersistenceTests.swift; path = Tests/PersistenceTests/PersistenceTests.swift; sourceTree = "<group>"; };
-		B070FDEF25C306B944FACC49 /* RhythmModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RhythmModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F31BAB5064741B1D033B13F0 /* MetronomeApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeApp.swift; path = App/MetronomeApp.swift; sourceTree = "<group>"; };
-		F4BB5DF42D2A384340FA2782 /* MainMetronomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MainMetronomeView.swift; path = App/MainMetronomeView.swift; sourceTree = "<group>"; };
-		FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RhythmModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FD351F786BB3AE32CF2C1761 /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F3EB8389A60C60E8D8F2E40 /* PersistenceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PersistenceTests.swift; path = Tests/PersistenceTests/PersistenceTests.swift; sourceTree = "<group>"; };
+		21209EE4394951D2AEF59A6F /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E1193CE5B63638249187A91 /* MainMetronomeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MainMetronomeView.swift; path = App/MainMetronomeView.swift; sourceTree = "<group>"; };
+		38670680285E8A0FFE5A6E17 /* MetronomeLibraryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeLibraryStore.swift; path = Sources/Persistence/MetronomeLibraryStore.swift; sourceTree = "<group>"; };
+		4155B9444800C63C82B6C90D /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		554D7ABED625C694E2D7FC6E /* Metronome.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metronome.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		72109E8FE256A052A092AF22 /* AudioEngine.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AudioEngine.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RhythmModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		833DBA8809B4B52EF94E4C8F /* RhythmModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RhythmModelTests.swift; path = Tests/RhythmModelTests/RhythmModelTests.swift; sourceTree = "<group>"; };
+		8C2D0133778A1A1EB573C7E5 /* AudioEngineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AudioEngineTests.swift; path = Tests/AudioEngineTests/AudioEngineTests.swift; sourceTree = "<group>"; };
+		9647E15DC45083C54D3070EA /* MetronomeAudioEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeAudioEngine.swift; path = Sources/AudioEngine/MetronomeAudioEngine.swift; sourceTree = "<group>"; };
+		AEB5E12EC50BC6C35CB3BF60 /* AudioEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AudioEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4FA15A0C97E9A83EED42D52 /* MetronomeApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MetronomeApp.swift; path = App/MetronomeApp.swift; sourceTree = "<group>"; };
+		E2E1B65203F8F5378FDBD99E /* RhythmModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RhythmModel.swift; path = Sources/RhythmModel/RhythmModel.swift; sourceTree = "<group>"; };
+		ED64857EEBC8152465A9C546 /* PersistenceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersistenceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F25FA7D2690AEA26966F5E9E /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = App/Assets.xcassets; sourceTree = "<group>"; };
+		F5A41BF7D73FA0AB370A2F6A /* RhythmModelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RhythmModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		2B0A28EBE12BF69A120034AF /* Frameworks */ = {
+		1A0DA8C6DC5C60FA776DA9D9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CA97CB3DEDB8629D5DF5AFB4 /* Foundation.framework in Frameworks */,
-				18A5EA8C27C60FCB76989039 /* RhythmModel.framework in Frameworks */,
+				5CE1EAB293AA14BF0E7C3B08 /* Foundation.framework in Frameworks */,
+				CA25A4D04718FC173A655818 /* RhythmModel.framework in Frameworks */,
+				AA065692A928267AFDDD248F /* AudioEngine.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		34845C28B9007C85B27B4EA6 /* Frameworks */ = {
+		25B4AAEADF2693C3ED9895E6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6E11E380E7EEF7DC3487F93 /* Foundation.framework in Frameworks */,
-				8CDC7DAC314E71976C652814 /* RhythmModel.framework in Frameworks */,
+				02DEE790FF9E305748980913 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5F5C3533D89022E0C15C4787 /* Frameworks */ = {
+		44AA5F6E2614416677D98BEC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2A4758A1A2DB0468BEAEA0A7 /* Foundation.framework in Frameworks */,
-				F3BD9BB4045C9F1BBDF9ABDD /* RhythmModel.framework in Frameworks */,
-				01361B3B67E2DBEFFF7AAA60 /* AudioEngine.framework in Frameworks */,
+				BD39431F85DD6D72142E20F6 /* Foundation.framework in Frameworks */,
+				5D67D9F4AB45406CF4C803E7 /* RhythmModel.framework in Frameworks */,
+				89A4F8178DDE26DFB716FD79 /* AudioEngine.framework in Frameworks */,
+				FE96E0E4989A7B6682868861 /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		96DF400230B97CC2A3061218 /* Frameworks */ = {
+		4A361AEF018788717294840E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3292ABA1618430E0E13C0BAD /* Foundation.framework in Frameworks */,
-				CDC68CFEA8701A72F938C5D3 /* RhythmModel.framework in Frameworks */,
-				4AF55166D8337A85D7C50BBE /* AudioEngine.framework in Frameworks */,
+				AC3FE3C9828CCC94BFD32B20 /* Foundation.framework in Frameworks */,
+				181DA885D7134D81337FB76B /* RhythmModel.framework in Frameworks */,
+				C5B519C98810288F4F641395 /* AudioEngine.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BBA0E2D44E646536A026412C /* Frameworks */ = {
+		4F747A8999ABFACF92990016 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C00F70465D496CE55D9EC7B5 /* Foundation.framework in Frameworks */,
-				F84EDD6C10C976281DA7187C /* RhythmModel.framework in Frameworks */,
-				686B7BAE4CCB08C95F54E774 /* AudioEngine.framework in Frameworks */,
-				2E00808DF75ACE19EF19BD39 /* Persistence.framework in Frameworks */,
+				FB5CA09C7D10FC0EDB8D79EA /* Foundation.framework in Frameworks */,
+				A2F805EB7F5CA49F528F0BEA /* RhythmModel.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DF825440B59610A96EAFAB4D /* Frameworks */ = {
+		4FAFA99247020926738B57FA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				912FE8A9E816D2E6CE311757 /* Foundation.framework in Frameworks */,
-				28D9686EA86AD0D93276F183 /* RhythmModel.framework in Frameworks */,
-				9A8EF77D837BC7883616E95F /* AudioEngine.framework in Frameworks */,
-				A3954CF06F5586DC839E39AB /* Persistence.framework in Frameworks */,
+				E45DACAE107FAA20D6D6C783 /* Foundation.framework in Frameworks */,
+				61C866022697FE0A7B649487 /* RhythmModel.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F2C150532FD052DF8F91859F /* Frameworks */ = {
+		9C9F6550DAD484BE883D302F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75F9EEEEC311439D4CE28230 /* Foundation.framework in Frameworks */,
+				44D7F3F13246A70DFB64A6A4 /* Foundation.framework in Frameworks */,
+				5249486A6C70ABA24BD5902E /* RhythmModel.framework in Frameworks */,
+				C300B985E97E44D7F9B1DB15 /* AudioEngine.framework in Frameworks */,
+				D10F5563FCCF33714E1E7E85 /* Persistence.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1541C844B7FE070EEEED3ED3 /* PersistenceTests */ = {
+		25E3E2C9CDAF421F53D25787 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A5FF4E53F89A73ACE8807310 /* PersistenceTests.swift */,
-			);
-			name = PersistenceTests;
-			path = PersistenceTests;
-			sourceTree = "<group>";
-		};
-		2121CC983D4DFEE495495B90 /* AudioEngineTests */ = {
-			isa = PBXGroup;
-			children = (
-				5E3F409CF33E9E55C8C8A910 /* AudioEngineTests.swift */,
-			);
-			name = AudioEngineTests;
-			path = AudioEngineTests;
-			sourceTree = "<group>";
-		};
-		44AD5577506482B1DB75859C /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				2889A628A032F0EB16B42BFC /* Foundation.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
-		6A7A3FF0D986003EA0D2A002 /* RhythmModelTests */ = {
-			isa = PBXGroup;
-			children = (
-				0E5A008A5E7B22A6866200F5 /* RhythmModelTests.swift */,
-			);
-			name = RhythmModelTests;
-			path = RhythmModelTests;
-			sourceTree = "<group>";
-		};
-		6B7ABB890E5B04E8F8CBD1DD /* AudioEngine */ = {
-			isa = PBXGroup;
-			children = (
-				42266DF4E1B6721CA66A8B95 /* MetronomeAudioEngine.swift */,
-			);
-			name = AudioEngine;
-			path = AudioEngine;
-			sourceTree = "<group>";
-		};
-		8AFE40B2CC17C5FC3C8CE808 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */,
-				1CD1881559130B3F5BEDF24E /* AudioEngine.framework */,
-				FD351F786BB3AE32CF2C1761 /* Persistence.framework */,
-				7078AE1D70C0F6E4C4FB2B9A /* Metronome.app */,
-				B070FDEF25C306B944FACC49 /* RhythmModelTests.xctest */,
-				597A73609554E01DFE786143 /* AudioEngineTests.xctest */,
-				49E6B83D65E0AE1336AD8B3E /* PersistenceTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		9AC670205DA67E9D651BCC2F /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				44AD5577506482B1DB75859C /* iOS */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		CC0CD1AB9C9D35DEEF24EDCD /* Sources */ = {
-			isa = PBXGroup;
-			children = (
-				F12DBCAB908EBA0B299ADFB6 /* RhythmModel */,
-				6B7ABB890E5B04E8F8CBD1DD /* AudioEngine */,
-				EA76C8238ED9D8A47E4E307B /* Persistence */,
+				50F8D56C670FD0D69275BBB2 /* RhythmModel */,
+				3E2C7D02F800EDD4C700E8C3 /* AudioEngine */,
+				E8550A9853F9250EDD8C5CE2 /* Persistence */,
 			);
 			name = Sources;
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		CD104B2555512F24335AC4AD /* App */ = {
+		2A6AA1D0FB32AFE6524913D3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F31BAB5064741B1D033B13F0 /* MetronomeApp.swift */,
-				F4BB5DF42D2A384340FA2782 /* MainMetronomeView.swift */,
+				7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */,
+				72109E8FE256A052A092AF22 /* AudioEngine.framework */,
+				21209EE4394951D2AEF59A6F /* Persistence.framework */,
+				554D7ABED625C694E2D7FC6E /* Metronome.app */,
+				F5A41BF7D73FA0AB370A2F6A /* RhythmModelTests.xctest */,
+				AEB5E12EC50BC6C35CB3BF60 /* AudioEngineTests.xctest */,
+				ED64857EEBC8152465A9C546 /* PersistenceTests.xctest */,
 			);
-			name = App;
-			path = App;
+			name = Products;
 			sourceTree = "<group>";
 		};
-		D84F346331AE13242DFB3608 /* Tests */ = {
+		2D0EEC8E0AB28CA83338CAEB /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				6A7A3FF0D986003EA0D2A002 /* RhythmModelTests */,
-				2121CC983D4DFEE495495B90 /* AudioEngineTests */,
-				1541C844B7FE070EEEED3ED3 /* PersistenceTests */,
+				4155B9444800C63C82B6C90D /* Foundation.framework */,
 			);
-			name = Tests;
-			path = Tests;
+			name = iOS;
 			sourceTree = "<group>";
 		};
-		EA76C8238ED9D8A47E4E307B /* Persistence */ = {
+		3E2C7D02F800EDD4C700E8C3 /* AudioEngine */ = {
 			isa = PBXGroup;
 			children = (
-				10047D7D0A8F8EA4BF9A5723 /* MetronomeLibraryStore.swift */,
+				9647E15DC45083C54D3070EA /* MetronomeAudioEngine.swift */,
 			);
-			name = Persistence;
-			path = Persistence;
+			name = AudioEngine;
+			path = AudioEngine;
 			sourceTree = "<group>";
 		};
-		F12DBCAB908EBA0B299ADFB6 /* RhythmModel */ = {
+		50F8D56C670FD0D69275BBB2 /* RhythmModel */ = {
 			isa = PBXGroup;
 			children = (
-				4C062E4B5E3A88275C843622 /* RhythmModel.swift */,
+				E2E1B65203F8F5378FDBD99E /* RhythmModel.swift */,
 			);
 			name = RhythmModel;
 			path = RhythmModel;
 			sourceTree = "<group>";
 		};
-		FD5B62FFF465120CCAF7A7D0 = {
+		56DCDC037018F4B8583DEE39 /* PersistenceTests */ = {
 			isa = PBXGroup;
 			children = (
-				8AFE40B2CC17C5FC3C8CE808 /* Products */,
-				9AC670205DA67E9D651BCC2F /* Frameworks */,
-				CD104B2555512F24335AC4AD /* App */,
-				CC0CD1AB9C9D35DEEF24EDCD /* Sources */,
-				D84F346331AE13242DFB3608 /* Tests */,
+				1F3EB8389A60C60E8D8F2E40 /* PersistenceTests.swift */,
 			);
+			name = PersistenceTests;
+			path = PersistenceTests;
+			sourceTree = "<group>";
+		};
+		6C7EF557D002279C14EDFDA5 = {
+			isa = PBXGroup;
+			children = (
+				2A6AA1D0FB32AFE6524913D3 /* Products */,
+				89F7AD5705CCEAC538101DF0 /* Frameworks */,
+				90FAD522B71A6EAF518D0CC3 /* App */,
+				25E3E2C9CDAF421F53D25787 /* Sources */,
+				ABEA372588739AA6A9641594 /* Tests */,
+			);
+			sourceTree = "<group>";
+		};
+		89F7AD5705CCEAC538101DF0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2D0EEC8E0AB28CA83338CAEB /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		90FAD522B71A6EAF518D0CC3 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				C4FA15A0C97E9A83EED42D52 /* MetronomeApp.swift */,
+				2E1193CE5B63638249187A91 /* MainMetronomeView.swift */,
+				F25FA7D2690AEA26966F5E9E /* Assets.xcassets */,
+			);
+			name = App;
+			path = App;
+			sourceTree = "<group>";
+		};
+		ABEA372588739AA6A9641594 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				CBCB9DDBF839E793284ACD47 /* RhythmModelTests */,
+				E33014F6B25EC6E63B253D11 /* AudioEngineTests */,
+				56DCDC037018F4B8583DEE39 /* PersistenceTests */,
+			);
+			name = Tests;
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		CBCB9DDBF839E793284ACD47 /* RhythmModelTests */ = {
+			isa = PBXGroup;
+			children = (
+				833DBA8809B4B52EF94E4C8F /* RhythmModelTests.swift */,
+			);
+			name = RhythmModelTests;
+			path = RhythmModelTests;
+			sourceTree = "<group>";
+		};
+		E33014F6B25EC6E63B253D11 /* AudioEngineTests */ = {
+			isa = PBXGroup;
+			children = (
+				8C2D0133778A1A1EB573C7E5 /* AudioEngineTests.swift */,
+			);
+			name = AudioEngineTests;
+			path = AudioEngineTests;
+			sourceTree = "<group>";
+		};
+		E8550A9853F9250EDD8C5CE2 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				38670680285E8A0FFE5A6E17 /* MetronomeLibraryStore.swift */,
+			);
+			name = Persistence;
+			path = Persistence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		2649E7A7B72CDA2255984FEE /* Headers */ = {
+		81E9AD715057137445DE3F75 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		43E7A7CDA3200CF76507626E /* Headers */ = {
+		A98B5C0636BF073F618407D5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B34FD2B2C68B1F5EA9F098B0 /* Headers */ = {
+		B708B18B72B100DAEC1EC6CF /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -387,33 +390,131 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		35EE1560C95550375C7EAFCA /* AudioEngineTests */ = {
+		0987392738BECAC173CDB176 /* Persistence */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2BDDB200BAA08A72C8F1A16B /* Build configuration list for PBXNativeTarget "AudioEngineTests" */;
+			buildConfigurationList = A06191F4E5F9D0568DBAE955 /* Build configuration list for PBXNativeTarget "Persistence" */;
 			buildPhases = (
-				97BA639644CC8B51088F1700 /* Sources */,
-				96DF400230B97CC2A3061218 /* Frameworks */,
-				7B8DF9DB373A0322092A81DF /* Resources */,
+				A98B5C0636BF073F618407D5 /* Headers */,
+				D768F5B5BE672100D856BD43 /* Sources */,
+				4A361AEF018788717294840E /* Frameworks */,
+				A4E1A117D2566FD89BD9158E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				9B43F1929030183437C65361 /* PBXTargetDependency */,
-				4855B741AD2EC39C0AB034EB /* PBXTargetDependency */,
+				8CB1C0F990BD7EA1FCD852FB /* PBXTargetDependency */,
+				926B4D7E46AD800EEF5C3AAF /* PBXTargetDependency */,
+			);
+			name = Persistence;
+			productName = Persistence;
+			productReference = 21209EE4394951D2AEF59A6F /* Persistence.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		42B66582BE0A808391329859 /* AudioEngine */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8875460A0BFDE2C6E1B42DDC /* Build configuration list for PBXNativeTarget "AudioEngine" */;
+			buildPhases = (
+				B708B18B72B100DAEC1EC6CF /* Headers */,
+				436BF622B8DD882441316001 /* Sources */,
+				4FAFA99247020926738B57FA /* Frameworks */,
+				F648FAFF6AB2AC9B95D16EEF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				576AFA30F750CFB0ADC58149 /* PBXTargetDependency */,
+			);
+			name = AudioEngine;
+			productName = AudioEngine;
+			productReference = 72109E8FE256A052A092AF22 /* AudioEngine.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		8E8AE7A3C358C69E88674194 /* Metronome */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A9D75BA313C2A6309FBFD4CF /* Build configuration list for PBXNativeTarget "Metronome" */;
+			buildPhases = (
+				3A79724EE9E99E948E87108B /* Sources */,
+				44AA5F6E2614416677D98BEC /* Frameworks */,
+				88804B7BBB264236B340ECE1 /* Resources */,
+				7F7A1E17B26394F9BEE00C17 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DB1BBBE8915278DDE9F5A870 /* PBXTargetDependency */,
+				3D398C58A06B42703CCCCB28 /* PBXTargetDependency */,
+				7C99D87F6602D717DB94ADCD /* PBXTargetDependency */,
+			);
+			name = Metronome;
+			productName = Metronome;
+			productReference = 554D7ABED625C694E2D7FC6E /* Metronome.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A3A85FCC197BD865A7D6F27F /* PersistenceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1661C6B09F6BE3A965B1F7B /* Build configuration list for PBXNativeTarget "PersistenceTests" */;
+			buildPhases = (
+				1B54CD7A0F8F283AFA477069 /* Sources */,
+				9C9F6550DAD484BE883D302F /* Frameworks */,
+				84457C3E71BD77A292C2C08E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E3E3BBBC8C19A047F3D6801A /* PBXTargetDependency */,
+				0AAFE06DA8DD843C2E85C3CC /* PBXTargetDependency */,
+				4FCB106337FF60EFBB761F0F /* PBXTargetDependency */,
+			);
+			name = PersistenceTests;
+			productName = PersistenceTests;
+			productReference = ED64857EEBC8152465A9C546 /* PersistenceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D257E4D1F2F4D9A823190209 /* RhythmModelTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4A9CE879D81C9E710E28B5E5 /* Build configuration list for PBXNativeTarget "RhythmModelTests" */;
+			buildPhases = (
+				934A91EED9D7DFA6BEE1A75B /* Sources */,
+				4F747A8999ABFACF92990016 /* Frameworks */,
+				5DF18C7EB42E0B2267610608 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F30CF27D2EA4546D392A656D /* PBXTargetDependency */,
+			);
+			name = RhythmModelTests;
+			productName = RhythmModelTests;
+			productReference = F5A41BF7D73FA0AB370A2F6A /* RhythmModelTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F5B0974F0AF01A46786D8067 /* AudioEngineTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0EC80311201B85F840356EA8 /* Build configuration list for PBXNativeTarget "AudioEngineTests" */;
+			buildPhases = (
+				FBD88A5FECA27DFFE9989CF7 /* Sources */,
+				1A0DA8C6DC5C60FA776DA9D9 /* Frameworks */,
+				4BAA9BA1D2223B7DD38A931C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2FD20F78C2DA671B8DFA3FFC /* PBXTargetDependency */,
+				0BDBA2EA0B34DE579EE0F44E /* PBXTargetDependency */,
 			);
 			name = AudioEngineTests;
 			productName = AudioEngineTests;
-			productReference = 597A73609554E01DFE786143 /* AudioEngineTests.xctest */;
+			productReference = AEB5E12EC50BC6C35CB3BF60 /* AudioEngineTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		3665B99973AEF9243601F577 /* RhythmModel */ = {
+		F63C100250B52722CCE1377E /* RhythmModel */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A7A22C9E76121B083D31BC79 /* Build configuration list for PBXNativeTarget "RhythmModel" */;
+			buildConfigurationList = 4CC3676DD869E3651865D47C /* Build configuration list for PBXNativeTarget "RhythmModel" */;
 			buildPhases = (
-				2649E7A7B72CDA2255984FEE /* Headers */,
-				437E07CF9E0DECB12ACB9CAB /* Sources */,
-				F2C150532FD052DF8F91859F /* Frameworks */,
-				FDDFD40591A0797D31DFC92A /* Resources */,
+				81E9AD715057137445DE3F75 /* Headers */,
+				07C895801A638BE0F19FAB37 /* Sources */,
+				25B4AAEADF2693C3ED9895E6 /* Frameworks */,
+				E377F2EC879B566ECA8F3709 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -421,117 +522,19 @@
 			);
 			name = RhythmModel;
 			productName = RhythmModel;
-			productReference = FA7F0AEC29FA442A34AF7DC0 /* RhythmModel.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		4FA325F3C1D7A8216A5F2807 /* Metronome */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 27E09CBBE34605ED69B58474 /* Build configuration list for PBXNativeTarget "Metronome" */;
-			buildPhases = (
-				E698342BC369D3CEA10D4FB0 /* Sources */,
-				DF825440B59610A96EAFAB4D /* Frameworks */,
-				5EC7D003FDFC19659843B656 /* Resources */,
-				15098ACA4D34534900591281 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A5CDC35C96C7DAEADAE9717C /* PBXTargetDependency */,
-				0648C560AA7C9DF0A5C80B5F /* PBXTargetDependency */,
-				62BCEA39ED55A6E75FCFC450 /* PBXTargetDependency */,
-			);
-			name = Metronome;
-			productName = Metronome;
-			productReference = 7078AE1D70C0F6E4C4FB2B9A /* Metronome.app */;
-			productType = "com.apple.product-type.application";
-		};
-		63DFF3D52CB7D629CE0DE2A9 /* PersistenceTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 24BE29AB86691AC9D6A71B2B /* Build configuration list for PBXNativeTarget "PersistenceTests" */;
-			buildPhases = (
-				25A55A12FD333716363E4614 /* Sources */,
-				BBA0E2D44E646536A026412C /* Frameworks */,
-				D8C0561A1CC8F3E4154CFD16 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				4806DD16FD426185A5331D62 /* PBXTargetDependency */,
-				24057F26D35D3846D07A53B4 /* PBXTargetDependency */,
-				8552DFBABC151629B5FECDF1 /* PBXTargetDependency */,
-			);
-			name = PersistenceTests;
-			productName = PersistenceTests;
-			productReference = 49E6B83D65E0AE1336AD8B3E /* PersistenceTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		6EE01B640F0870EA25B66EF9 /* Persistence */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D1E547B3F5E1CA81CC58F1E0 /* Build configuration list for PBXNativeTarget "Persistence" */;
-			buildPhases = (
-				43E7A7CDA3200CF76507626E /* Headers */,
-				030DFBFC1C75F036AD3C912C /* Sources */,
-				5F5C3533D89022E0C15C4787 /* Frameworks */,
-				818ED899F4782CB492EB132E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				821D7D4872AADAF4FD9804FF /* PBXTargetDependency */,
-				62C1C6974CF2FF7A2D2F1A49 /* PBXTargetDependency */,
-			);
-			name = Persistence;
-			productName = Persistence;
-			productReference = FD351F786BB3AE32CF2C1761 /* Persistence.framework */;
-			productType = "com.apple.product-type.framework";
-		};
-		6F90646CAEFE454DD62E19F8 /* RhythmModelTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 055B1AA47504A396B76EF48D /* Build configuration list for PBXNativeTarget "RhythmModelTests" */;
-			buildPhases = (
-				4462C2D8980DFF130BBA6011 /* Sources */,
-				2B0A28EBE12BF69A120034AF /* Frameworks */,
-				AAE85051A1C83FD16EFD1CB1 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				50D74C52D1669C456632AC16 /* PBXTargetDependency */,
-			);
-			name = RhythmModelTests;
-			productName = RhythmModelTests;
-			productReference = B070FDEF25C306B944FACC49 /* RhythmModelTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		AB99BD14665ABAE84303AC36 /* AudioEngine */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 497120BDB0EB10A9B606C10A /* Build configuration list for PBXNativeTarget "AudioEngine" */;
-			buildPhases = (
-				B34FD2B2C68B1F5EA9F098B0 /* Headers */,
-				731FDBC9B3DE6A00E0604A7C /* Sources */,
-				34845C28B9007C85B27B4EA6 /* Frameworks */,
-				053C7E4F54031093017C93E1 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				7E491F998400AAE2B1D069A4 /* PBXTargetDependency */,
-			);
-			name = AudioEngine;
-			productName = AudioEngine;
-			productReference = 1CD1881559130B3F5BEDF24E /* AudioEngine.framework */;
+			productReference = 7E8DAB6FC3EAC8CCA35F31EC /* RhythmModel.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		84BA6FED1EC409FB41C3922C /* Project object */ = {
+		2CC6707D09D69AEEC1B90CAF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1600;
 			};
-			buildConfigurationList = AEF7998041767A22F9DEA9C7 /* Build configuration list for PBXProject "Metronome" */;
+			buildConfigurationList = 27A518FEBBF5186A81C41C20 /* Build configuration list for PBXProject "Metronome" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -539,68 +542,69 @@
 				en,
 				Base,
 			);
-			mainGroup = FD5B62FFF465120CCAF7A7D0;
+			mainGroup = 6C7EF557D002279C14EDFDA5;
 			minimizedProjectReferenceProxies = 0;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 8AFE40B2CC17C5FC3C8CE808 /* Products */;
+			productRefGroup = 2A6AA1D0FB32AFE6524913D3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				3665B99973AEF9243601F577 /* RhythmModel */,
-				AB99BD14665ABAE84303AC36 /* AudioEngine */,
-				6EE01B640F0870EA25B66EF9 /* Persistence */,
-				4FA325F3C1D7A8216A5F2807 /* Metronome */,
-				6F90646CAEFE454DD62E19F8 /* RhythmModelTests */,
-				35EE1560C95550375C7EAFCA /* AudioEngineTests */,
-				63DFF3D52CB7D629CE0DE2A9 /* PersistenceTests */,
+				F63C100250B52722CCE1377E /* RhythmModel */,
+				42B66582BE0A808391329859 /* AudioEngine */,
+				0987392738BECAC173CDB176 /* Persistence */,
+				8E8AE7A3C358C69E88674194 /* Metronome */,
+				D257E4D1F2F4D9A823190209 /* RhythmModelTests */,
+				F5B0974F0AF01A46786D8067 /* AudioEngineTests */,
+				A3A85FCC197BD865A7D6F27F /* PersistenceTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		053C7E4F54031093017C93E1 /* Resources */ = {
+		4BAA9BA1D2223B7DD38A931C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5EC7D003FDFC19659843B656 /* Resources */ = {
+		5DF18C7EB42E0B2267610608 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		7B8DF9DB373A0322092A81DF /* Resources */ = {
+		84457C3E71BD77A292C2C08E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		818ED899F4782CB492EB132E /* Resources */ = {
+		88804B7BBB264236B340ECE1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B787A1479EB7D5628749A9BD /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4E1A117D2566FD89BD9158E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		AAE85051A1C83FD16EFD1CB1 /* Resources */ = {
+		E377F2EC879B566ECA8F3709 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D8C0561A1CC8F3E4154CFD16 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		FDDFD40591A0797D31DFC92A /* Resources */ = {
+		F648FAFF6AB2AC9B95D16EEF /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -610,344 +614,142 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		030DFBFC1C75F036AD3C912C /* Sources */ = {
+		07C895801A638BE0F19FAB37 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				036D7D430C77094B0C285744 /* MetronomeLibraryStore.swift in Sources */,
+				A827F564E57F387F43BC8173 /* RhythmModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		25A55A12FD333716363E4614 /* Sources */ = {
+		1B54CD7A0F8F283AFA477069 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0D3AE2E21FAEF5E9500C17AD /* PersistenceTests.swift in Sources */,
+				B50563BE3B6E6022798B8B9B /* PersistenceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		437E07CF9E0DECB12ACB9CAB /* Sources */ = {
+		3A79724EE9E99E948E87108B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D5D8BE749F54B431EE7E2E56 /* RhythmModel.swift in Sources */,
+				470EBE9D5857B2E33195B3EE /* MetronomeApp.swift in Sources */,
+				B3327B6F5B75C0009686D405 /* MainMetronomeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4462C2D8980DFF130BBA6011 /* Sources */ = {
+		436BF622B8DD882441316001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3ACC70A86FC5B519AE47CE5E /* RhythmModelTests.swift in Sources */,
+				349018DFC717D240D2F8EA31 /* MetronomeAudioEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		731FDBC9B3DE6A00E0604A7C /* Sources */ = {
+		934A91EED9D7DFA6BEE1A75B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6D01BB6F9B3B23A18916E3DA /* MetronomeAudioEngine.swift in Sources */,
+				AFD6E3D5D8EC54F1EE0E6448 /* RhythmModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		97BA639644CC8B51088F1700 /* Sources */ = {
+		D768F5B5BE672100D856BD43 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C2EE784D1925C90C0E0CBD /* AudioEngineTests.swift in Sources */,
+				4749EFD5F596573DAAC38125 /* MetronomeLibraryStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E698342BC369D3CEA10D4FB0 /* Sources */ = {
+		FBD88A5FECA27DFFE9989CF7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDBF093C995D6BBB6F610746 /* MetronomeApp.swift in Sources */,
-				41CE496A2668A867CF7620AB /* MainMetronomeView.swift in Sources */,
+				ECD41AA0547D7A0608C249FD /* AudioEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0648C560AA7C9DF0A5C80B5F /* PBXTargetDependency */ = {
+		0AAFE06DA8DD843C2E85C3CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AudioEngine;
-			target = AB99BD14665ABAE84303AC36 /* AudioEngine */;
-			targetProxy = 078FFFC05FE8DE3B8BDE1A12 /* PBXContainerItemProxy */;
+			target = 42B66582BE0A808391329859 /* AudioEngine */;
+			targetProxy = 1FA820298E9C5BA5E62C9CDA /* PBXContainerItemProxy */;
 		};
-		24057F26D35D3846D07A53B4 /* PBXTargetDependency */ = {
+		0BDBA2EA0B34DE579EE0F44E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AudioEngine;
-			target = AB99BD14665ABAE84303AC36 /* AudioEngine */;
-			targetProxy = BAB2EAA23A471F87C03A8E91 /* PBXContainerItemProxy */;
+			target = 42B66582BE0A808391329859 /* AudioEngine */;
+			targetProxy = F306CAA96F38D5A34F05D47E /* PBXContainerItemProxy */;
 		};
-		4806DD16FD426185A5331D62 /* PBXTargetDependency */ = {
+		2FD20F78C2DA671B8DFA3FFC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = EF9BF9906F1083DEA0EF63ED /* PBXContainerItemProxy */;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = 5ED2C17600352E2D819CEB03 /* PBXContainerItemProxy */;
 		};
-		4855B741AD2EC39C0AB034EB /* PBXTargetDependency */ = {
+		3D398C58A06B42703CCCCB28 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AudioEngine;
-			target = AB99BD14665ABAE84303AC36 /* AudioEngine */;
-			targetProxy = 6FB4AB8F35E04447CE935E0F /* PBXContainerItemProxy */;
+			target = 42B66582BE0A808391329859 /* AudioEngine */;
+			targetProxy = C8751F4938DF8FC94E5D2AF8 /* PBXContainerItemProxy */;
 		};
-		50D74C52D1669C456632AC16 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = B9CE4673CB3BBB9538C97D5C /* PBXContainerItemProxy */;
-		};
-		62BCEA39ED55A6E75FCFC450 /* PBXTargetDependency */ = {
+		4FCB106337FF60EFBB761F0F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Persistence;
-			target = 6EE01B640F0870EA25B66EF9 /* Persistence */;
-			targetProxy = B089E69E8D5037026033100B /* PBXContainerItemProxy */;
+			target = 0987392738BECAC173CDB176 /* Persistence */;
+			targetProxy = 181444C6FC7EC092B859858A /* PBXContainerItemProxy */;
 		};
-		62C1C6974CF2FF7A2D2F1A49 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioEngine;
-			target = AB99BD14665ABAE84303AC36 /* AudioEngine */;
-			targetProxy = 8232759F7D2CB20EF332AA07 /* PBXContainerItemProxy */;
-		};
-		7E491F998400AAE2B1D069A4 /* PBXTargetDependency */ = {
+		576AFA30F750CFB0ADC58149 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = D5917D2E699AF18B5C10B8DF /* PBXContainerItemProxy */;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = 052A0EEB81C966A0E5D6206F /* PBXContainerItemProxy */;
 		};
-		821D7D4872AADAF4FD9804FF /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = 93C46981EE166FF7E94EF0B0 /* PBXContainerItemProxy */;
-		};
-		8552DFBABC151629B5FECDF1 /* PBXTargetDependency */ = {
+		7C99D87F6602D717DB94ADCD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = Persistence;
-			target = 6EE01B640F0870EA25B66EF9 /* Persistence */;
-			targetProxy = B1370613F0E08C3B3ACE52EA /* PBXContainerItemProxy */;
+			target = 0987392738BECAC173CDB176 /* Persistence */;
+			targetProxy = 894551440C9BD7EA8223C6B2 /* PBXContainerItemProxy */;
 		};
-		9B43F1929030183437C65361 /* PBXTargetDependency */ = {
+		8CB1C0F990BD7EA1FCD852FB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = 18D73E28C52F9E8F6DEE58B0 /* PBXContainerItemProxy */;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = 9A8410555D84A06B5DF07484 /* PBXContainerItemProxy */;
 		};
-		A5CDC35C96C7DAEADAE9717C /* PBXTargetDependency */ = {
+		926B4D7E46AD800EEF5C3AAF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioEngine;
+			target = 42B66582BE0A808391329859 /* AudioEngine */;
+			targetProxy = 666CB4EBBB7EABE86A1A6BFC /* PBXContainerItemProxy */;
+		};
+		DB1BBBE8915278DDE9F5A870 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RhythmModel;
-			target = 3665B99973AEF9243601F577 /* RhythmModel */;
-			targetProxy = 808A20040D6FA2DA5781AF79 /* PBXContainerItemProxy */;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = BFC08B80FE702797815004EC /* PBXContainerItemProxy */;
+		};
+		E3E3BBBC8C19A047F3D6801A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhythmModel;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = A4246AC5BADBC5784B6F80D2 /* PBXContainerItemProxy */;
+		};
+		F30CF27D2EA4546D392A656D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RhythmModel;
+			target = F63C100250B52722CCE1377E /* RhythmModel */;
+			targetProxy = B6FDC0E89B6A669A76CFFA19 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0225E5BE731E2C789ED3446B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.rhythmmodeltests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		023224E2CA4BBE10F1E5C4F3 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GENERATE_INFOPLIST_FILE = YES;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.rhythmmodel;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		23F228352D8672BFCCEF2B5C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistencetests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "";
-			};
-			name = Debug;
-		};
-		30936F53822F22B277B56589 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioenginetests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		37608324536CF80FD55FABF4 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		4A9EEBB6DE328E93BA4A4761 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistencetests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		53BA6FC5BA0BE9893573EADF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		63495F399E303383EB600109 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GENERATE_INFOPLIST_FILE = YES;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistence;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		7EBD6F1A0C0421C35116E980 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioenginetests;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "";
-			};
-			name = Debug;
-		};
-		9AE19ED712282636CE25E029 /* Debug */ = {
+		1C7CCF0ABECFCC6A38A05728 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -973,34 +775,7 @@
 			};
 			name = Debug;
 		};
-		C67D7D9FD3C6B201815E961D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GENERATE_INFOPLIST_FILE = YES;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioengine;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
-		};
-		CF3ABEF42419977F6D97A2E9 /* Debug */ = {
+		2D30A7312D6F04D88E9B7FB3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1061,7 +836,7 @@
 			};
 			name = Debug;
 		};
-		D36C2EF3F979513B194C5A67 /* Release */ = {
+		3FF53E22EC0AEFB2332564C3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -1088,7 +863,98 @@
 			};
 			name = Release;
 		};
-		DA52F85F61138F4522A74342 /* Debug */ = {
+		400F2C89EDC52CC0DAFAA4B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioenginetests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		585421DA88D6075B8C1D3B80 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistence;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		68BB402EF36D095D64A7E579 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7388D79455B7467A50D5E24C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistencetests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8EBC1FE7323391906D0F6C61 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.rhythmmodeltests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A4DA189511322A459AACC728 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -1103,7 +969,164 @@
 			};
 			name = Debug;
 		};
-		E46038AA99A6C476FD7AC718 /* Release */ = {
+		AE5DC0B1966B6F1072AEA827 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		BF82738631EF17077A39049E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioengine;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		C5F50B4BE9DFED216FD9151E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.persistencetests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+			};
+			name = Debug;
+		};
+		DA0B9BF415B6882FBE3BC1D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GENERATE_INFOPLIST_FILE = YES;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.rhythmmodel;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		F7EE59213E28359EBC91EA80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		FAB81C7C2DD734B8A769600B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome.audioenginetests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FFABB47F153396A03E6DBF0E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -1130,101 +1153,82 @@
 			};
 			name = Release;
 		};
-		EAEC64049D9A8FA0847E1FFE /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.seanashe.metronome;
-				SDKROOT = iphoneos;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		055B1AA47504A396B76EF48D /* Build configuration list for PBXNativeTarget "RhythmModelTests" */ = {
+		0EC80311201B85F840356EA8 /* Build configuration list for PBXNativeTarget "AudioEngineTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0225E5BE731E2C789ED3446B /* Release */,
-				DA52F85F61138F4522A74342 /* Debug */,
+				FAB81C7C2DD734B8A769600B /* Release */,
+				400F2C89EDC52CC0DAFAA4B1 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		24BE29AB86691AC9D6A71B2B /* Build configuration list for PBXNativeTarget "PersistenceTests" */ = {
+		27A518FEBBF5186A81C41C20 /* Build configuration list for PBXProject "Metronome" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				4A9EEBB6DE328E93BA4A4761 /* Release */,
-				23F228352D8672BFCCEF2B5C /* Debug */,
+				2D30A7312D6F04D88E9B7FB3 /* Debug */,
+				F7EE59213E28359EBC91EA80 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		27E09CBBE34605ED69B58474 /* Build configuration list for PBXNativeTarget "Metronome" */ = {
+		4A9CE879D81C9E710E28B5E5 /* Build configuration list for PBXNativeTarget "RhythmModelTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				EAEC64049D9A8FA0847E1FFE /* Release */,
-				53BA6FC5BA0BE9893573EADF /* Debug */,
+				8EBC1FE7323391906D0F6C61 /* Release */,
+				A4DA189511322A459AACC728 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2BDDB200BAA08A72C8F1A16B /* Build configuration list for PBXNativeTarget "AudioEngineTests" */ = {
+		4CC3676DD869E3651865D47C /* Build configuration list for PBXNativeTarget "RhythmModel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				30936F53822F22B277B56589 /* Release */,
-				7EBD6F1A0C0421C35116E980 /* Debug */,
+				3FF53E22EC0AEFB2332564C3 /* Release */,
+				DA0B9BF415B6882FBE3BC1D0 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		497120BDB0EB10A9B606C10A /* Build configuration list for PBXNativeTarget "AudioEngine" */ = {
+		8875460A0BFDE2C6E1B42DDC /* Build configuration list for PBXNativeTarget "AudioEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C67D7D9FD3C6B201815E961D /* Release */,
-				9AE19ED712282636CE25E029 /* Debug */,
+				BF82738631EF17077A39049E /* Release */,
+				1C7CCF0ABECFCC6A38A05728 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		A7A22C9E76121B083D31BC79 /* Build configuration list for PBXNativeTarget "RhythmModel" */ = {
+		A06191F4E5F9D0568DBAE955 /* Build configuration list for PBXNativeTarget "Persistence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D36C2EF3F979513B194C5A67 /* Release */,
-				023224E2CA4BBE10F1E5C4F3 /* Debug */,
+				FFABB47F153396A03E6DBF0E /* Release */,
+				585421DA88D6075B8C1D3B80 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		AEF7998041767A22F9DEA9C7 /* Build configuration list for PBXProject "Metronome" */ = {
+		A9D75BA313C2A6309FBFD4CF /* Build configuration list for PBXNativeTarget "Metronome" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CF3ABEF42419977F6D97A2E9 /* Debug */,
-				37608324536CF80FD55FABF4 /* Release */,
+				AE5DC0B1966B6F1072AEA827 /* Release */,
+				68BB402EF36D095D64A7E579 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D1E547B3F5E1CA81CC58F1E0 /* Build configuration list for PBXNativeTarget "Persistence" */ = {
+		C1661C6B09F6BE3A965B1F7B /* Build configuration list for PBXNativeTarget "PersistenceTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E46038AA99A6C476FD7AC718 /* Release */,
-				63495F399E303383EB600109 /* Debug */,
+				7388D79455B7467A50D5E24C /* Release */,
+				C5F50B4BE9DFED216FD9151E /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 84BA6FED1EC409FB41C3922C /* Project object */;
+	rootObject = 2CC6707D09D69AEEC1B90CAF /* Project object */;
 }
