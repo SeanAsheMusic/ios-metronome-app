@@ -74,7 +74,7 @@ The repository includes a generated Xcode project and a Swift package manifest.
 Tools/run_local_validation.sh
 ```
 
-This repository has been validated with privacy/local-first checks, Swift package tests, click fixture checksums, iPhone 17 simulator builds/tests, and a simulator launch screenshot smoke check. The package tests can also be run directly with:
+This repository has been validated with privacy/local-first checks, Swift package tests, click fixture checksums, iPhone 17 simulator builds/tests, a warning-clean generic iOS device build with signing disabled, and a simulator launch screenshot smoke check. The package tests can also be run directly with:
 
 ```sh
 swift test

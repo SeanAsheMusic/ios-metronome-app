@@ -102,6 +102,17 @@ run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-build.log" \
   -quiet
 
 echo
+echo "== Generic iOS device build =="
+run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-device-build.log" \
+  xcodebuild build \
+  -project Metronome.xcodeproj \
+  -scheme Metronome \
+  -destination 'generic/platform=iOS' \
+  CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath "$DERIVED_DATA_ROOT/MetronomeDevice" \
+  -quiet
+
+echo
 echo "== Simulator app launch smoke =="
 simulator_name="$(
   /usr/bin/ruby -e 'destination = ARGV.fetch(0); match = destination.match(/(?:^|,)name=([^,]+)/); puts(match[1]) if match' "$DESTINATION"
