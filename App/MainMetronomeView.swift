@@ -6,7 +6,7 @@ import RhythmModel
 
 struct MainMetronomeView: View {
     @StateObject private var viewModel: MainMetronomeViewModel
-    @State private var selectedTab: InstrumentTab = .play
+    @State private var selectedTab: InstrumentTab
     @State private var exportDocument = LibraryExportDocument(data: Data())
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
@@ -65,12 +65,14 @@ struct MainMetronomeView: View {
         static let hairline = Color.white.opacity(0.12)
     }
 
-    init() {
+    init(initialTab: String = InstrumentTab.play.rawValue) {
         _viewModel = StateObject(wrappedValue: MainMetronomeViewModel())
+        _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
     }
 
-    init(viewModel: MainMetronomeViewModel) {
+    init(viewModel: MainMetronomeViewModel, initialTab: String = InstrumentTab.play.rawValue) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
     }
 
     var body: some View {
@@ -1192,13 +1194,17 @@ struct MainMetronomeView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 3) {
                     sectionLabel("Rhythm Grid")
-                    Text("Pick a feel, then tap steps to paint the groove.")
+                    Text("Paint each beat and subdivision as accent, hit, soft, or rest.")
                         .font(.caption)
                         .foregroundStyle(InstrumentTheme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 12)
-                rhythmLegend
+                Text(viewModel.rhythmGridSummary)
+                    .font(.caption2.monospaced().weight(.semibold))
+                    .foregroundStyle(InstrumentTheme.secondaryText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
 
             rhythmPaintPalette
@@ -1206,10 +1212,10 @@ struct MainMetronomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 10) {
                     ForEach(viewModel.rhythmGridBeats) { beatGroup in
-                        VStack(spacing: 8) {
+                        VStack(spacing: 7) {
                             HStack(spacing: 7) {
                                 Text("\(beatGroup.beatNumber)")
-                                    .font(.caption.monospaced().weight(.bold))
+                                    .font(.caption.monospacedDigit().weight(.black))
                                     .foregroundStyle(InstrumentTheme.primaryText)
 
                                 Menu {
@@ -1239,20 +1245,20 @@ struct MainMetronomeView: View {
                             }
                             .frame(maxWidth: .infinity)
 
-                            HStack(alignment: .center, spacing: 6) {
-                                ForEach(beatGroup.steps) { beat in
-                                    rhythmStepButton(beat: beat)
+                            HStack(alignment: .center, spacing: 5) {
+                                ForEach(Array(beatGroup.steps.enumerated()), id: \.element.id) { stepOffset, beat in
+                                    rhythmStepButton(beat: beat, stepNumber: stepOffset + 1)
                                 }
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 10)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 8)
                             .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .stroke(InstrumentTheme.hairline, lineWidth: 1)
                             )
                         }
-                        .frame(minWidth: max(76, CGFloat(beatGroup.steps.count) * 30 + 22))
+                        .frame(minWidth: max(82, CGFloat(beatGroup.steps.count) * 42 + 18))
                         .accessibilityElement(children: .contain)
                     }
                 }
@@ -1263,29 +1269,8 @@ struct MainMetronomeView: View {
         .accessibilityIdentifier("Rhythm Grid")
     }
 
-    private var rhythmLegend: some View {
-        HStack(spacing: 8) {
-            rhythmLegendItem(accent: .strong, label: "Accent")
-            rhythmLegendItem(accent: .normal, label: "Hit")
-            rhythmLegendItem(accent: .ghost, label: "Soft")
-            rhythmLegendItem(accent: .muted, label: "Rest")
-        }
-        .lineLimit(1)
-        .minimumScaleFactor(0.8)
-    }
-
-    private func rhythmLegendItem(accent: AccentLevel, label: String) -> some View {
-        HStack(spacing: 4) {
-            rhythmStepGlyph(for: accent)
-                .frame(width: 12, height: 12)
-            Text(label)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(InstrumentTheme.secondaryText)
-        }
-    }
-
     private var rhythmPaintPalette: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 0) {
             rhythmPaintButton(accent: .strong, label: "Accent")
             rhythmPaintButton(accent: .normal, label: "Hit")
             rhythmPaintButton(accent: .ghost, label: "Soft")
@@ -1299,41 +1284,56 @@ struct MainMetronomeView: View {
         return Button {
             selectedRhythmGridAccent = accent
         } label: {
-            VStack(spacing: 5) {
-                rhythmStepGlyph(for: accent)
-                    .frame(width: 18, height: 18)
-                Text(label)
-                    .font(.caption2.weight(.bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+            VStack(spacing: 6) {
+                HStack(spacing: 5) {
+                    rhythmStepGlyph(for: accent)
+                        .frame(width: 15, height: 15)
+                    Text(label)
+                        .font(.caption2.monospaced().weight(.bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+
+                Rectangle()
+                    .fill(isSelected ? InstrumentTheme.accent : InstrumentTheme.hairline)
+                    .frame(height: isSelected ? 2 : 1)
+                    .opacity(isSelected ? 1 : 0.35)
             }
             .foregroundStyle(isSelected ? InstrumentTheme.primaryText : InstrumentTheme.secondaryText)
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .background(
-                isSelected ? InstrumentTheme.raisedSurface : InstrumentTheme.surface,
-                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(isSelected ? InstrumentTheme.accent : InstrumentTheme.hairline, lineWidth: isSelected ? 2 : 1)
-            )
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Paint \(label)")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
 
-    private func rhythmStepButton(beat: Beat) -> some View {
+    private func rhythmStepButton(beat: Beat, stepNumber: Int) -> some View {
         Button {
             Task {
                 await viewModel.setAccent(selectedRhythmGridAccent, at: beat.index)
             }
         } label: {
-            rhythmStepGlyph(for: beat.accent)
-                .frame(width: 24, height: 36)
-                .contentShape(Rectangle())
+            VStack(spacing: 4) {
+                rhythmStepGlyph(for: beat.accent)
+                    .frame(width: 22, height: 22)
+                Text("\(stepNumber)")
+                    .font(.system(size: 8, weight: .bold, design: .monospaced))
+                    .foregroundStyle(InstrumentTheme.secondaryText)
+                    .lineLimit(1)
+            }
+            .frame(width: 38, height: 46)
+            .background(
+                stepPadFill(for: beat.accent),
+                in: RoundedRectangle(cornerRadius: 6, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(stepPadStroke(for: beat.accent), lineWidth: beat.accent == .strong ? 1.5 : 1)
+            )
         }
         .buttonStyle(.plain)
+        .contentShape(Rectangle())
         .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
         .accessibilityHint("Sets this step to the selected rhythm-grid paint state.")
         .contextMenu {
@@ -1346,6 +1346,32 @@ struct MainMetronomeView: View {
                     Label(viewModel.menuLabel(for: accent), systemImage: viewModel.systemImage(for: accent))
                 }
             }
+        }
+    }
+
+    private func stepPadFill(for accent: AccentLevel) -> Color {
+        switch accent {
+        case .strong:
+            InstrumentTheme.accent.opacity(0.18)
+        case .normal:
+            InstrumentTheme.raisedSurface
+        case .ghost:
+            InstrumentTheme.surface
+        case .muted:
+            InstrumentTheme.background
+        }
+    }
+
+    private func stepPadStroke(for accent: AccentLevel) -> Color {
+        switch accent {
+        case .strong:
+            InstrumentTheme.accent.opacity(0.8)
+        case .normal:
+            InstrumentTheme.hairline
+        case .ghost:
+            InstrumentTheme.secondaryText.opacity(0.45)
+        case .muted:
+            InstrumentTheme.secondaryText.opacity(0.22)
         }
     }
 
@@ -2593,6 +2619,11 @@ final class MainMetronomeViewModel: ObservableObject {
         }
 
         return beatGroups
+    }
+
+    var rhythmGridSummary: String {
+        let stepCount = pattern.beats.count
+        return "\(pattern.meter.displayName) · \(stepCount) steps"
     }
 
     func compactSubdivisionLabel(for subdivision: Subdivision) -> String {

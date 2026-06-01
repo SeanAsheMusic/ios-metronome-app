@@ -56,11 +56,8 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
     }
 
-    func testEditRhythmGridCyclesStepAccent() {
-        let app = launchApp()
-
-        XCTAssertTrue(app.buttons["Edit tab"].waitForExistence(timeout: 8))
-        app.buttons["Edit tab"].tap()
+    func testEditRhythmGridPaintsStepAccent() {
+        let app = launchApp(initialTab: "edit")
 
         XCTAssertTrue(app.descendants(matching: .any)["Rhythm Grid"].waitForExistence(timeout: 2), "Edit should expose the visual rhythm grid.")
         let firstStep = app.buttons["Step 1, strong accent"]
@@ -68,7 +65,7 @@ final class MetronomeLaunchUITests: XCTestCase {
 
         XCTAssertEqual(app.buttons["Paint Hit"].value as? String, "Selected", "The grid should default to painting ordinary hits.")
         firstStep.tap()
-        XCTAssertTrue(app.buttons["Step 1, normal accent"].waitForExistence(timeout: 2), "Tapping a grid step should cycle its accent state.")
+        XCTAssertTrue(app.buttons["Step 1, normal accent"].waitForExistence(timeout: 2), "Tapping a grid step should apply the selected paint state.")
 
         app.buttons["Paint Rest"].tap()
         XCTAssertEqual(app.buttons["Paint Rest"].value as? String, "Selected")
@@ -128,12 +125,15 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, "Expected \(element) to become reachable after scrolling.")
     }
 
-    private func launchApp(contentSizeCategory: String? = nil) -> XCUIApplication {
+    private func launchApp(contentSizeCategory: String? = nil, initialTab: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
         let contentSizeArguments = contentSizeCategory.map {
             ["-UIPreferredContentSizeCategoryName", $0]
         } ?? []
-        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments
+        let initialTabArguments = initialTab.map {
+            ["-PulsecraftInitialTab", $0]
+        } ?? []
+        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments + initialTabArguments
         app.launch()
         return app
     }
