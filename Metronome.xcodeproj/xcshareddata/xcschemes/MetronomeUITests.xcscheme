@@ -28,9 +28,9 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5092BB70DF0E0CAEF37AA03A"
-               BuildableName = "RhythmModelTests.xctest"
-               BlueprintName = "RhythmModelTests"
+               BlueprintIdentifier = "8D6849E7ACC2AF56D5BBD150"
+               BuildableName = "MetronomeUITests.xctest"
+               BlueprintName = "MetronomeUITests"
                ReferencedContainer = "container:Metronome.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -84,36 +84,6 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5092BB70DF0E0CAEF37AA03A"
-               BuildableName = "RhythmModelTests.xctest"
-               BlueprintName = "RhythmModelTests"
-               ReferencedContainer = "container:Metronome.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D844CC5CC5F3B0EBAE13F6D3"
-               BuildableName = "AudioEngineTests.xctest"
-               BlueprintName = "AudioEngineTests"
-               ReferencedContainer = "container:Metronome.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "E924DAD75F1114DBD27B375D"
-               BuildableName = "PersistenceTests.xctest"
-               BlueprintName = "PersistenceTests"
-               ReferencedContainer = "container:Metronome.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
          <TestableReference
             skipped = "NO">
             <BuildableReference

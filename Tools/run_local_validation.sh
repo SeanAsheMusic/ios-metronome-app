@@ -90,6 +90,7 @@ run_xcode_test() {
 run_xcode_test RhythmModel
 run_xcode_test AudioEngine
 run_xcode_test Persistence
+run_xcode_test MetronomeUITests
 
 echo
 echo "== Simulator app build =="

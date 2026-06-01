@@ -25,6 +25,7 @@ persistence_group = sources_group.new_group('Persistence', 'Persistence')
 rhythm_tests_group = tests_group.new_group('RhythmModelTests', 'RhythmModelTests')
 audio_tests_group = tests_group.new_group('AudioEngineTests', 'AudioEngineTests')
 persistence_tests_group = tests_group.new_group('PersistenceTests', 'PersistenceTests')
+metronome_ui_tests_group = tests_group.new_group('MetronomeUITests', 'MetronomeUITests')
 
 rhythm_target = project.new_target(:framework, 'RhythmModel', :ios, DEPLOYMENT_TARGET)
 audio_target = project.new_target(:framework, 'AudioEngine', :ios, DEPLOYMENT_TARGET)
@@ -33,6 +34,7 @@ app_target = project.new_target(:application, 'Metronome', :ios, DEPLOYMENT_TARG
 rhythm_tests_target = project.new_target(:unit_test_bundle, 'RhythmModelTests', :ios, DEPLOYMENT_TARGET)
 audio_tests_target = project.new_target(:unit_test_bundle, 'AudioEngineTests', :ios, DEPLOYMENT_TARGET)
 persistence_tests_target = project.new_target(:unit_test_bundle, 'PersistenceTests', :ios, DEPLOYMENT_TARGET)
+metronome_ui_tests_target = project.new_target(:ui_test_bundle, 'MetronomeUITests', :ios, DEPLOYMENT_TARGET)
 
 def add_source(group, target, path)
   file = group.new_file(path)
@@ -40,19 +42,20 @@ def add_source(group, target, path)
   file
 end
 
-add_source(rhythm_group, rhythm_target, 'Sources/RhythmModel/RhythmModel.swift')
-add_source(audio_group, audio_target, 'Sources/AudioEngine/MetronomeAudioEngine.swift')
-add_source(persistence_group, persistence_target, 'Sources/Persistence/MetronomeLibraryStore.swift')
-add_source(app_group, app_target, 'App/MetronomeApp.swift')
-add_source(app_group, app_target, 'App/MainMetronomeView.swift')
-app_group.new_file('App/Info.plist')
-asset_catalog = app_group.new_file('App/Assets.xcassets')
+add_source(rhythm_group, rhythm_target, 'RhythmModel.swift')
+add_source(audio_group, audio_target, 'MetronomeAudioEngine.swift')
+add_source(persistence_group, persistence_target, 'MetronomeLibraryStore.swift')
+add_source(app_group, app_target, 'MetronomeApp.swift')
+add_source(app_group, app_target, 'MainMetronomeView.swift')
+app_group.new_file('Info.plist')
+asset_catalog = app_group.new_file('Assets.xcassets')
 app_target.resources_build_phase.add_file_reference(asset_catalog)
-privacy_manifest = app_group.new_file('App/PrivacyInfo.xcprivacy')
+privacy_manifest = app_group.new_file('PrivacyInfo.xcprivacy')
 app_target.resources_build_phase.add_file_reference(privacy_manifest)
-add_source(rhythm_tests_group, rhythm_tests_target, 'Tests/RhythmModelTests/RhythmModelTests.swift')
-add_source(audio_tests_group, audio_tests_target, 'Tests/AudioEngineTests/AudioEngineTests.swift')
-add_source(persistence_tests_group, persistence_tests_target, 'Tests/PersistenceTests/PersistenceTests.swift')
+add_source(rhythm_tests_group, rhythm_tests_target, 'RhythmModelTests.swift')
+add_source(audio_tests_group, audio_tests_target, 'AudioEngineTests.swift')
+add_source(persistence_tests_group, persistence_tests_target, 'PersistenceTests.swift')
+add_source(metronome_ui_tests_group, metronome_ui_tests_target, 'MetronomeLaunchUITests.swift')
 
 audio_target.add_dependency(rhythm_target)
 persistence_target.add_dependency(rhythm_target)
@@ -66,6 +69,7 @@ audio_tests_target.add_dependency(audio_target)
 persistence_tests_target.add_dependency(rhythm_target)
 persistence_tests_target.add_dependency(audio_target)
 persistence_tests_target.add_dependency(persistence_target)
+metronome_ui_tests_target.add_dependency(app_target)
 
 app_target.frameworks_build_phase.add_file_reference(rhythm_target.product_reference)
 app_target.frameworks_build_phase.add_file_reference(audio_target.product_reference)
@@ -87,7 +91,7 @@ embed_frameworks_phase.dst_subfolder_spec = '10'
   build_file.settings = { 'ATTRIBUTES' => ['CodeSignOnCopy', 'RemoveHeadersOnCopy'] }
 end
 
-[rhythm_target, audio_target, persistence_target, app_target, rhythm_tests_target, audio_tests_target, persistence_tests_target].each do |target|
+[rhythm_target, audio_target, persistence_target, app_target, rhythm_tests_target, audio_tests_target, persistence_tests_target, metronome_ui_tests_target].each do |target|
   target.build_configurations.each do |config|
     config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = DEPLOYMENT_TARGET
     config.build_settings['SWIFT_VERSION'] = '5.0'
@@ -135,6 +139,16 @@ persistence_tests_target.build_configurations.each do |config|
   config.build_settings['TEST_HOST'] = ''
 end
 
+metronome_ui_tests_target.build_configurations.each do |config|
+  config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.seanashe.metronome.uitests'
+  config.build_settings['TEST_TARGET_NAME'] = 'Metronome'
+end
+
+project.root_object.attributes['TargetAttributes'] ||= {}
+project.root_object.attributes['TargetAttributes'][metronome_ui_tests_target.uuid] = {
+  'TestTargetID' => app_target.uuid
+}
+
 project.save
 
 metronome_scheme = Xcodeproj::XCScheme.new
@@ -144,6 +158,7 @@ metronome_scheme.add_build_target(audio_target)
 metronome_scheme.add_build_target(persistence_target)
 metronome_scheme.add_test_target(audio_tests_target)
 metronome_scheme.add_test_target(persistence_tests_target)
+metronome_scheme.add_test_target(metronome_ui_tests_target)
 metronome_scheme.save_as(PROJECT_PATH, 'Metronome', true)
 
 rhythm_scheme = Xcodeproj::XCScheme.new
@@ -159,3 +174,10 @@ persistence_scheme = Xcodeproj::XCScheme.new
 persistence_scheme.configure_with_targets(persistence_target, persistence_tests_target)
 persistence_scheme.add_build_target(rhythm_target)
 persistence_scheme.save_as(PROJECT_PATH, 'Persistence', true)
+
+metronome_ui_tests_scheme = Xcodeproj::XCScheme.new
+metronome_ui_tests_scheme.configure_with_targets(app_target, metronome_ui_tests_target)
+metronome_ui_tests_scheme.add_build_target(rhythm_target)
+metronome_ui_tests_scheme.add_build_target(audio_target)
+metronome_ui_tests_scheme.add_build_target(persistence_target)
+metronome_ui_tests_scheme.save_as(PROJECT_PATH, 'MetronomeUITests', true)
