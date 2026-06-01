@@ -45,6 +45,7 @@ add_source(audio_group, audio_target, 'Sources/AudioEngine/MetronomeAudioEngine.
 add_source(persistence_group, persistence_target, 'Sources/Persistence/MetronomeLibraryStore.swift')
 add_source(app_group, app_target, 'App/MetronomeApp.swift')
 add_source(app_group, app_target, 'App/MainMetronomeView.swift')
+app_group.new_file('App/Info.plist')
 asset_catalog = app_group.new_file('App/Assets.xcassets')
 app_target.resources_build_phase.add_file_reference(asset_catalog)
 privacy_manifest = app_group.new_file('App/PrivacyInfo.xcprivacy')
@@ -113,14 +114,8 @@ end
 app_target.build_configurations.each do |config|
   config.build_settings['PRODUCT_BUNDLE_IDENTIFIER'] = 'com.seanashe.metronome'
   config.build_settings['PRODUCT_NAME'] = 'Pulsecraft'
-  config.build_settings['INFOPLIST_KEY_CFBundleDisplayName'] = 'Pulsecraft'
-  config.build_settings['INFOPLIST_KEY_LSApplicationCategoryType'] = 'public.app-category.music'
-  config.build_settings['INFOPLIST_KEY_NSHumanReadableCopyright'] = 'Copyright © 2026 Sean Ashe Music'
-  config.build_settings['INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents'] = 'YES'
-  config.build_settings['INFOPLIST_KEY_UIBackgroundModes'] = 'audio'
-  config.build_settings['INFOPLIST_KEY_UILaunchScreen_Generation'] = 'YES'
-  config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations'] = 'UIInterfaceOrientationPortrait'
-  config.build_settings['INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad'] = 'UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight'
+  config.build_settings['GENERATE_INFOPLIST_FILE'] = 'NO'
+  config.build_settings['INFOPLIST_FILE'] = 'App/Info.plist'
   config.build_settings['ASSETCATALOG_COMPILER_APPICON_NAME'] = 'AppIcon'
   config.build_settings['ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME'] = 'AccentColor'
 end

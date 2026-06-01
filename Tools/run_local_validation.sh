@@ -132,6 +132,47 @@ if [[ ! -d "$ARCHIVE_PATH/Products/Applications/Pulsecraft.app" ]]; then
   exit 1
 fi
 
+archived_app_path="$ARCHIVE_PATH/Products/Applications/Pulsecraft.app"
+archived_info_plist="$archived_app_path/Info.plist"
+archived_privacy_manifest="$archived_app_path/PrivacyInfo.xcprivacy"
+
+/usr/bin/ruby -rjson -e '
+  info_plist = ARGV.fetch(0)
+  info = JSON.parse(`plutil -convert json -o - "#{info_plist}"`)
+  failures = []
+  failures << "CFBundleDisplayName must be Pulsecraft" unless info["CFBundleDisplayName"] == "Pulsecraft"
+  failures << "CFBundleIdentifier must be com.seanashe.metronome" unless info["CFBundleIdentifier"] == "com.seanashe.metronome"
+  failures << "CFBundleShortVersionString must be 0.1.0" unless info["CFBundleShortVersionString"] == "0.1.0"
+  failures << "CFBundleVersion must be 1" unless info["CFBundleVersion"] == "1"
+  failures << "MinimumOSVersion must be 17.0" unless info["MinimumOSVersion"] == "17.0"
+  failures << "LSApplicationCategoryType must be public.app-category.music" unless info["LSApplicationCategoryType"] == "public.app-category.music"
+  failures << "UIBackgroundModes must include audio" unless Array(info["UIBackgroundModes"]).include?("audio")
+  failures << "UIDeviceFamily must include iPhone and iPad" unless info["UIDeviceFamily"] == [1, 2]
+  if failures.any?
+    warn failures.join("\n")
+    exit 1
+  end
+' "$archived_info_plist"
+
+if [[ ! -f "$archived_privacy_manifest" ]]; then
+  echo "Archive did not contain PrivacyInfo.xcprivacy." >&2
+  exit 1
+fi
+
+archived_privacy_json="$(plutil -convert json -o - "$archived_privacy_manifest")"
+/usr/bin/ruby -rjson -e '
+  manifest = JSON.parse(ARGF.read)
+  failures = []
+  failures << "Archived NSPrivacyTracking must be false" unless manifest["NSPrivacyTracking"] == false
+  failures << "Archived NSPrivacyCollectedDataTypes must be empty" unless manifest["NSPrivacyCollectedDataTypes"] == []
+  failures << "Archived NSPrivacyTrackingDomains must be empty" unless manifest["NSPrivacyTrackingDomains"] == []
+  failures << "Archived NSPrivacyAccessedAPITypes must be empty" unless manifest["NSPrivacyAccessedAPITypes"] == []
+  if failures.any?
+    warn failures.join("\n")
+    exit 1
+  end
+' <<< "$archived_privacy_json"
+
 echo
 echo "== Simulator app launch smoke =="
 simulator_name="$(
