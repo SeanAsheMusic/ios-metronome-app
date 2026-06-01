@@ -2,8 +2,7 @@ import XCTest
 
 final class MetronomeLaunchUITests: XCTestCase {
     func testLaunchShowsPlaySurface() {
-        let app = XCUIApplication()
-        app.launch()
+        let app = launchApp()
 
         XCTAssertTrue(app.staticTexts["Pattern Default 4/4"].waitForExistence(timeout: 8), "The main pattern header should be visible after launch.")
         XCTAssertTrue(app.staticTexts["120 beats per minute"].exists, "The default tempo readout should be visible after launch.")
@@ -31,8 +30,7 @@ final class MetronomeLaunchUITests: XCTestCase {
     }
 
     func testBottomNavigationReachesEveryPrimarySurface() {
-        let app = XCUIApplication()
-        app.launch()
+        let app = launchApp()
 
         XCTAssertTrue(app.buttons["Play tab"].waitForExistence(timeout: 8))
         XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
@@ -59,8 +57,7 @@ final class MetronomeLaunchUITests: XCTestCase {
     }
 
     func testStagePulseOpensAndClosesFromPlaySurface() {
-        let app = XCUIApplication()
-        app.launch()
+        let app = launchApp()
 
         XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 8))
         scrollToElement(app.buttons["Open stage pulse"], in: app)
@@ -79,5 +76,12 @@ final class MetronomeLaunchUITests: XCTestCase {
             app.swipeUp()
         }
         XCTAssertTrue(element.isHittable, "Expected \(element) to become reachable after scrolling.")
+    }
+
+    private func launchApp() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"]
+        app.launch()
+        return app
     }
 }

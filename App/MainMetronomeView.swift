@@ -5,15 +5,14 @@ import Persistence
 import RhythmModel
 
 struct MainMetronomeView: View {
-    @StateObject private var viewModel = MainMetronomeViewModel()
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @StateObject private var viewModel: MainMetronomeViewModel
     @State private var selectedTab: InstrumentTab = .play
     @State private var exportDocument = LibraryExportDocument(data: Data())
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
     @State private var isConfirmingSnapshotRestore = false
-    private let bottomTabBarContentPadding: CGFloat = 94
+    private let bottomTabBarContentPadding: CGFloat = 78
 
     private enum InstrumentTab: String, CaseIterable, Identifiable {
         case play
@@ -63,6 +62,14 @@ struct MainMetronomeView: View {
         static let secondaryText = Color(red: 0.420, green: 0.420, blue: 0.420)
         static let accent = Color(red: 0.180, green: 0.710, blue: 0.376)
         static let hairline = Color.white.opacity(0.12)
+    }
+
+    init() {
+        _viewModel = StateObject(wrappedValue: MainMetronomeViewModel())
+    }
+
+    init(viewModel: MainMetronomeViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     var body: some View {
@@ -130,10 +137,10 @@ struct MainMetronomeView: View {
                 Button {
                     selectedTab = tab
                 } label: {
-                    VStack(spacing: 3) {
+                    VStack(spacing: 2) {
                         Image(systemName: tab.systemImage)
-                            .font(.system(size: 20, weight: .semibold))
-                            .frame(height: 22)
+                            .font(.system(size: 17, weight: .semibold))
+                            .frame(height: 19)
 
                         Text(tab.title)
                             .font(.system(size: 9, weight: .semibold))
@@ -141,7 +148,7 @@ struct MainMetronomeView: View {
                             .minimumScaleFactor(0.75)
                     }
                     .foregroundStyle(isSelected ? InstrumentTheme.accent : Color(red: 0.290, green: 0.290, blue: 0.290))
-                    .frame(maxWidth: .infinity, minHeight: 54)
+                    .frame(maxWidth: .infinity, minHeight: 46)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -149,20 +156,20 @@ struct MainMetronomeView: View {
                 .accessibilityValue(isSelected ? "Selected" : "Not selected")
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
-        .background(.ultraThinMaterial, in: Capsule())
-        .overlay(
-            Capsule()
-                .stroke(InstrumentTheme.hairline, lineWidth: 1)
-        )
-        .padding(.horizontal, 22)
-        .padding(.bottom, 8)
+        .padding(.horizontal, 10)
+        .padding(.top, 5)
+        .padding(.bottom, 5)
+        .background(InstrumentTheme.surface)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(InstrumentTheme.hairline)
+                .frame(height: 1)
+        }
     }
 
     private var playTab: some View {
         ScrollView {
-            VStack(spacing: 10) {
+            VStack(spacing: 8) {
                 header
                 bpmDisplay
                 transportControls
@@ -170,11 +177,9 @@ struct MainMetronomeView: View {
                 tempoControls
                 patternSummary
                 practicePanel
-                visualPulse
-                stagePulseButton
             }
             .padding(.horizontal, 16)
-            .padding(.top, 12)
+            .padding(.top, 8)
             .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
@@ -504,28 +509,33 @@ struct MainMetronomeView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text(viewModel.pattern.name)
-                .font(.subheadline.monospaced().weight(.semibold))
-                .foregroundStyle(InstrumentTheme.primaryText)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-                .accessibilityLabel("Pattern \(viewModel.pattern.name)")
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.pattern.name)
+                    .font(.subheadline.monospaced().weight(.semibold))
+                    .foregroundStyle(InstrumentTheme.primaryText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .accessibilityLabel("Pattern \(viewModel.pattern.name)")
 
-            Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivisionSummary)")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(InstrumentTheme.secondaryText)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .multilineTextAlignment(.center)
-                .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivisionSummary)")
+                Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivisionSummary)")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(InstrumentTheme.secondaryText)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .multilineTextAlignment(.center)
+                    .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivisionSummary)")
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            stagePulseButton
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bpmDisplay: some View {
-        HStack(alignment: .center, spacing: 14) {
-            VStack(alignment: .leading, spacing: 6) {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text("\(viewModel.pattern.bpm)")
                     .font(.system(size: 98, weight: .black, design: .monospaced))
                     .monospacedDigit()
@@ -547,7 +557,7 @@ struct MainMetronomeView: View {
                 }
             }
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("BPM")
                     .font(.caption2.weight(.bold))
                     .foregroundStyle(InstrumentTheme.secondaryText)
@@ -593,7 +603,7 @@ struct MainMetronomeView: View {
     }
 
     private var transportControls: some View {
-        HStack(alignment: .center, spacing: 18) {
+        HStack(alignment: .center, spacing: 14) {
             Spacer(minLength: 0)
 
             Button {
@@ -602,8 +612,8 @@ struct MainMetronomeView: View {
                 }
             } label: {
                 Image(systemName: viewModel.primaryTransportSystemImage)
-                    .font(.system(size: 42, weight: .black))
-                    .frame(width: 112, height: 112)
+                    .font(.system(size: 40, weight: .black))
+                    .frame(width: 108, height: 108)
             }
             .buttonStyle(InstrumentCircleButtonStyle(
                 fill: viewModel.isPlaying || viewModel.isCountingIn ? InstrumentTheme.raisedSurface : InstrumentTheme.accent,
@@ -618,7 +628,7 @@ struct MainMetronomeView: View {
             } label: {
                 Image(systemName: "hand.tap.fill")
                     .font(.title3.weight(.semibold))
-                    .frame(width: 68, height: 68)
+                    .frame(width: 62, height: 62)
             }
             .buttonStyle(InstrumentOutlineButtonStyle(foreground: InstrumentTheme.accent))
             .accessibilityLabel("Tap tempo")
@@ -684,7 +694,7 @@ struct MainMetronomeView: View {
                 .accessibilityLabel("Increase count-in")
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 6)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(InstrumentTheme.hairline)
@@ -700,7 +710,7 @@ struct MainMetronomeView: View {
     }
 
     private var tempoControls: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
                 tempoButton(label: "-5", delta: -5)
                 tempoButton(label: "-1", delta: -1)
                 tempoButton(label: "+1", delta: 1)
@@ -715,7 +725,7 @@ struct MainMetronomeView: View {
             }
         }
         .font(.title3.monospaced().weight(.bold))
-        .frame(maxWidth: .infinity, minHeight: 42)
+        .frame(maxWidth: .infinity, minHeight: 38)
         .buttonStyle(InstrumentTrimButtonStyle(foreground: InstrumentTheme.accent))
         .accessibilityLabel(delta > 0 ? "Increase tempo by \(delta)" : "Decrease tempo by \(abs(delta))")
     }
@@ -749,7 +759,7 @@ struct MainMetronomeView: View {
             viewModel.setPracticeDuration(minutes: minutes)
         } label: {
             let isActive = viewModel.practiceTimer.durationSeconds == minutes * 60
-            VStack(spacing: 5) {
+            VStack(spacing: 4) {
                 Text("\(minutes)m")
                     .font(.subheadline.monospaced().weight(.bold))
                 Rectangle()
@@ -757,7 +767,7 @@ struct MainMetronomeView: View {
                     .frame(height: 2)
             }
             .foregroundStyle(isActive ? InstrumentTheme.accent : InstrumentTheme.secondaryText)
-            .frame(maxWidth: .infinity, minHeight: 38)
+            .frame(maxWidth: .infinity, minHeight: 34)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Set practice timer to \(minutes) minutes")
@@ -833,7 +843,7 @@ struct MainMetronomeView: View {
     }
 
     private var practicePanel: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 8) {
             hairline()
 
             HStack(spacing: 10) {
@@ -854,7 +864,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label(viewModel.practiceTimer.isRunning ? "Pause" : "Start", systemImage: viewModel.practiceTimer.isRunning ? "pause.fill" : "play.fill")
                         .labelStyle(.iconOnly)
-                        .frame(width: 56, height: 56)
+                        .frame(width: 52, height: 52)
                 }
                 .buttonStyle(InstrumentCircleButtonStyle(fill: InstrumentTheme.accent, foreground: InstrumentTheme.background))
                 .accessibilityLabel(viewModel.practiceTimer.isRunning ? "Pause practice timer" : "Start practice timer")
@@ -864,7 +874,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label("Reset", systemImage: "arrow.counterclockwise")
                         .labelStyle(.iconOnly)
-                        .frame(width: 52, height: 52)
+                        .frame(width: 48, height: 48)
                 }
                 .buttonStyle(InstrumentOutlineButtonStyle(foreground: InstrumentTheme.accent))
                 .accessibilityLabel("Reset practice timer")
@@ -878,7 +888,7 @@ struct MainMetronomeView: View {
 
             hairline()
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         sectionLabel("Tempo Ladder")
@@ -927,7 +937,7 @@ struct MainMetronomeView: View {
 
             hairline()
 
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         sectionLabel("Rhythm Trainer")
@@ -996,7 +1006,7 @@ struct MainMetronomeView: View {
                 }
             }
         }
-        .padding(.top, 4)
+        .padding(.top, 2)
     }
 
     private func practiceDurationButton(minutes: Int) -> some View {
@@ -1559,24 +1569,15 @@ struct MainMetronomeView: View {
         )
     }
 
-    private var visualPulse: some View {
-        Circle()
-            .fill(viewModel.pulseIsActive ? Color.accentColor : Color.secondary.opacity(0.3))
-            .frame(width: 112, height: 112)
-            .scaleEffect(reduceMotion ? 1.0 : (viewModel.pulseIsActive ? 1.0 : 0.82))
-            .animation(reduceMotion ? nil : .snappy(duration: 0.18), value: viewModel.pulseIsActive)
-            .accessibilityLabel("Visual pulse")
-            .accessibilityValue(viewModel.pulseIsActive ? "Active" : (reduceMotion ? "Inactive, reduced motion" : "Inactive"))
-    }
-
     private var stagePulseButton: some View {
         Button {
             isShowingStagePulse = true
         } label: {
             Label("Stage", systemImage: "rectangle.expand.vertical")
-                .frame(maxWidth: .infinity, minHeight: 48)
+                .labelStyle(.iconOnly)
+                .frame(width: 44, height: 44)
         }
-        .buttonStyle(.bordered)
+        .buttonStyle(InstrumentOutlineButtonStyle(foreground: InstrumentTheme.accent))
         .accessibilityLabel("Open stage pulse")
     }
 }

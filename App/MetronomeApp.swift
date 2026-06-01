@@ -1,11 +1,22 @@
 import SwiftUI
-import RhythmModel
+import AudioEngine
 
 @main
 struct MetronomeApp: App {
+    private let viewModel: MainMetronomeViewModel
+
+    init() {
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-PulsecraftUITestingInMemoryLibrary") {
+            viewModel = MainMetronomeViewModel(audioEngine: AudioEngineStub(), libraryStore: nil)
+        } else {
+            viewModel = MainMetronomeViewModel()
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
-            MainMetronomeView()
+            MainMetronomeView(viewModel: viewModel)
         }
     }
 }
