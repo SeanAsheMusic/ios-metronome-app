@@ -6,7 +6,7 @@ DESTINATION="${1:-platform=iOS Simulator,name=iPhone 17}"
 DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/PulsecraftLocalValidation}"
 APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
 APP_BUNDLE_ID="com.seanashe.metronome"
-MIN_LAUNCH_SCREENSHOT_BYTES=150000
+MIN_SCREENSHOT_BYTES=150000
 DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
 BUILD_LOG_ROOT="$DERIVED_DATA_ROOT/Logs"
 ARCHIVE_PATH="$DERIVED_DATA_ROOT/Pulsecraft.xcarchive"
@@ -206,28 +206,38 @@ fi
 
 app_path="$APP_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/Pulsecraft.app"
 launch_screenshot="$APP_DERIVED_DATA_PATH/launch-smoke.png"
+edit_screenshot="$APP_DERIVED_DATA_PATH/edit-rhythm-grid-smoke.png"
+
+capture_app_screenshot() {
+  local screenshot_path="$1"
+  shift
+
+  xcrun simctl launch "$simulator_udid" "$APP_BUNDLE_ID" "$@"
+  sleep 8
+  xcrun simctl io "$simulator_udid" screenshot "$screenshot_path" >/dev/null
+  xcrun simctl terminate "$simulator_udid" "$APP_BUNDLE_ID" >/dev/null 2>&1 || true
+
+  if [[ ! -s "$screenshot_path" ]]; then
+    echo "Smoke screenshot was not created: $screenshot_path" >&2
+    exit 1
+  fi
+
+  screenshot_bytes="$(stat -f '%z' "$screenshot_path")"
+
+  if (( screenshot_bytes < MIN_SCREENSHOT_BYTES )); then
+    echo "Smoke screenshot looks blank or incomplete: $screenshot_path ($screenshot_bytes bytes)." >&2
+    exit 1
+  fi
+}
 
 xcrun simctl boot "$simulator_udid" 2>/dev/null || true
 xcrun simctl bootstatus "$simulator_udid" -b
 xcrun simctl install "$simulator_udid" "$app_path"
-xcrun simctl launch "$simulator_udid" "$APP_BUNDLE_ID"
-sleep 8
-xcrun simctl io "$simulator_udid" screenshot "$launch_screenshot" >/dev/null
-xcrun simctl terminate "$simulator_udid" "$APP_BUNDLE_ID" >/dev/null 2>&1 || true
-
-if [[ ! -s "$launch_screenshot" ]]; then
-  echo "Launch smoke screenshot was not created." >&2
-  exit 1
-fi
-
-screenshot_bytes="$(stat -f '%z' "$launch_screenshot")"
-
-if (( screenshot_bytes < MIN_LAUNCH_SCREENSHOT_BYTES )); then
-  echo "Launch smoke screenshot looks blank or incomplete: $launch_screenshot ($screenshot_bytes bytes)." >&2
-  exit 1
-fi
+capture_app_screenshot "$launch_screenshot"
+capture_app_screenshot "$edit_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab edit
 
 echo "Launch smoke screenshot: $launch_screenshot"
+echo "Edit rhythm grid smoke screenshot: $edit_screenshot"
 
 echo
 echo "Local validation passed."
