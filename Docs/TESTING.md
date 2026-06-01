@@ -44,22 +44,32 @@ The Swift package includes XCTest coverage for:
 - Audio timing summary and bounded timing measurement recorder behavior.
 - Exportable click-render verification WAV fixtures and SHA-256 checksums.
 
-Run with:
+Run the package suite with:
 
 ```sh
 swift test
 ```
 
-## Current Environment Note
+## Local Validation Gate
 
-On this machine, `swift test` currently fails before compiling project code because the active developer directory is `/Library/Developer/CommandLineTools`, not a full Xcode install, and the Command Line Tools Swift/PackageDescription setup reports manifest-linking errors. A direct Swift type-check also fails while importing Foundation due to a `SwiftBridging` module redefinition inside the Command Line Tools SDK. Re-run tests after installing/selecting full Xcode:
+Use the local validation script before pushing release-candidate work:
 
 ```sh
-sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-swift test
+Tools/run_local_validation.sh
 ```
 
-The generated Xcode project also includes shared `RhythmModel`, `AudioEngine`, `Persistence`, and `Metronome` schemes. Use the dedicated schemes for module tests once full Xcode is active.
+The script runs `swift test`, verifies `SoundLibrary/RenderedVerification/SHA256SUMS`, runs the shared `RhythmModel`, `AudioEngine`, and `Persistence` Xcode test schemes, and builds the `Metronome` app for an iPhone simulator with code signing disabled. It defaults to `platform=iOS Simulator,name=iPhone 17`; pass another destination string as the first argument when needed.
+
+Manual fallback commands:
+
+```sh
+xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
+xcodebuild build -project Metronome.xcodeproj -scheme Metronome -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
+```
+
+Physical-device validation, signing, route checks, interruption handling, and accessibility verification still require full Xcode plus hardware and are tracked in `Docs/DEVICE_VALIDATION_RUNBOOK.md`.
 
 ## Current Source Audits
 

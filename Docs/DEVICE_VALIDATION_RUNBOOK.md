@@ -6,6 +6,7 @@ Use this runbook before App Store submission and before any claim about producti
 
 - Open `Metronome.xcodeproj` in full Xcode.
 - Set the development team and signing for the `Metronome` target.
+- Run `Tools/run_local_validation.sh` and keep the output with the release notes.
 - Run the shared `RhythmModel`, `AudioEngine`, and `Persistence` test schemes.
 - Install on at least one compact iPhone, one current mainstream iPhone, one large iPhone, and one iPad.
 - Keep the tested commit hash with the notes.

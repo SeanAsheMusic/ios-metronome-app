@@ -71,12 +71,10 @@ Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sh
 The repository includes a generated Xcode project and a Swift package manifest.
 
 ```sh
-xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'platform=iOS Simulator,name=iPhone 16'
-xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'platform=iOS Simulator,name=iPhone 16'
-xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 16'
+Tools/run_local_validation.sh
 ```
 
-This repository has been validated with Swift package tests, Mac Catalyst Xcode tests, and iPhone 17 simulator builds/tests. The model package can also be tested with:
+This repository has been validated with Swift package tests and iPhone 17 simulator builds/tests. The package tests can also be run directly with:
 
 ```sh
 swift test
