@@ -207,6 +207,8 @@ fi
 app_path="$APP_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/Pulsecraft.app"
 launch_screenshot="$APP_DERIVED_DATA_PATH/launch-smoke.png"
 edit_screenshot="$APP_DERIVED_DATA_PATH/edit-rhythm-grid-smoke.png"
+patterns_screenshot="$APP_DERIVED_DATA_PATH/patterns-smoke.png"
+setlist_screenshot="$APP_DERIVED_DATA_PATH/setlist-smoke.png"
 settings_screenshot="$APP_DERIVED_DATA_PATH/settings-smoke.png"
 
 capture_app_screenshot() {
@@ -236,10 +238,14 @@ xcrun simctl bootstatus "$simulator_udid" -b
 xcrun simctl install "$simulator_udid" "$app_path"
 capture_app_screenshot "$launch_screenshot"
 capture_app_screenshot "$edit_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab edit
+capture_app_screenshot "$patterns_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab patterns
+capture_app_screenshot "$setlist_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab setlist
 capture_app_screenshot "$settings_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab settings
 
 echo "Launch smoke screenshot: $launch_screenshot"
 echo "Edit rhythm grid smoke screenshot: $edit_screenshot"
+echo "Patterns smoke screenshot: $patterns_screenshot"
+echo "Setlist smoke screenshot: $setlist_screenshot"
 echo "Settings smoke screenshot: $settings_screenshot"
 
 echo

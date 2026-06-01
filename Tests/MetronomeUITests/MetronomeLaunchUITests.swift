@@ -73,6 +73,39 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Step 1, muted"].waitForExistence(timeout: 2), "The paint palette should let musicians directly silence a step.")
     }
 
+    func testPatternsSurfaceExposesTemplateAndLibraryControls() {
+        let app = launchApp(initialTab: "patterns")
+
+        XCTAssertTrue(app.buttons["Duplicate current pattern"].waitForExistence(timeout: 2), "Patterns should expose duplication.")
+        XCTAssertTrue(app.buttons["Delete current pattern"].exists, "Patterns should expose protected deletion.")
+
+        XCTAssertTrue(app.buttons["Add Son Clave 3:2 groove"].exists, "Patterns should expose groove templates.")
+        XCTAssertTrue(app.buttons["Add Son 3:2, Clave + Click"].exists, "Patterns should expose clave-mode templates.")
+        XCTAssertTrue(app.buttons["Add Jazz 2 & 4 swing pattern"].exists, "Patterns should expose swing templates.")
+        XCTAssertTrue(app.buttons["Add 3 over 2 polyrhythm pattern"].exists, "Patterns should expose polyrhythm templates.")
+
+        let currentPattern = app.buttons["Default 4/4, 120 beats per minute"]
+        XCTAssertTrue(currentPattern.exists, "Patterns should expose saved pattern selection.")
+        XCTAssertEqual(currentPattern.value as? String, "Selected")
+    }
+
+    func testSetlistSurfaceExposesSongFormControls() {
+        let app = launchApp(initialTab: "setlist")
+
+        XCTAssertTrue(app.descendants(matching: .any)["Setlist Practice, auto advance off, 0 of 4 bars completed"].waitForExistence(timeout: 2), "Setlist should expose the active song-form state.")
+        XCTAssertEqual(app.switches["Song form auto advance"].value as? String, "Off", "Song-form auto advance should default off.")
+        XCTAssertTrue(app.buttons["Add current pattern to setlist"].exists, "Setlist should expose adding the current pattern.")
+
+        XCTAssertTrue(app.buttons["Setlist item 1, Default 4/4, 4 bars"].exists, "Setlist should expose the default item.")
+        XCTAssertTrue(app.buttons["Decrease bars for Default 4/4"].exists, "Setlist should expose bar-count editing.")
+        XCTAssertTrue(app.buttons["Increase bars for Default 4/4"].exists)
+        XCTAssertTrue(app.buttons["Move Default 4/4 earlier"].exists)
+        XCTAssertFalse(app.buttons["Move Default 4/4 earlier"].isEnabled, "The first setlist item cannot move earlier.")
+        XCTAssertTrue(app.buttons["Move Default 4/4 later"].exists)
+        XCTAssertFalse(app.buttons["Move Default 4/4 later"].isEnabled, "The only setlist item cannot move later.")
+        XCTAssertTrue(app.buttons["Remove Default 4/4 from setlist"].exists)
+    }
+
     func testSettingsSurfaceExposesValidationAndDataControls() {
         let app = launchApp(initialTab: "settings")
 
