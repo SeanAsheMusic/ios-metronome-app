@@ -57,4 +57,27 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Play should remain reachable after visiting the other primary surfaces.")
         XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
     }
+
+    func testStagePulseOpensAndClosesFromPlaySurface() {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 8))
+        scrollToElement(app.buttons["Open stage pulse"], in: app)
+
+        app.buttons["Open stage pulse"].tap()
+        XCTAssertTrue(app.buttons["Close stage pulse"].waitForExistence(timeout: 2), "Stage Pulse should open from the Play surface.")
+        XCTAssertTrue(app.descendants(matching: .any)["Stage visual pulse"].exists, "Stage Pulse should expose the full-screen pulse element.")
+        XCTAssertTrue(app.descendants(matching: .any)["Pattern Default 4/4, 120 beats per minute, meter 4/4"].exists, "Stage Pulse should expose the current pattern context.")
+
+        app.buttons["Close stage pulse"].tap()
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Closing Stage Pulse should return to the Play surface.")
+    }
+
+    private func scrollToElement(_ element: XCUIElement, in app: XCUIApplication, attempts: Int = 5) {
+        for _ in 0..<attempts where !element.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(element.isHittable, "Expected \(element) to become reachable after scrolling.")
+    }
 }
