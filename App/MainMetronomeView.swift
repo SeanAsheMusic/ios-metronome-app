@@ -188,15 +188,16 @@ struct MainMetronomeView: View {
 
     private var editTab: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 14) {
                 header
                 patternEditor
             }
-            .padding(24)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
             .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
-        .background(Color(.systemBackground))
+        .background(InstrumentTheme.background)
     }
 
     private var libraryTab: some View {
@@ -531,7 +532,6 @@ struct MainMetronomeView: View {
             stagePulseButton
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityIdentifier("Rhythm Grid")
     }
 
     private var bpmDisplay: some View {
@@ -1109,10 +1109,21 @@ struct MainMetronomeView: View {
     }
 
     private var patternEditor: some View {
-        VStack(spacing: 12) {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionLabel("Pattern")
+
             TextField("Pattern name", text: $viewModel.patternNameDraft)
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(.plain)
                 .submitLabel(.done)
+                .font(.headline.monospaced().weight(.semibold))
+                .foregroundStyle(InstrumentTheme.primaryText)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 11)
+                .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                )
                 .onSubmit {
                     Task {
                         await viewModel.commitPatternName()
@@ -1135,6 +1146,14 @@ struct MainMetronomeView: View {
                 }
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 9)
+                .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                )
+                .tint(InstrumentTheme.accent)
                 .accessibilityLabel("Meter")
 
                 Picker("Subdivision", selection: Binding(
@@ -1151,6 +1170,14 @@ struct MainMetronomeView: View {
                 }
                 .pickerStyle(.menu)
                 .frame(maxWidth: .infinity)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 9)
+                .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                )
+                .tint(InstrumentTheme.accent)
                 .accessibilityLabel("Subdivision")
             }
 
@@ -1164,7 +1191,7 @@ struct MainMetronomeView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 3) {
                     sectionLabel("Rhythm Grid")
-                    Text("Tap a step to cycle accent, normal, light, and silent.")
+                    Text("Tap steps to choose the groove: accent, hit, soft, or rest.")
                         .font(.caption)
                         .foregroundStyle(InstrumentTheme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -1230,13 +1257,15 @@ struct MainMetronomeView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("Rhythm Grid")
     }
 
     private var rhythmLegend: some View {
         HStack(spacing: 8) {
             rhythmLegendItem(accent: .strong, label: "Accent")
-            rhythmLegendItem(accent: .normal, label: "Normal")
-            rhythmLegendItem(accent: .muted, label: "Silent")
+            rhythmLegendItem(accent: .normal, label: "Hit")
+            rhythmLegendItem(accent: .ghost, label: "Soft")
+            rhythmLegendItem(accent: .muted, label: "Rest")
         }
         .lineLimit(1)
         .minimumScaleFactor(0.8)
@@ -1264,7 +1293,7 @@ struct MainMetronomeView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
-        .accessibilityHint("Cycles between accent, normal, light, and silent.")
+        .accessibilityHint("Cycles between accent, hit, soft, and rest.")
         .contextMenu {
             ForEach(AccentLevel.allCases, id: \.self) { accent in
                 Button {
@@ -2563,19 +2592,19 @@ final class MainMetronomeViewModel: ObservableObject {
 
     func shortLabel(for accent: AccentLevel) -> String {
         switch accent {
-        case .strong: "S"
-        case .normal: "N"
-        case .ghost: "G"
-        case .muted: "M"
+        case .strong: "A"
+        case .normal: "H"
+        case .ghost: "S"
+        case .muted: "R"
         }
     }
 
     func menuLabel(for accent: AccentLevel) -> String {
         switch accent {
-        case .strong: "Strong"
-        case .normal: "Normal"
-        case .ghost: "Ghost"
-        case .muted: "Mute"
+        case .strong: "Accent"
+        case .normal: "Hit"
+        case .ghost: "Soft"
+        case .muted: "Rest"
         }
     }
 
