@@ -8,8 +8,10 @@ APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
 APP_BUNDLE_ID="com.seanashe.metronome"
 MIN_LAUNCH_SCREENSHOT_BYTES=150000
 DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
+BUILD_LOG_ROOT="$DERIVED_DATA_ROOT/Logs"
 
 cd "$ROOT_DIR"
+mkdir -p "$BUILD_LOG_ROOT"
 
 echo "Local validation destination: $DESTINATION"
 echo "Derived data root: $DERIVED_DATA_ROOT"
@@ -43,6 +45,19 @@ if disallowed_hits="$(rg -n "$DISALLOWED_LOCAL_FIRST_PATTERN" App Sources Packag
   exit 1
 fi
 
+run_xcode_and_reject_warnings() {
+  local log_path="$1"
+  shift
+
+  "$@" 2>&1 | tee "$log_path"
+
+  if warning_hits="$(rg -n "warning:" "$log_path")"; then
+    echo "Xcode emitted warnings; resolve them before release-candidate validation:" >&2
+    echo "$warning_hits" >&2
+    exit 1
+  fi
+}
+
 echo
 echo "== Swift package tests =="
 swift test
@@ -57,10 +72,12 @@ echo "== Click fixture checksums =="
 run_xcode_test() {
   local scheme="$1"
   local derived_data_path="$DERIVED_DATA_ROOT/$scheme"
+  local log_path="$BUILD_LOG_ROOT/${scheme}-test.log"
 
   echo
   echo "== Xcode tests: $scheme =="
-  xcodebuild test \
+  run_xcode_and_reject_warnings "$log_path" \
+    xcodebuild test \
     -project Metronome.xcodeproj \
     -scheme "$scheme" \
     -destination "$DESTINATION" \
@@ -75,7 +92,8 @@ run_xcode_test Persistence
 
 echo
 echo "== Simulator app build =="
-xcodebuild build \
+run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-build.log" \
+  xcodebuild build \
   -project Metronome.xcodeproj \
   -scheme Metronome \
   -destination "$DESTINATION" \
