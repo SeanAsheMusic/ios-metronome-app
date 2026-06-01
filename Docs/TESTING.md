@@ -58,7 +58,7 @@ Use the local validation script before pushing release-candidate work:
 Tools/run_local_validation.sh
 ```
 
-The script verifies the privacy manifest and local-first policy, runs `swift test`, verifies `SoundLibrary/RenderedVerification/SHA256SUMS`, runs the shared `RhythmModel`, `AudioEngine`, and `Persistence` Xcode test schemes, rejects Xcode warning output, builds the `Metronome` app for an iPhone simulator and a generic iOS device with code signing disabled, installs the simulator build, launches it, captures a first-screen smoke-test screenshot, and terminates it. It defaults to `platform=iOS Simulator,name=iPhone 17`; pass another destination string as the first argument when needed.
+The script verifies the privacy manifest and local-first policy, runs `swift test`, verifies `SoundLibrary/RenderedVerification/SHA256SUMS`, runs the shared `RhythmModel`, `AudioEngine`, and `Persistence` Xcode test schemes, rejects Xcode warning output, builds the `Metronome` app for an iPhone simulator and a generic iOS device with code signing disabled, creates an unsigned generic iOS archive containing `Pulsecraft.app`, installs the simulator build, launches it, captures a first-screen smoke-test screenshot, and terminates it. It defaults to `platform=iOS Simulator,name=iPhone 17`; pass another destination string as the first argument when needed.
 
 Manual fallback commands:
 
@@ -69,6 +69,7 @@ xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'p
 xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
 xcodebuild build -project Metronome.xcodeproj -scheme Metronome -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
 xcodebuild build -project Metronome.xcodeproj -scheme Metronome -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO
+xcodebuild archive -project Metronome.xcodeproj -scheme Metronome -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO SKIP_INSTALL=NO -archivePath /tmp/PulsecraftLocalValidation/Pulsecraft.xcarchive
 xcrun simctl install booted /tmp/PulsecraftLocalValidation/Metronome/Build/Products/Debug-iphonesimulator/Pulsecraft.app
 xcrun simctl launch booted com.seanashe.metronome
 ```

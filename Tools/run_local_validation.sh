@@ -9,6 +9,7 @@ APP_BUNDLE_ID="com.seanashe.metronome"
 MIN_LAUNCH_SCREENSHOT_BYTES=150000
 DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
 BUILD_LOG_ROOT="$DERIVED_DATA_ROOT/Logs"
+ARCHIVE_PATH="$DERIVED_DATA_ROOT/Pulsecraft.xcarchive"
 
 cd "$ROOT_DIR"
 mkdir -p "$BUILD_LOG_ROOT"
@@ -111,6 +112,25 @@ run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-device-build.log" \
   CODE_SIGNING_ALLOWED=NO \
   -derivedDataPath "$DERIVED_DATA_ROOT/MetronomeDevice" \
   -quiet
+
+echo
+echo "== Unsigned generic iOS archive =="
+rm -rf "$ARCHIVE_PATH"
+run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-archive.log" \
+  xcodebuild archive \
+  -project Metronome.xcodeproj \
+  -scheme Metronome \
+  -destination 'generic/platform=iOS' \
+  CODE_SIGNING_ALLOWED=NO \
+  SKIP_INSTALL=NO \
+  -archivePath "$ARCHIVE_PATH" \
+  -derivedDataPath "$DERIVED_DATA_ROOT/MetronomeArchive" \
+  -quiet
+
+if [[ ! -d "$ARCHIVE_PATH/Products/Applications/Pulsecraft.app" ]]; then
+  echo "Archive did not contain Pulsecraft.app." >&2
+  exit 1
+fi
 
 echo
 echo "== Simulator app launch smoke =="
