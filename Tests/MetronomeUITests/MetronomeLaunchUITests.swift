@@ -71,6 +71,22 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Closing Stage Pulse should return to the Play surface.")
     }
 
+    func testPlaybackUpdatesBeatVisualizerFromScheduledBeat() {
+        let app = launchApp()
+
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 8))
+        let beatVisualizer = app.descendants(matching: .any)["Beat visualizer"]
+        XCTAssertEqual(beatVisualizer.value as? String, "Stopped")
+
+        app.buttons["Play metronome"].tap()
+        XCTAssertTrue(app.buttons["Stop metronome"].waitForExistence(timeout: 2), "Playback should switch the transport into stop mode.")
+        XCTAssertEqual(beatVisualizer.value as? String, "Beat 1", "The visualizer should follow the scheduled beat event from the audio engine.")
+
+        app.buttons["Stop metronome"].tap()
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Stopping playback should restore the play control.")
+        XCTAssertEqual(beatVisualizer.value as? String, "Stopped", "Stopping playback should clear the visual beat state.")
+    }
+
     func testPlaySurfaceSupportsLargestAccessibilityText() {
         let app = launchApp(contentSizeCategory: "UICTContentSizeCategoryAccessibilityXXXL")
 
