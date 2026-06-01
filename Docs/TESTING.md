@@ -58,7 +58,7 @@ Use the local validation script before pushing release-candidate work:
 Tools/run_local_validation.sh
 ```
 
-The script runs `swift test`, verifies `SoundLibrary/RenderedVerification/SHA256SUMS`, runs the shared `RhythmModel`, `AudioEngine`, and `Persistence` Xcode test schemes, and builds the `Metronome` app for an iPhone simulator with code signing disabled. It defaults to `platform=iOS Simulator,name=iPhone 17`; pass another destination string as the first argument when needed.
+The script runs `swift test`, verifies `SoundLibrary/RenderedVerification/SHA256SUMS`, runs the shared `RhythmModel`, `AudioEngine`, and `Persistence` Xcode test schemes, builds the `Metronome` app for an iPhone simulator with code signing disabled, installs it, launches it, captures a first-screen smoke-test screenshot, and terminates it. It defaults to `platform=iOS Simulator,name=iPhone 17`; pass another destination string as the first argument when needed.
 
 Manual fallback commands:
 
@@ -67,6 +67,8 @@ xcodebuild test -project Metronome.xcodeproj -scheme RhythmModel -destination 'p
 xcodebuild test -project Metronome.xcodeproj -scheme AudioEngine -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
 xcodebuild test -project Metronome.xcodeproj -scheme Persistence -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
 xcodebuild build -project Metronome.xcodeproj -scheme Metronome -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO
+xcrun simctl install booted /tmp/PulsecraftLocalValidation/Metronome/Build/Products/Debug-iphonesimulator/Pulsecraft.app
+xcrun simctl launch booted com.seanashe.metronome
 ```
 
 Physical-device validation, signing, route checks, interruption handling, and accessibility verification still require full Xcode plus hardware and are tracked in `Docs/DEVICE_VALIDATION_RUNBOOK.md`.

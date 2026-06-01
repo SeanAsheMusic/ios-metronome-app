@@ -13,7 +13,7 @@
 - `Docs/ACCESSIBILITY_AUDIT.md` records the source-level accessibility pass and the remaining device checklist.
 - `Docs/DEVICE_VALIDATION_RUNBOOK.md` records the full device-validation pass/fail matrix.
 - `Metronome.xcodeproj` is generated with app, `RhythmModel`, `AudioEngine`, `Persistence`, and test targets.
-- Current source has been validated with Swift package tests, Mac Catalyst Xcode tests, and iPhone 17 simulator build/test runs. The app also launches and renders the Play screen on the iPhone 17 simulator.
+- Current source has been validated with Swift package tests, click fixture checksums, iPhone 17 simulator Xcode scheme tests, simulator app build, and an iPhone 17 simulator install/launch screenshot smoke check.
 
 ## Next Engineering Task
 

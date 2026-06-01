@@ -4,6 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DESTINATION="${1:-platform=iOS Simulator,name=iPhone 17}"
 DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/PulsecraftLocalValidation}"
+APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
+APP_BUNDLE_ID="com.seanashe.metronome"
+MIN_LAUNCH_SCREENSHOT_BYTES=150000
 
 cd "$ROOT_DIR"
 
@@ -47,8 +50,63 @@ xcodebuild build \
   -scheme Metronome \
   -destination "$DESTINATION" \
   CODE_SIGNING_ALLOWED=NO \
-  -derivedDataPath "$DERIVED_DATA_ROOT/Metronome" \
+  -derivedDataPath "$APP_DERIVED_DATA_PATH" \
   -quiet
+
+echo
+echo "== Simulator app launch smoke =="
+simulator_name="$(
+  /usr/bin/ruby -e 'destination = ARGV.fetch(0); match = destination.match(/(?:^|,)name=([^,]+)/); puts(match[1]) if match' "$DESTINATION"
+)"
+
+if [[ -z "$simulator_name" ]]; then
+  echo "Destination must include a simulator name for launch smoke validation." >&2
+  exit 1
+fi
+
+simulator_udid="$(
+  xcrun simctl list devices available -j | /usr/bin/ruby -rjson -e '
+    name = ARGV.fetch(0)
+    devices = JSON.parse($stdin.read).fetch("devices")
+    devices.each_value do |runtime_devices|
+      match = runtime_devices.find { |device| device["name"] == name && device["isAvailable"] }
+      if match
+        puts match.fetch("udid")
+        exit
+      end
+    end
+  ' "$simulator_name"
+)"
+
+if [[ -z "$simulator_udid" ]]; then
+  echo "No available simulator found named '$simulator_name'." >&2
+  exit 1
+fi
+
+app_path="$APP_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/Pulsecraft.app"
+launch_screenshot="$APP_DERIVED_DATA_PATH/launch-smoke.png"
+
+xcrun simctl boot "$simulator_udid" 2>/dev/null || true
+xcrun simctl bootstatus "$simulator_udid" -b
+xcrun simctl install "$simulator_udid" "$app_path"
+xcrun simctl launch "$simulator_udid" "$APP_BUNDLE_ID"
+sleep 8
+xcrun simctl io "$simulator_udid" screenshot "$launch_screenshot" >/dev/null
+xcrun simctl terminate "$simulator_udid" "$APP_BUNDLE_ID" >/dev/null 2>&1 || true
+
+if [[ ! -s "$launch_screenshot" ]]; then
+  echo "Launch smoke screenshot was not created." >&2
+  exit 1
+fi
+
+screenshot_bytes="$(stat -f '%z' "$launch_screenshot")"
+
+if (( screenshot_bytes < MIN_LAUNCH_SCREENSHOT_BYTES )); then
+  echo "Launch smoke screenshot looks blank or incomplete: $launch_screenshot ($screenshot_bytes bytes)." >&2
+  exit 1
+fi
+
+echo "Launch smoke screenshot: $launch_screenshot"
 
 echo
 echo "Local validation passed."

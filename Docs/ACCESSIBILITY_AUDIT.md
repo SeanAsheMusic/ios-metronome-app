@@ -6,7 +6,7 @@ Date: May 31, 2026
 
 This is a source-level accessibility audit of the current SwiftUI app surface. It checks whether the main controls expose understandable labels, large touch targets, Dynamic Type-friendly layout choices, dark-mode/high-contrast-compatible system colors, and Reduce Motion behavior.
 
-This audit has not been verified with Accessibility Inspector, VoiceOver running on device, or representative simulator/device layouts because the current machine does not have a full active Xcode installation.
+This audit has not been verified with Accessibility Inspector or VoiceOver running on device. The local validation gate now launches the app on the iPhone 17 simulator and captures a first-screen screenshot, but the full accessibility checklist still requires simulator and physical-device review at representative sizes and settings.
 
 ## Summary
 
@@ -73,7 +73,7 @@ This audit has not been verified with Accessibility Inspector, VoiceOver running
 
 ## Manual Verification Checklist
 
-Run this checklist before App Store submission once full Xcode and test devices are available:
+Run this checklist before App Store submission once test devices are available:
 
 - Run VoiceOver through Play, Edit, Patterns, Setlist, Settings, and Stage Pulse.
 - Confirm control order matches the visual task order.
@@ -86,7 +86,7 @@ Run this checklist before App Store submission once full Xcode and test devices 
 
 ## Residual Risks
 
-- No device or simulator accessibility run has been completed in this environment.
+- No Accessibility Inspector or VoiceOver run has been completed in this environment.
 - Touch-target sizing is implemented in source, but practical hit areas still need device verification with SwiftUI button styling and real hand use.
 - Horizontal scrolling controls can be awkward with assistive technologies; real VoiceOver flow should determine whether rotor actions or alternate list layouts are needed.
 - The app should not claim fully verified accessibility support until this audit is rerun with Accessibility Inspector and physical-device VoiceOver testing.
