@@ -73,6 +73,24 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Step 1, muted"].waitForExistence(timeout: 2), "The paint palette should let musicians directly silence a step.")
     }
 
+    func testSettingsSurfaceExposesValidationAndDataControls() {
+        let app = launchApp(initialTab: "settings")
+
+        let clickSound = app.descendants(matching: .any)["Click sound"]
+        XCTAssertTrue(clickSound.waitForExistence(timeout: 2), "Settings should expose the hardware-style click selector.")
+        XCTAssertEqual(clickSound.value as? String, "Classic", "The click selector should announce the active synthesized sound.")
+
+        XCTAssertTrue(app.sliders["Master volume"].exists, "Settings should expose master volume.")
+        XCTAssertTrue(app.sliders["Accent boost"].exists, "Settings should expose accent boost.")
+        XCTAssertTrue(app.buttons["Reset mixer levels"].exists, "Settings should expose mixer recovery.")
+        XCTAssertTrue(app.buttons["Enable precision practice mode"].exists, "Settings should expose precision validation mode.")
+        XCTAssertTrue(app.buttons["Refresh audio output"].exists, "Settings should expose audio route status refresh.")
+
+        scrollToElement(app.buttons["Export library"], in: app)
+        XCTAssertTrue(app.buttons["Import library"].exists, "Settings should expose local import.")
+        XCTAssertTrue(app.buttons["Restore latest local library snapshot"].exists, "Settings should expose local snapshot recovery.")
+    }
+
     func testStagePulseOpensAndClosesFromPlaySurface() {
         let app = launchApp()
 
