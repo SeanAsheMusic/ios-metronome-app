@@ -56,6 +56,20 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
     }
 
+    func testEditRhythmGridCyclesStepAccent() {
+        let app = launchApp()
+
+        XCTAssertTrue(app.buttons["Edit tab"].waitForExistence(timeout: 8))
+        app.buttons["Edit tab"].tap()
+
+        XCTAssertTrue(app.descendants(matching: .any)["Rhythm Grid"].waitForExistence(timeout: 2), "Edit should expose the visual rhythm grid.")
+        let firstStep = app.buttons["Step 1, strong accent"]
+        XCTAssertTrue(firstStep.exists, "The grid should expose editable beat and subdivision steps.")
+
+        firstStep.tap()
+        XCTAssertTrue(app.buttons["Step 1, normal accent"].waitForExistence(timeout: 2), "Tapping a grid step should cycle its accent state.")
+    }
+
     func testStagePulseOpensAndClosesFromPlaySurface() {
         let app = launchApp()
 

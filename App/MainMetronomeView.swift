@@ -531,6 +531,7 @@ struct MainMetronomeView: View {
             stagePulseButton
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("Rhythm Grid")
     }
 
     private var bpmDisplay: some View {
@@ -1153,76 +1154,152 @@ struct MainMetronomeView: View {
                 .accessibilityLabel("Subdivision")
             }
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(viewModel.pattern.beats) { beat in
-                        Menu {
-                            ForEach(AccentLevel.allCases, id: \.self) { accent in
-                                Button {
-                                    Task {
-                                        await viewModel.setAccent(accent, at: beat.index)
-                                    }
-                                } label: {
-                                    Label(viewModel.menuLabel(for: accent), systemImage: viewModel.systemImage(for: accent))
-                                }
-                            }
-                        } label: {
-                            VStack(spacing: 4) {
-                                Text("\(beat.index + 1)")
-                                    .font(.caption.weight(.bold))
-                                Text(viewModel.shortLabel(for: beat.accent))
-                                    .font(.caption2.weight(.semibold))
-                            }
-                            .frame(width: 44, height: 46)
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(viewModel.tint(for: beat.accent))
-                        .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
-                        .accessibilityHint("Opens accent and mute choices")
-                    }
-                }
-            }
-
-            perBeatSubdivisionEditor
+            rhythmGridEditor
         }
         .frame(maxWidth: .infinity)
     }
 
-    private var perBeatSubdivisionEditor: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Per-beat subdivisions")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+    private var rhythmGridEditor: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 3) {
+                    sectionLabel("Rhythm Grid")
+                    Text("Tap a step to cycle accent, normal, light, and silent.")
+                        .font(.caption)
+                        .foregroundStyle(InstrumentTheme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 12)
+                rhythmLegend
+            }
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(0..<viewModel.pattern.meter.beatsPerBar, id: \.self) { beatIndex in
-                        Menu {
-                            ForEach(Subdivision.allCases, id: \.self) { subdivision in
-                                Button {
-                                    Task {
-                                        await viewModel.updateBeatSubdivision(subdivision, at: beatIndex)
+                HStack(alignment: .top, spacing: 10) {
+                    ForEach(viewModel.rhythmGridBeats) { beatGroup in
+                        VStack(spacing: 8) {
+                            HStack(spacing: 7) {
+                                Text("\(beatGroup.beatNumber)")
+                                    .font(.caption.monospaced().weight(.bold))
+                                    .foregroundStyle(InstrumentTheme.primaryText)
+
+                                Menu {
+                                    ForEach(Subdivision.allCases, id: \.self) { subdivision in
+                                        Button {
+                                            Task {
+                                                await viewModel.updateBeatSubdivision(subdivision, at: beatGroup.index)
+                                            }
+                                        } label: {
+                                            Text(subdivision.displayName)
+                                        }
                                     }
                                 } label: {
-                                    Text(subdivision.displayName)
+                                    Text(viewModel.compactSubdivisionLabel(for: beatGroup.subdivision))
+                                        .font(.caption2.monospaced().weight(.bold))
+                                        .foregroundStyle(InstrumentTheme.secondaryText)
+                                        .padding(.horizontal, 7)
+                                        .padding(.vertical, 4)
+                                        .background(InstrumentTheme.surface, in: Capsule())
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Beat \(beatGroup.beatNumber) subdivision \(viewModel.beatSubdivisionAccessibilityLabel(at: beatGroup.index))")
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            HStack(alignment: .center, spacing: 6) {
+                                ForEach(beatGroup.steps) { beat in
+                                    rhythmStepButton(beat: beat)
                                 }
                             }
-                        } label: {
-                            VStack(spacing: 4) {
-                                Text("\(beatIndex + 1)")
-                                    .font(.caption.weight(.bold))
-                                Text(viewModel.beatSubdivisionLabel(at: beatIndex))
-                                    .font(.caption2.weight(.semibold))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.75)
-                            }
-                            .frame(width: 86, height: 46)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 10)
+                            .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                            )
                         }
-                        .buttonStyle(.bordered)
-                        .accessibilityLabel("Beat \(beatIndex + 1) subdivision \(viewModel.beatSubdivisionAccessibilityLabel(at: beatIndex))")
+                        .frame(minWidth: max(76, CGFloat(beatGroup.steps.count) * 30 + 22))
+                        .accessibilityElement(children: .contain)
                     }
                 }
+                .padding(.vertical, 2)
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var rhythmLegend: some View {
+        HStack(spacing: 8) {
+            rhythmLegendItem(accent: .strong, label: "Accent")
+            rhythmLegendItem(accent: .normal, label: "Normal")
+            rhythmLegendItem(accent: .muted, label: "Silent")
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+    }
+
+    private func rhythmLegendItem(accent: AccentLevel, label: String) -> some View {
+        HStack(spacing: 4) {
+            rhythmStepGlyph(for: accent)
+                .frame(width: 12, height: 12)
+            Text(label)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(InstrumentTheme.secondaryText)
+        }
+    }
+
+    private func rhythmStepButton(beat: Beat) -> some View {
+        Button {
+            Task {
+                await viewModel.cycleAccent(at: beat.index)
+            }
+        } label: {
+            rhythmStepGlyph(for: beat.accent)
+                .frame(width: 24, height: 36)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
+        .accessibilityHint("Cycles between accent, normal, light, and silent.")
+        .contextMenu {
+            ForEach(AccentLevel.allCases, id: \.self) { accent in
+                Button {
+                    Task {
+                        await viewModel.setAccent(accent, at: beat.index)
+                    }
+                } label: {
+                    Label(viewModel.menuLabel(for: accent), systemImage: viewModel.systemImage(for: accent))
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func rhythmStepGlyph(for accent: AccentLevel) -> some View {
+        switch accent {
+        case .strong:
+            Circle()
+                .fill(InstrumentTheme.accent)
+                .overlay(
+                    Circle()
+                        .stroke(InstrumentTheme.primaryText.opacity(0.9), lineWidth: 2)
+                )
+        case .normal:
+            Circle()
+                .fill(InstrumentTheme.accent)
+                .scaleEffect(0.78)
+        case .ghost:
+            Circle()
+                .stroke(InstrumentTheme.secondaryText, lineWidth: 2)
+                .scaleEffect(0.72)
+        case .muted:
+            Capsule()
+                .fill(InstrumentTheme.secondaryText.opacity(0.45))
+                .frame(height: 3)
         }
     }
 
@@ -1603,6 +1680,15 @@ final class MainMetronomeViewModel: ObservableObject {
         var meter: Meter {
             try! Meter(beatsPerBar: beatsPerBar, beatUnit: beatUnit, grouping: grouping)
         }
+    }
+
+    struct RhythmGridBeat: Identifiable {
+        let index: Int
+        let beatNumber: Int
+        let subdivision: Subdivision
+        let steps: [Beat]
+
+        var id: Int { index }
     }
 
     static let meterOptions: [MeterOption] = [
@@ -2402,6 +2488,51 @@ final class MainMetronomeViewModel: ObservableObject {
 
     func beatSubdivisionAccessibilityLabel(at meterBeatIndex: Int) -> String {
         beatSubdivision(at: meterBeatIndex).displayName.lowercased()
+    }
+
+    var rhythmGridBeats: [RhythmGridBeat] {
+        var beatGroups: [RhythmGridBeat] = []
+        var stepCursor = 0
+
+        for meterBeatIndex in 0..<pattern.meter.beatsPerBar {
+            let subdivision = beatSubdivision(at: meterBeatIndex)
+            let stepCount = subdivision.stepsPerMeterBeat(beatUnit: pattern.meter.beatUnit)
+            let steps = Array(pattern.beats.dropFirst(stepCursor).prefix(stepCount))
+
+            beatGroups.append(RhythmGridBeat(
+                index: meterBeatIndex,
+                beatNumber: meterBeatIndex + 1,
+                subdivision: subdivision,
+                steps: steps
+            ))
+
+            stepCursor += stepCount
+        }
+
+        if stepCursor < pattern.beats.count {
+            let remainingSteps = Array(pattern.beats.dropFirst(stepCursor))
+            if !remainingSteps.isEmpty {
+                beatGroups.append(RhythmGridBeat(
+                    index: beatGroups.count,
+                    beatNumber: beatGroups.count + 1,
+                    subdivision: pattern.subdivision,
+                    steps: remainingSteps
+                ))
+            }
+        }
+
+        return beatGroups
+    }
+
+    func compactSubdivisionLabel(for subdivision: Subdivision) -> String {
+        switch subdivision {
+        case .quarter: "1"
+        case .eighth: "2"
+        case .triplet: "3"
+        case .quintuplet: "5"
+        case .sixteenth: "4"
+        case .septuplet: "7"
+        }
     }
 
     private func beatSubdivision(at meterBeatIndex: Int) -> Subdivision {
