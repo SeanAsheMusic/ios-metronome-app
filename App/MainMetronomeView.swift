@@ -12,6 +12,7 @@ struct MainMetronomeView: View {
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
     @State private var isConfirmingSnapshotRestore = false
+    private let bottomTabBarContentPadding: CGFloat = 112
 
     var body: some View {
         TabView {
@@ -90,6 +91,7 @@ struct MainMetronomeView: View {
                 stagePulseButton
             }
             .padding(24)
+            .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
         .background(Color(.systemBackground))
@@ -102,6 +104,7 @@ struct MainMetronomeView: View {
                 patternEditor
             }
             .padding(24)
+            .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
         .background(Color(.systemBackground))
@@ -114,6 +117,7 @@ struct MainMetronomeView: View {
                 patternLibrary
             }
             .padding(24)
+            .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
         .background(Color(.systemBackground))
@@ -126,6 +130,7 @@ struct MainMetronomeView: View {
                 setlistPanel
             }
             .padding(24)
+            .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
         .background(Color(.systemBackground))
@@ -408,6 +413,7 @@ struct MainMetronomeView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(24)
+            .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
         .background(Color(.systemBackground))
@@ -1412,9 +1418,7 @@ final class MainMetronomeViewModel: ObservableObject {
         await loadLibrary()
 
         await audioEngine.setEventHandler { [weak self] event in
-            await MainActor.run {
-                self?.handleBeat(event)
-            }
+            await self?.handleBeat(event)
         }
         try? await audioEngine.prepare(pattern: pattern)
     }
