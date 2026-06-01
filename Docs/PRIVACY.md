@@ -24,4 +24,4 @@ The current app stores the local library as `MetronomeLibrary.json` in the app d
 
 ## Privacy Manifest
 
-The app target includes `App/PrivacyInfo.xcprivacy` declaring no tracking, no collected data types, no tracking domains, and no required-reason API usage. Re-check this manifest before any dependency, analytics, crash reporting, networking, or export/import feature is added.
+The app target includes `App/PrivacyInfo.xcprivacy` declaring no tracking, no collected data types, no tracking domains, and no required-reason API usage. `Tools/run_local_validation.sh` verifies those manifest values, confirms `Package.swift` has no external dependencies, and scans Swift source for account, tracking, analytics, network, cloud, ad, or subscription surfaces. Re-check this manifest before any dependency, analytics, crash reporting, networking, or export/import feature is added.

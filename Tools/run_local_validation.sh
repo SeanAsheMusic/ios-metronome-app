@@ -7,11 +7,41 @@ DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/PulsecraftLocalValidation}"
 APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
 APP_BUNDLE_ID="com.seanashe.metronome"
 MIN_LAUNCH_SCREENSHOT_BYTES=150000
+DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
 
 cd "$ROOT_DIR"
 
 echo "Local validation destination: $DESTINATION"
 echo "Derived data root: $DERIVED_DATA_ROOT"
+
+echo
+echo "== Privacy and local-first policy =="
+plutil -lint App/PrivacyInfo.xcprivacy
+
+privacy_json="$(plutil -convert json -o - App/PrivacyInfo.xcprivacy)"
+/usr/bin/ruby -rjson -e '
+  manifest = JSON.parse(ARGF.read)
+  failures = []
+  failures << "NSPrivacyTracking must be false" unless manifest["NSPrivacyTracking"] == false
+  failures << "NSPrivacyCollectedDataTypes must be empty" unless manifest["NSPrivacyCollectedDataTypes"] == []
+  failures << "NSPrivacyTrackingDomains must be empty" unless manifest["NSPrivacyTrackingDomains"] == []
+  failures << "NSPrivacyAccessedAPITypes must be empty" unless manifest["NSPrivacyAccessedAPITypes"] == []
+  if failures.any?
+    warn failures.join("\n")
+    exit 1
+  end
+' <<< "$privacy_json"
+
+if rg -n '\.package\(' Package.swift; then
+  echo "Package.swift declares external dependencies; review v1 dependency policy before release." >&2
+  exit 1
+fi
+
+if disallowed_hits="$(rg -n "$DISALLOWED_LOCAL_FIRST_PATTERN" App Sources Package.swift Tests -g '*.swift')"; then
+  echo "Potential account, tracking, analytics, network, cloud, ad, or subscription surface found:" >&2
+  echo "$disallowed_hits" >&2
+  exit 1
+fi
 
 echo
 echo "== Swift package tests =="
