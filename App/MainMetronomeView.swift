@@ -13,6 +13,7 @@ struct MainMetronomeView: View {
     @State private var isShowingStagePulse = false
     @State private var isConfirmingSnapshotRestore = false
     @State private var selectedRhythmGridAccent: AccentLevel = .normal
+    @State private var shouldShowStagePulseOnLaunch: Bool
     private let bottomTabBarContentPadding: CGFloat = 78
 
     private enum InstrumentTab: String, CaseIterable, Identifiable {
@@ -65,14 +66,23 @@ struct MainMetronomeView: View {
         static let hairline = Color.white.opacity(0.12)
     }
 
-    init(initialTab: String = InstrumentTab.play.rawValue) {
+    init(
+        initialTab: String = InstrumentTab.play.rawValue,
+        showsStagePulseOnLaunch: Bool = false
+    ) {
         _viewModel = StateObject(wrappedValue: MainMetronomeViewModel())
         _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
+        _shouldShowStagePulseOnLaunch = State(initialValue: showsStagePulseOnLaunch)
     }
 
-    init(viewModel: MainMetronomeViewModel, initialTab: String = InstrumentTab.play.rawValue) {
+    init(
+        viewModel: MainMetronomeViewModel,
+        initialTab: String = InstrumentTab.play.rawValue,
+        showsStagePulseOnLaunch: Bool = false
+    ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
+        _shouldShowStagePulseOnLaunch = State(initialValue: showsStagePulseOnLaunch)
     }
 
     var body: some View {
@@ -84,6 +94,10 @@ struct MainMetronomeView: View {
         .tint(InstrumentTheme.accent)
         .task {
             await viewModel.prepare()
+            if shouldShowStagePulseOnLaunch {
+                shouldShowStagePulseOnLaunch = false
+                isShowingStagePulse = true
+            }
         }
         .fileExporter(
             isPresented: $isExportingLibrary,

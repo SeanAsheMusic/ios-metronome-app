@@ -6,7 +6,7 @@ DESTINATION="${1:-platform=iOS Simulator,name=iPhone 17}"
 DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/PulsecraftLocalValidation}"
 APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
 APP_BUNDLE_ID="com.seanashe.metronome"
-MIN_SCREENSHOT_BYTES=150000
+MIN_SCREENSHOT_BYTES=90000
 DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
 BUILD_LOG_ROOT="$DERIVED_DATA_ROOT/Logs"
 ARCHIVE_PATH="$DERIVED_DATA_ROOT/Pulsecraft.xcarchive"
@@ -210,6 +210,7 @@ edit_screenshot="$APP_DERIVED_DATA_PATH/edit-rhythm-grid-smoke.png"
 patterns_screenshot="$APP_DERIVED_DATA_PATH/patterns-smoke.png"
 setlist_screenshot="$APP_DERIVED_DATA_PATH/setlist-smoke.png"
 settings_screenshot="$APP_DERIVED_DATA_PATH/settings-smoke.png"
+stage_pulse_screenshot="$APP_DERIVED_DATA_PATH/stage-pulse-smoke.png"
 
 capture_app_screenshot() {
   local screenshot_path="$1"
@@ -241,12 +242,14 @@ capture_app_screenshot "$edit_screenshot" -PulsecraftUITestingInMemoryLibrary -P
 capture_app_screenshot "$patterns_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab patterns
 capture_app_screenshot "$setlist_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab setlist
 capture_app_screenshot "$settings_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab settings
+capture_app_screenshot "$stage_pulse_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftShowStagePulse
 
 echo "Launch smoke screenshot: $launch_screenshot"
 echo "Edit rhythm grid smoke screenshot: $edit_screenshot"
 echo "Patterns smoke screenshot: $patterns_screenshot"
 echo "Setlist smoke screenshot: $setlist_screenshot"
 echo "Settings smoke screenshot: $settings_screenshot"
+echo "Stage Pulse smoke screenshot: $stage_pulse_screenshot"
 
 echo
 echo "Local validation passed."

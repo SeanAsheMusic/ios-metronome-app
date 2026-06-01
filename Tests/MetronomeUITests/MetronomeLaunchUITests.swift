@@ -139,6 +139,14 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Closing Stage Pulse should return to the Play surface.")
     }
 
+    func testStagePulseCanLaunchDirectlyForSmokeCapture() {
+        let app = launchApp(showStagePulse: true)
+
+        XCTAssertTrue(app.buttons["Close stage pulse"].waitForExistence(timeout: 8), "Stage Pulse should support direct smoke-test launch.")
+        XCTAssertTrue(app.descendants(matching: .any)["Stage visual pulse"].exists, "The full-screen pulse element should be visible on direct launch.")
+        XCTAssertTrue(app.descendants(matching: .any)["Pattern Default 4/4, 120 beats per minute, meter 4/4"].exists, "The stage surface should expose performer context.")
+    }
+
     func testPlaybackUpdatesBeatVisualizerFromScheduledBeat() {
         let app = launchApp()
 
@@ -176,7 +184,11 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, "Expected \(element) to become reachable after scrolling.")
     }
 
-    private func launchApp(contentSizeCategory: String? = nil, initialTab: String? = nil) -> XCUIApplication {
+    private func launchApp(
+        contentSizeCategory: String? = nil,
+        initialTab: String? = nil,
+        showStagePulse: Bool = false
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         let contentSizeArguments = contentSizeCategory.map {
             ["-UIPreferredContentSizeCategoryName", $0]
@@ -184,7 +196,8 @@ final class MetronomeLaunchUITests: XCTestCase {
         let initialTabArguments = initialTab.map {
             ["-PulsecraftInitialTab", $0]
         } ?? []
-        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments + initialTabArguments
+        let stagePulseArguments = showStagePulse ? ["-PulsecraftShowStagePulse"] : []
+        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments + initialTabArguments + stagePulseArguments
         app.launch()
         return app
     }

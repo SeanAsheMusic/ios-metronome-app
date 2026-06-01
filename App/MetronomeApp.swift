@@ -5,10 +5,12 @@ import AudioEngine
 struct MetronomeApp: App {
     private let viewModel: MainMetronomeViewModel
     private let initialTab: String
+    private let showsStagePulseOnLaunch: Bool
 
     init() {
         let arguments = ProcessInfo.processInfo.arguments
         initialTab = Self.argumentValue(after: "-PulsecraftInitialTab", in: arguments) ?? "play"
+        showsStagePulseOnLaunch = arguments.contains("-PulsecraftShowStagePulse")
         if arguments.contains("-PulsecraftUITestingInMemoryLibrary") {
             viewModel = MainMetronomeViewModel(audioEngine: AudioEngineStub(), libraryStore: nil)
         } else {
@@ -18,7 +20,11 @@ struct MetronomeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainMetronomeView(viewModel: viewModel, initialTab: initialTab)
+            MainMetronomeView(
+                viewModel: viewModel,
+                initialTab: initialTab,
+                showsStagePulseOnLaunch: showsStagePulseOnLaunch
+            )
         }
     }
 
