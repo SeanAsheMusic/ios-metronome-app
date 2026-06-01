@@ -12,6 +12,7 @@ struct MainMetronomeView: View {
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
     @State private var isConfirmingSnapshotRestore = false
+    @State private var selectedRhythmGridAccent: AccentLevel = .normal
     private let bottomTabBarContentPadding: CGFloat = 78
 
     private enum InstrumentTab: String, CaseIterable, Identifiable {
@@ -1191,7 +1192,7 @@ struct MainMetronomeView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 3) {
                     sectionLabel("Rhythm Grid")
-                    Text("Tap steps to choose the groove: accent, hit, soft, or rest.")
+                    Text("Pick a feel, then tap steps to paint the groove.")
                         .font(.caption)
                         .foregroundStyle(InstrumentTheme.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
@@ -1199,6 +1200,8 @@ struct MainMetronomeView: View {
                 Spacer(minLength: 12)
                 rhythmLegend
             }
+
+            rhythmPaintPalette
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .top, spacing: 10) {
@@ -1281,10 +1284,49 @@ struct MainMetronomeView: View {
         }
     }
 
+    private var rhythmPaintPalette: some View {
+        HStack(spacing: 8) {
+            rhythmPaintButton(accent: .strong, label: "Accent")
+            rhythmPaintButton(accent: .normal, label: "Hit")
+            rhythmPaintButton(accent: .ghost, label: "Soft")
+            rhythmPaintButton(accent: .muted, label: "Rest")
+        }
+    }
+
+    private func rhythmPaintButton(accent: AccentLevel, label: String) -> some View {
+        let isSelected = selectedRhythmGridAccent == accent
+
+        return Button {
+            selectedRhythmGridAccent = accent
+        } label: {
+            VStack(spacing: 5) {
+                rhythmStepGlyph(for: accent)
+                    .frame(width: 18, height: 18)
+                Text(label)
+                    .font(.caption2.weight(.bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+            .foregroundStyle(isSelected ? InstrumentTheme.primaryText : InstrumentTheme.secondaryText)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(
+                isSelected ? InstrumentTheme.raisedSurface : InstrumentTheme.surface,
+                in: RoundedRectangle(cornerRadius: 8, style: .continuous)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(isSelected ? InstrumentTheme.accent : InstrumentTheme.hairline, lineWidth: isSelected ? 2 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Paint \(label)")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+    }
+
     private func rhythmStepButton(beat: Beat) -> some View {
         Button {
             Task {
-                await viewModel.cycleAccent(at: beat.index)
+                await viewModel.setAccent(selectedRhythmGridAccent, at: beat.index)
             }
         } label: {
             rhythmStepGlyph(for: beat.accent)
@@ -1293,7 +1335,7 @@ struct MainMetronomeView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Step \(beat.index + 1), \(viewModel.accessibilityLabel(for: beat.accent))")
-        .accessibilityHint("Cycles between accent, hit, soft, and rest.")
+        .accessibilityHint("Sets this step to the selected rhythm-grid paint state.")
         .contextMenu {
             ForEach(AccentLevel.allCases, id: \.self) { accent in
                 Button {

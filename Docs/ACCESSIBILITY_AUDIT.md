@@ -14,7 +14,7 @@ This audit has not been verified with Accessibility Inspector or VoiceOver runni
 |---|---|---|
 | Play | Implemented in source | Pattern, meter, BPM, tempo marking, beat visualizer, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, rhythm trainer, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
-| Edit | Implemented in source | Pattern name, meter, global subdivision, visual rhythm-grid beat groups, per-beat subdivision selectors, and explicit step controls are labeled with musician-facing Accent, Hit, Soft, and Rest states. Grid steps announce the step number and current accent level. |
+| Edit | Implemented in source | Pattern name, meter, global subdivision, visual rhythm-grid beat groups, per-beat subdivision selectors, an Accent/Hit/Soft/Rest paint palette, and explicit step controls are labeled. Grid steps announce the step number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, Clave Mode creation, Swing template creation, and Polyrhythm template creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, bar-count, auto-advance, and remove controls have labels that include the affected item title. |
 | Settings | Implemented in source | Click preset, volume, accent boost, role mixer, mixer reset, Precision mode, Human Feel, timing summary/reset, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
@@ -56,7 +56,8 @@ This audit has not been verified with Accessibility Inspector or VoiceOver runni
 
 - Pattern name, meter, and subdivision fields use labels.
 - The rhythm grid groups editable steps under each meter beat so VoiceOver users hear step numbers in musical context.
-- Tapping a grid step cycles its state; the context menu exposes explicit Accent, Hit, Soft, and Rest choices.
+- The rhythm-grid paint palette exposes Accent, Hit, Soft, and Rest states; tapping a grid step applies the selected state.
+- The context menu also exposes explicit Accent, Hit, Soft, and Rest choices for direct VoiceOver/action-menu access.
 - Per-beat subdivision menus sit inside the beat group and include the beat number and selected subdivision.
 - If future gestures add lane editing, labels should include lane, accent level, and muted state.
 

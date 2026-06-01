@@ -66,8 +66,14 @@ final class MetronomeLaunchUITests: XCTestCase {
         let firstStep = app.buttons["Step 1, strong accent"]
         XCTAssertTrue(firstStep.exists, "The grid should expose editable beat and subdivision steps.")
 
+        XCTAssertEqual(app.buttons["Paint Hit"].value as? String, "Selected", "The grid should default to painting ordinary hits.")
         firstStep.tap()
         XCTAssertTrue(app.buttons["Step 1, normal accent"].waitForExistence(timeout: 2), "Tapping a grid step should cycle its accent state.")
+
+        app.buttons["Paint Rest"].tap()
+        XCTAssertEqual(app.buttons["Paint Rest"].value as? String, "Selected")
+        app.buttons["Step 1, normal accent"].tap()
+        XCTAssertTrue(app.buttons["Step 1, muted"].waitForExistence(timeout: 2), "The paint palette should let musicians directly silence a step.")
     }
 
     func testStagePulseOpensAndClosesFromPlaySurface() {
