@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 import UniformTypeIdentifiers
 import AudioEngine
 import Persistence
@@ -8,12 +7,53 @@ import RhythmModel
 struct MainMetronomeView: View {
     @StateObject private var viewModel = MainMetronomeViewModel()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var selectedTab: InstrumentTab = .play
     @State private var exportDocument = LibraryExportDocument(data: Data())
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
     @State private var isConfirmingSnapshotRestore = false
-    private let bottomTabBarContentPadding: CGFloat = 112
+    private let bottomTabBarContentPadding: CGFloat = 94
+
+    private enum InstrumentTab: String, CaseIterable, Identifiable {
+        case play
+        case edit
+        case patterns
+        case setlist
+        case settings
+
+        var id: Self { self }
+
+        var title: String {
+            switch self {
+            case .play:
+                "Play"
+            case .edit:
+                "Edit"
+            case .patterns:
+                "Patterns"
+            case .setlist:
+                "Setlist"
+            case .settings:
+                "Settings"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .play:
+                "metronome"
+            case .edit:
+                "slider.horizontal.3"
+            case .patterns:
+                "music.note.list"
+            case .setlist:
+                "list.bullet.rectangle"
+            case .settings:
+                "gearshape"
+            }
+        }
+    }
 
     private enum InstrumentTheme {
         static let background = Color(red: 0.039, green: 0.039, blue: 0.039)
@@ -25,50 +65,10 @@ struct MainMetronomeView: View {
         static let hairline = Color.white.opacity(0.12)
     }
 
-    init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundColor = UIColor(white: 0.04, alpha: 0.94)
-        appearance.stackedLayoutAppearance.normal.iconColor = UIColor(white: 0.29, alpha: 1)
-        appearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: UIColor(white: 0.29, alpha: 1),
-            .font: UIFont.systemFont(ofSize: 9, weight: .semibold)
-        ]
-        appearance.stackedLayoutAppearance.selected.iconColor = UIColor(red: 0.180, green: 0.710, blue: 0.376, alpha: 1)
-        appearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: UIColor(red: 0.180, green: 0.710, blue: 0.376, alpha: 1),
-            .font: UIFont.systemFont(ofSize: 9, weight: .semibold)
-        ]
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-    }
-
     var body: some View {
-        TabView {
-            playTab
-                .tabItem {
-                    Label("Play", systemImage: "metronome")
-                }
-
-            editTab
-                .tabItem {
-                    Label("Edit", systemImage: "slider.horizontal.3")
-                }
-
-            libraryTab
-                .tabItem {
-                    Label("Patterns", systemImage: "music.note.list")
-                }
-
-            setlistTab
-                .tabItem {
-                    Label("Setlist", systemImage: "list.bullet.rectangle")
-                }
-
-            settingsTab
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
-                }
+        ZStack(alignment: .bottom) {
+            selectedTabContent
+            instrumentTabBar
         }
         .preferredColorScheme(.dark)
         .tint(InstrumentTheme.accent)
@@ -105,6 +105,59 @@ struct MainMetronomeView: View {
         } message: {
             Text("This replaces the current library with the most recent local snapshot. The current library is snapshotted first.")
         }
+    }
+
+    @ViewBuilder
+    private var selectedTabContent: some View {
+        switch selectedTab {
+        case .play:
+            playTab
+        case .edit:
+            editTab
+        case .patterns:
+            libraryTab
+        case .setlist:
+            setlistTab
+        case .settings:
+            settingsTab
+        }
+    }
+
+    private var instrumentTabBar: some View {
+        HStack(spacing: 0) {
+            ForEach(InstrumentTab.allCases) { tab in
+                let isSelected = selectedTab == tab
+                Button {
+                    selectedTab = tab
+                } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: tab.systemImage)
+                            .font(.system(size: 20, weight: .semibold))
+                            .frame(height: 22)
+
+                        Text(tab.title)
+                            .font(.system(size: 9, weight: .semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
+                    }
+                    .foregroundStyle(isSelected ? InstrumentTheme.accent : Color(red: 0.290, green: 0.290, blue: 0.290))
+                    .frame(maxWidth: .infinity, minHeight: 54)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("\(tab.title) tab")
+                .accessibilityValue(isSelected ? "Selected" : "Not selected")
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial, in: Capsule())
+        .overlay(
+            Capsule()
+                .stroke(InstrumentTheme.hairline, lineWidth: 1)
+        )
+        .padding(.horizontal, 22)
+        .padding(.bottom, 8)
     }
 
     private var playTab: some View {
@@ -487,6 +540,7 @@ struct MainMetronomeView: View {
                         .foregroundStyle(InstrumentTheme.secondaryText)
                         .textCase(.uppercase)
                         .kerning(1.2)
+                        .accessibilityIdentifier("tempo-marking")
                         .accessibilityLabel("Tempo marking \(viewModel.tempoMarking)")
 
                     beatVisualizer
