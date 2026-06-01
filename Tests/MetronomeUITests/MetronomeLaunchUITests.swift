@@ -71,6 +71,20 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Closing Stage Pulse should return to the Play surface.")
     }
 
+    func testPlaySurfaceSupportsLargestAccessibilityText() {
+        let app = launchApp(contentSizeCategory: "UICTContentSizeCategoryAccessibilityXXXL")
+
+        XCTAssertTrue(app.staticTexts["Pattern Default 4/4"].waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["120 beats per minute"].exists)
+        XCTAssertTrue(app.buttons["Play metronome"].exists)
+        XCTAssertTrue(app.buttons["Tap tempo"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["Beat visualizer"].exists)
+        XCTAssertTrue(app.buttons["Open stage pulse"].exists)
+        XCTAssertTrue(app.buttons["Decrease count-in"].exists)
+        XCTAssertTrue(app.buttons["Increase count-in"].exists)
+        XCTAssertTrue(app.buttons["Play tab"].exists)
+    }
+
     private func scrollToElement(_ element: XCUIElement, in app: XCUIApplication, attempts: Int = 5) {
         for _ in 0..<attempts where !element.isHittable {
             app.swipeUp()
@@ -78,9 +92,12 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(element.isHittable, "Expected \(element) to become reachable after scrolling.")
     }
 
-    private func launchApp() -> XCUIApplication {
+    private func launchApp(contentSizeCategory: String? = nil) -> XCUIApplication {
         let app = XCUIApplication()
-        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"]
+        let contentSizeArguments = contentSizeCategory.map {
+            ["-UIPreferredContentSizeCategoryName", $0]
+        } ?? []
+        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments
         app.launch()
         return app
     }

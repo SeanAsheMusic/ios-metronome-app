@@ -6,19 +6,19 @@ Date: June 1, 2026
 
 This is a source-level accessibility audit of the current SwiftUI app surface. It checks whether the main controls expose understandable labels, large touch targets, Dynamic Type-friendly layout choices, dark-mode/high-contrast-compatible system colors, and Reduce Motion behavior.
 
-This audit has not been verified with Accessibility Inspector or VoiceOver running on device. The local validation gate now launches the app on the iPhone 17 simulator and captures a first-screen screenshot, but the full accessibility checklist still requires simulator and physical-device review at representative sizes and settings.
+This audit has not been verified with Accessibility Inspector or VoiceOver running on device. The local validation gate now launches the app on the iPhone 17 simulator, runs a largest-accessibility-text Play surface smoke test, and captures a first-screen screenshot, but the full accessibility checklist still requires physical-device review at representative sizes and settings.
 
 ## Summary
 
 | Area | Source status | Notes |
 |---|---|---|
-| Play | Implemented in source | Pattern, meter, BPM, tempo marking, beat visualizer, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, rhythm trainer, visual pulse, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
+| Play | Implemented in source | Pattern, meter, BPM, tempo marking, beat visualizer, direct tempo entry, play/stop, tap tempo, count-in, practice timer, tempo ladder, rhythm trainer, and stage pulse entry have explicit labels or semantic SwiftUI controls. |
 | Stage Pulse | Implemented in source | Full-screen pulse exposes pattern context, pulse state, and a labeled close button. Motion scaling is disabled when Reduce Motion is enabled. |
 | Edit | Implemented in source | Pattern name, meter, global subdivision, per-beat subdivision, and explicit beat/subdivision accent/mute controls are labeled. Beat menus announce the step number and current accent level. |
 | Patterns | Implemented in source | Saved pattern selection, current selection state, duplication, deletion, groove template creation, Clave Mode creation, Swing template creation, and Polyrhythm template creation have labels. |
 | Setlist | Implemented in source | Add, select, reorder, bar-count, auto-advance, and remove controls have labels that include the affected item title. |
 | Settings | Implemented in source | Click preset, volume, accent boost, role mixer, mixer reset, Precision mode, Human Feel, timing summary/reset, audio output status, refresh, export, import, latest snapshot restore, and data-result messages have labels. |
-| Dynamic Type | Source likely supports core flow | Most controls use SwiftUI text styles, flexible frames, scroll views, and minimum scale factors. Needs simulator/device verification at largest accessibility sizes. |
+| Dynamic Type | Partly verified | The UI smoke suite launches the Play surface at the largest accessibility text size and verifies the primary above-the-fold performance controls remain reachable. Full app-wide device verification is still required. |
 | Touch targets | Implemented in source | Primary controls, tab controls, beat cells, pattern actions, groove buttons, practice presets, settings refresh, and setlist reorder/remove controls are at least 44 pt in source. |
 | Color and contrast | Source likely supports | System colors and semantic secondary/accent colors are used. Needs high-contrast and dark-mode visual review. |
 | Reduce Motion | Implemented in source | Main visual pulse and stage pulse disable scale animation when Reduce Motion is enabled. |
@@ -37,7 +37,7 @@ This audit has not been verified with Accessibility Inspector or VoiceOver runni
 - Practice timer controls expose duration, start/pause, reset, and remaining time.
 - Tempo ladder controls expose target BPM, step size, bars per step, and start/stop state.
 - Rhythm Trainer exposes mode, fixed bar counts, random silent-bar chance, random beat-dropout chance, and guide-tone/dropout modes.
-- Visual pulse exposes active/inactive state and reduced-motion state.
+- The beat visualizer exposes stopped/current-beat state; the full-screen Stage Pulse exposes active/inactive pulse state and reduced-motion state.
 
 ### Bottom Navigation
 
@@ -87,7 +87,7 @@ Run this checklist before App Store submission once test devices are available:
 - Confirm control order matches the visual task order.
 - Confirm the custom bottom navigation is reachable and reports selected state correctly.
 - Confirm all controls are reachable and actionable with VoiceOver.
-- Test Dynamic Type at largest accessibility sizes on compact iPhone, large iPhone, and iPad.
+- Test Dynamic Type at largest accessibility sizes on compact iPhone, large iPhone, and iPad. The simulator smoke test covers the primary Play surface controls only.
 - Test high contrast and dark mode on Play and Stage Pulse.
 - Enable Reduce Motion and confirm pulses do not scale or animate.
 - Confirm beat, settings, pattern, and setlist controls meet practical touch-target expectations on device.
