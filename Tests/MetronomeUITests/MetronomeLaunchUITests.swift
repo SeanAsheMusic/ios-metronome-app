@@ -29,4 +29,32 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Reset practice timer"].exists)
         XCTAssertTrue(app.buttons["Start tempo ladder"].exists, "Tempo Ladder should use the app accent treatment, not a separate blue action.")
     }
+
+    func testBottomNavigationReachesEveryPrimarySurface() {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.buttons["Play tab"].waitForExistence(timeout: 8))
+        XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
+
+        app.buttons["Edit tab"].tap()
+        XCTAssertTrue(app.textFields["Pattern name"].waitForExistence(timeout: 2), "Edit should expose pattern editing after selecting the Edit tab.")
+        XCTAssertEqual(app.buttons["Edit tab"].value as? String, "Selected")
+
+        app.buttons["Patterns tab"].tap()
+        XCTAssertTrue(app.buttons["Duplicate current pattern"].waitForExistence(timeout: 2), "Patterns should expose library actions after selecting the Patterns tab.")
+        XCTAssertEqual(app.buttons["Patterns tab"].value as? String, "Selected")
+
+        app.buttons["Setlist tab"].tap()
+        XCTAssertTrue(app.buttons["Add current pattern to setlist"].waitForExistence(timeout: 2), "Setlist should expose setlist actions after selecting the Setlist tab.")
+        XCTAssertEqual(app.buttons["Setlist tab"].value as? String, "Selected")
+
+        app.buttons["Settings tab"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["Click sound"].waitForExistence(timeout: 2), "Settings should expose click sound settings after selecting the Settings tab.")
+        XCTAssertEqual(app.buttons["Settings tab"].value as? String, "Selected")
+
+        app.buttons["Play tab"].tap()
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 2), "Play should remain reachable after visiting the other primary surfaces.")
+        XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
+    }
 }

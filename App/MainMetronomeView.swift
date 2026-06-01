@@ -1651,6 +1651,7 @@ final class MainMetronomeViewModel: ObservableObject {
     private var countInTask: Task<Void, Never>?
     private var songFormActiveItemID: SetlistItem.ID?
     private var songFormHasSeenFirstDownbeat = false
+    private var hasPrepared = false
 
     init(
         audioEngine: any MetronomeAudioEngine = AVMetronomeAudioEngine(),
@@ -1661,12 +1662,16 @@ final class MainMetronomeViewModel: ObservableObject {
     }
 
     func prepare() async {
+        guard !hasPrepared else {
+            return
+        }
+        hasPrepared = true
+
         await loadLibrary()
 
         await audioEngine.setEventHandler { [weak self] event in
             await self?.handleBeat(event)
         }
-        try? await audioEngine.prepare(pattern: pattern)
     }
 
     func togglePlayback() async {
