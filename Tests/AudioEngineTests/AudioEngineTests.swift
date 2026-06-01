@@ -187,9 +187,19 @@ final class AudioEngineTests: XCTestCase {
 
     func testClickSoundPresetDisplayNames() {
         XCTAssertEqual(ClickSoundPreset.classic.displayName, "Classic")
+        XCTAssertEqual(ClickSoundPreset.hardClick.displayName, "Hard Click")
         XCTAssertEqual(ClickSoundPreset.wood.displayName, "Wood")
+        XCTAssertEqual(ClickSoundPreset.clave.displayName, "Clave")
+        XCTAssertEqual(ClickSoundPreset.rimshot.displayName, "Rimshot")
+        XCTAssertEqual(ClickSoundPreset.cowbell.displayName, "Cowbell")
+        XCTAssertEqual(ClickSoundPreset.hiHat.displayName, "Hi-Hat")
+        XCTAssertEqual(ClickSoundPreset.shaker.displayName, "Shaker")
+        XCTAssertEqual(ClickSoundPreset.clap.displayName, "Clap")
+        XCTAssertEqual(ClickSoundPreset.sine.displayName, "Sine")
+        XCTAssertEqual(ClickSoundPreset.mellow.displayName, "Mellow")
         XCTAssertEqual(ClickSoundPreset.bell.displayName, "Bell")
         XCTAssertEqual(ClickSoundPreset.mechanical.displayName, "Mechanical")
+        XCTAssertEqual(ClickSoundPreset.allCases.count, 13)
     }
 
     func testAudioTimingSummaryCalculatesOffsetAndJitter() {

@@ -15,7 +15,7 @@
 | Tuner | Yes | No | Strong | No | Ignore | Later/no |
 | Practice timer | Yes | Coach modes | Strong | Trainer | Quiet/local only | V1 |
 | Clave/groove modes | Limited | Limited | Limited | Limited | Traditional, bell, odd-meter, and mixer template foundation | V1 |
-| Sound mixing | Presets | Strong | Strong | Basic | Role-level downbeat, beat, subdivision, and cue levels | V1 |
+| Sound mixing | Presets | Strong | Strong | Basic | 13 synthesized presets plus role-level downbeat, beat, subdivision, and cue levels | V1 |
 | Gap/random silence | Limited | Coach | Assistant | Trainer | Fixed/random silent bars, random beat dropout, and guide-tone/dropout Rhythm Trainer modes | V1 |
 | MIDI/Link | No/varies | No/varies | No/varies | Link | Defer | Later |
 
@@ -24,5 +24,5 @@
 - Keep all core rhythm controls editable after creation.
 - Avoid nag screens, ads, subscriptions, and account walls.
 - Make setlist ordering, duplication, and export/import obvious.
-- Build a better sound library from synthesized, rights-clean sources.
+- Keep improving the synthesized, rights-clean sound library through listening review and device checks.
 - Label high-latency routes and avoid pretending Bluetooth/AirPlay are stage-perfect.

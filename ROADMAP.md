@@ -12,7 +12,7 @@
 - Local export/import bundles.
 - Bounded local library snapshots.
 - Latest local snapshot restore.
-- Sound family picker with synthesized presets.
+- Sound family picker with 13 synthesized presets.
 - Role-level mixer for downbeat, beat, subdivision, and count-in cue levels.
 - Mixer reset and Precision mode for validation-safe settings.
 - Exportable click-render verification assets.

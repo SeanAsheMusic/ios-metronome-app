@@ -36,6 +36,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - SwiftUI performance play screen foundation.
 - Full-screen stage pulse mode.
 - Accessibility labels and large touch targets.
+- Thirteen rights-clean synthesized click presets: classic, hard click, wood, clave, rimshot, cowbell, hi-hat, shaker, clap, sine, mellow, bell, and mechanical.
 - Settings role-level mixer controls for downbeat, beat, subdivision, and count-in cue levels, plus mixer reset.
 - Settings Precision mode to turn off timing-altering practice features before validation.
 - Playable audio engine foundation and scheduling spec.

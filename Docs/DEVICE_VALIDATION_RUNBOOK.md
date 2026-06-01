@@ -31,6 +31,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Subdivision editing | Eighth, triplet, and sixteenth subdivision steps can be muted or accented from the editor. | Device note. |
 | Mixed subdivisions | Different subdivisions per beat, including quintuplets, play at the expected spacing. | Device note. |
 | Beat accents | Explicit Strong, Normal, Ghost, and Mute beat choices are reachable and audible or silent as expected. | Device note. |
+| Click presets | All 13 synthesized click presets are selectable and audibly distinct enough for listening review. | Device note. |
 | Role mixer | Downbeat, beat, subdivision, and count-in cue level controls audibly rebalance the click without changing pattern timing; Reset Mixer restores all role levels. | Device note. |
 | Clave templates | Son, rumba, and bossa 3:2/2:3 groove buttons create 16-step patterns with the expected active hits. | Device note. |
 | Clave Mode mixer | Clave-only, click-only, clave-plus-click, and subdivision mixer presets create audibly distinct patterns. | Device note. |
@@ -43,7 +44,7 @@ Use this runbook before App Store submission and before any claim about producti
 | Rhythm Trainer | Fixed silent bars, random silent bars, random beat dropout, 2-and-4 guide, and 1-and-3 dropout modes mute the intended events while keeping the transport running. | Device note. |
 | Human Feel | Zero percent remains steady; high values audibly drift and show the inaccuracy warning. | Device note. |
 | Stage pulse | Full-screen pulse opens, follows scheduled beat events, and closes reliably. | Screenshot plus device note. |
-| Click fixtures | `SoundLibrary/RenderedVerification` WAVs match `SHA256SUMS` and are useful for preset listening review. | Checksum output plus notes. |
+| Click fixtures | `SoundLibrary/RenderedVerification` WAVs match `SHA256SUMS` for all 13 presets and are useful for preset listening review. | Checksum output plus notes. |
 
 ## Audio Timing
 

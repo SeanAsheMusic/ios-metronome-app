@@ -95,14 +95,32 @@ public actor AudioTimingRecorder {
 
 public enum ClickSoundPreset: String, CaseIterable, Codable, Equatable, Sendable {
     case classic
+    case hardClick
     case wood
+    case clave
+    case rimshot
+    case cowbell
+    case hiHat
+    case shaker
+    case clap
+    case sine
+    case mellow
     case bell
     case mechanical
 
     public var displayName: String {
         switch self {
         case .classic: "Classic"
+        case .hardClick: "Hard Click"
         case .wood: "Wood"
+        case .clave: "Clave"
+        case .rimshot: "Rimshot"
+        case .cowbell: "Cowbell"
+        case .hiHat: "Hi-Hat"
+        case .shaker: "Shaker"
+        case .clap: "Clap"
+        case .sine: "Sine"
+        case .mellow: "Mellow"
         case .bell: "Bell"
         case .mechanical: "Mechanical"
         }
@@ -920,10 +938,10 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         let cueGain = Float(settings.cueGain)
 
         return [
-            .downbeat: try makeClickBuffer(format: format, frequency: profile.downbeatFrequency, duration: profile.downbeatDuration, gain: min(1.0, profile.downbeatGain * masterGain * accentBoost * downbeatGain), decayPower: profile.decayPower),
-            .beat: try makeClickBuffer(format: format, frequency: profile.beatFrequency, duration: profile.beatDuration, gain: profile.beatGain * masterGain * beatGain, decayPower: profile.decayPower),
-            .subdivision: try makeClickBuffer(format: format, frequency: profile.subdivisionFrequency, duration: profile.subdivisionDuration, gain: profile.subdivisionGain * masterGain * subdivisionGain, decayPower: profile.decayPower),
-            .cue: try makeClickBuffer(format: format, frequency: profile.cueFrequency, duration: profile.cueDuration, gain: profile.cueGain * masterGain * cueGain, decayPower: profile.decayPower),
+            .downbeat: try makeClickBuffer(format: format, frequency: profile.downbeatFrequency, duration: profile.downbeatDuration, gain: min(1.0, profile.downbeatGain * masterGain * accentBoost * downbeatGain), decayPower: profile.decayPower, noiseMix: profile.noiseMix),
+            .beat: try makeClickBuffer(format: format, frequency: profile.beatFrequency, duration: profile.beatDuration, gain: profile.beatGain * masterGain * beatGain, decayPower: profile.decayPower, noiseMix: profile.noiseMix),
+            .subdivision: try makeClickBuffer(format: format, frequency: profile.subdivisionFrequency, duration: profile.subdivisionDuration, gain: profile.subdivisionGain * masterGain * subdivisionGain, decayPower: profile.decayPower, noiseMix: profile.noiseMix),
+            .cue: try makeClickBuffer(format: format, frequency: profile.cueFrequency, duration: profile.cueDuration, gain: profile.cueGain * masterGain * cueGain, decayPower: profile.decayPower, noiseMix: profile.noiseMix),
             .muted: try makeClickBuffer(format: format, frequency: 200, duration: 0.004, gain: 0.0)
         ]
     }
@@ -933,7 +951,8 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         frequency: Double,
         duration: Double,
         gain: Float,
-        decayPower: Double = 4.0
+        decayPower: Double = 4.0,
+        noiseMix: Double = 0.0
     ) throws -> AVAudioPCMBuffer {
         let frameCount = AVAudioFrameCount(format.sampleRate * duration)
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
@@ -948,11 +967,20 @@ public actor AVMetronomeAudioEngine: MetronomeAudioEngine {
         for frame in 0..<Int(frameCount) {
             let progress = Double(frame) / Double(frameCount)
             let envelope = Float(pow(1.0 - progress, decayPower))
-            let sample = sin((Double(frame) / format.sampleRate) * frequency * 2.0 * Double.pi)
+            let sine = sin((Double(frame) / format.sampleRate) * frequency * 2.0 * Double.pi)
+            let noise = deterministicNoise(frame: frame)
+            let clampedNoiseMix = min(1.0, max(0.0, noiseMix))
+            let sample = (sine * (1.0 - clampedNoiseMix)) + (noise * clampedNoiseMix)
             channel[frame] = Float(sample) * gain * envelope
         }
 
         return buffer
+    }
+
+    private func deterministicNoise(frame: Int) -> Double {
+        var value = UInt64(frame + 1) &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
+        value ^= value >> 33
+        return (Double(value % 20_001) / 10_000.0) - 1.0
     }
 }
 
@@ -974,6 +1002,7 @@ private struct ClickProfile {
     let subdivisionGain: Float
     let cueGain: Float
     let decayPower: Double
+    let noiseMix: Double
 
     static func profile(for preset: ClickSoundPreset) -> ClickProfile {
         switch preset {
@@ -991,7 +1020,25 @@ private struct ClickProfile {
                 beatGain: 0.62,
                 subdivisionGain: 0.42,
                 cueGain: 0.7,
-                decayPower: 4.0
+                decayPower: 4.0,
+                noiseMix: 0.0
+            )
+        case .hardClick:
+            ClickProfile(
+                downbeatFrequency: 2_600,
+                beatFrequency: 2_100,
+                subdivisionFrequency: 1_700,
+                cueFrequency: 2_350,
+                downbeatDuration: 0.018,
+                beatDuration: 0.014,
+                subdivisionDuration: 0.010,
+                cueDuration: 0.024,
+                downbeatGain: 0.88,
+                beatGain: 0.66,
+                subdivisionGain: 0.44,
+                cueGain: 0.72,
+                decayPower: 8.0,
+                noiseMix: 0.18
             )
         case .wood:
             ClickProfile(
@@ -1007,7 +1054,144 @@ private struct ClickProfile {
                 beatGain: 0.58,
                 subdivisionGain: 0.36,
                 cueGain: 0.62,
-                decayPower: 5.0
+                decayPower: 5.0,
+                noiseMix: 0.04
+            )
+        case .clave:
+            ClickProfile(
+                downbeatFrequency: 1_450,
+                beatFrequency: 1_120,
+                subdivisionFrequency: 860,
+                cueFrequency: 1_300,
+                downbeatDuration: 0.034,
+                beatDuration: 0.028,
+                subdivisionDuration: 0.016,
+                cueDuration: 0.040,
+                downbeatGain: 0.82,
+                beatGain: 0.60,
+                subdivisionGain: 0.34,
+                cueGain: 0.66,
+                decayPower: 5.8,
+                noiseMix: 0.10
+            )
+        case .rimshot:
+            ClickProfile(
+                downbeatFrequency: 2_900,
+                beatFrequency: 2_400,
+                subdivisionFrequency: 1_700,
+                cueFrequency: 2_700,
+                downbeatDuration: 0.026,
+                beatDuration: 0.020,
+                subdivisionDuration: 0.012,
+                cueDuration: 0.032,
+                downbeatGain: 0.86,
+                beatGain: 0.64,
+                subdivisionGain: 0.40,
+                cueGain: 0.70,
+                decayPower: 6.8,
+                noiseMix: 0.34
+            )
+        case .cowbell:
+            ClickProfile(
+                downbeatFrequency: 1_900,
+                beatFrequency: 1_540,
+                subdivisionFrequency: 1_160,
+                cueFrequency: 1_740,
+                downbeatDuration: 0.065,
+                beatDuration: 0.048,
+                subdivisionDuration: 0.026,
+                cueDuration: 0.060,
+                downbeatGain: 0.78,
+                beatGain: 0.56,
+                subdivisionGain: 0.34,
+                cueGain: 0.62,
+                decayPower: 2.4,
+                noiseMix: 0.06
+            )
+        case .hiHat:
+            ClickProfile(
+                downbeatFrequency: 6_800,
+                beatFrequency: 5_600,
+                subdivisionFrequency: 4_800,
+                cueFrequency: 6_200,
+                downbeatDuration: 0.030,
+                beatDuration: 0.022,
+                subdivisionDuration: 0.014,
+                cueDuration: 0.032,
+                downbeatGain: 0.62,
+                beatGain: 0.48,
+                subdivisionGain: 0.34,
+                cueGain: 0.54,
+                decayPower: 5.6,
+                noiseMix: 0.82
+            )
+        case .shaker:
+            ClickProfile(
+                downbeatFrequency: 4_900,
+                beatFrequency: 4_200,
+                subdivisionFrequency: 3_800,
+                cueFrequency: 4_600,
+                downbeatDuration: 0.046,
+                beatDuration: 0.036,
+                subdivisionDuration: 0.024,
+                cueDuration: 0.048,
+                downbeatGain: 0.50,
+                beatGain: 0.40,
+                subdivisionGain: 0.30,
+                cueGain: 0.46,
+                decayPower: 4.6,
+                noiseMix: 0.92
+            )
+        case .clap:
+            ClickProfile(
+                downbeatFrequency: 2_200,
+                beatFrequency: 1_800,
+                subdivisionFrequency: 1_400,
+                cueFrequency: 2_000,
+                downbeatDuration: 0.060,
+                beatDuration: 0.045,
+                subdivisionDuration: 0.026,
+                cueDuration: 0.058,
+                downbeatGain: 0.72,
+                beatGain: 0.52,
+                subdivisionGain: 0.30,
+                cueGain: 0.60,
+                decayPower: 3.2,
+                noiseMix: 0.72
+            )
+        case .sine:
+            ClickProfile(
+                downbeatFrequency: 1_000,
+                beatFrequency: 750,
+                subdivisionFrequency: 500,
+                cueFrequency: 900,
+                downbeatDuration: 0.075,
+                beatDuration: 0.055,
+                subdivisionDuration: 0.032,
+                cueDuration: 0.070,
+                downbeatGain: 0.68,
+                beatGain: 0.50,
+                subdivisionGain: 0.32,
+                cueGain: 0.56,
+                decayPower: 2.2,
+                noiseMix: 0.0
+            )
+        case .mellow:
+            ClickProfile(
+                downbeatFrequency: 880,
+                beatFrequency: 660,
+                subdivisionFrequency: 520,
+                cueFrequency: 780,
+                downbeatDuration: 0.060,
+                beatDuration: 0.044,
+                subdivisionDuration: 0.026,
+                cueDuration: 0.058,
+                downbeatGain: 0.58,
+                beatGain: 0.44,
+                subdivisionGain: 0.28,
+                cueGain: 0.50,
+                decayPower: 3.0,
+                noiseMix: 0.02
             )
         case .bell:
             ClickProfile(
@@ -1023,7 +1207,8 @@ private struct ClickProfile {
                 beatGain: 0.52,
                 subdivisionGain: 0.34,
                 cueGain: 0.64,
-                decayPower: 2.8
+                decayPower: 2.8,
+                noiseMix: 0.0
             )
         case .mechanical:
             ClickProfile(
@@ -1039,7 +1224,8 @@ private struct ClickProfile {
                 beatGain: 0.66,
                 subdivisionGain: 0.4,
                 cueGain: 0.72,
-                decayPower: 7.0
+                decayPower: 7.0,
+                noiseMix: 0.12
             )
         }
     }
