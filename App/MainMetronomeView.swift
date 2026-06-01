@@ -14,6 +14,16 @@ struct MainMetronomeView: View {
     @State private var isConfirmingSnapshotRestore = false
     private let bottomTabBarContentPadding: CGFloat = 112
 
+    private enum InstrumentTheme {
+        static let background = Color(red: 0.039, green: 0.039, blue: 0.039)
+        static let surface = Color(red: 0.078, green: 0.078, blue: 0.078)
+        static let raisedSurface = Color(red: 0.102, green: 0.102, blue: 0.102)
+        static let primaryText = Color(red: 0.910, green: 0.910, blue: 0.886)
+        static let secondaryText = Color(red: 0.420, green: 0.420, blue: 0.420)
+        static let accent = Color(red: 0.239, green: 0.729, blue: 0.435)
+        static let hairline = Color.white.opacity(0.12)
+    }
+
     var body: some View {
         TabView {
             playTab
@@ -42,6 +52,7 @@ struct MainMetronomeView: View {
                 }
         }
         .preferredColorScheme(.dark)
+        .tint(InstrumentTheme.accent)
         .task {
             await viewModel.prepare()
         }
@@ -79,7 +90,7 @@ struct MainMetronomeView: View {
 
     private var playTab: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 10) {
                 header
                 bpmDisplay
                 transportControls
@@ -90,11 +101,12 @@ struct MainMetronomeView: View {
                 visualPulse
                 stagePulseButton
             }
-            .padding(24)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
             .padding(.bottom, bottomTabBarContentPadding)
             .frame(maxWidth: .infinity)
         }
-        .background(Color(.systemBackground))
+        .background(InstrumentTheme.background)
     }
 
     private var editTab: some View {
@@ -420,15 +432,18 @@ struct MainMetronomeView: View {
     }
 
     private var header: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 3) {
             Text(viewModel.pattern.name)
-                .font(.title3.weight(.semibold))
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(InstrumentTheme.primaryText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
                 .accessibilityLabel("Pattern \(viewModel.pattern.name)")
 
             Text("\(viewModel.pattern.meter.displayName) · \(viewModel.pattern.subdivisionSummary)")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(InstrumentTheme.secondaryText)
+                .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .multilineTextAlignment(.center)
                 .accessibilityLabel("Meter \(viewModel.pattern.meter.displayName), subdivision \(viewModel.pattern.subdivisionSummary)")
@@ -436,109 +451,150 @@ struct MainMetronomeView: View {
     }
 
     private var bpmDisplay: some View {
-        VStack(spacing: 4) {
+        HStack(alignment: .center, spacing: 14) {
             Text("\(viewModel.pattern.bpm)")
-                .font(.system(size: 96, weight: .bold, design: .rounded))
+                .font(.system(size: 98, weight: .black, design: .monospaced))
                 .monospacedDigit()
-                .minimumScaleFactor(0.65)
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
+                .foregroundStyle(InstrumentTheme.primaryText)
                 .accessibilityLabel("\(viewModel.pattern.bpm) beats per minute")
 
-            Text("BPM")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("BPM")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(InstrumentTheme.secondaryText)
 
-            HStack(spacing: 10) {
-                TextField("BPM", text: $viewModel.bpmEntryDraft)
-                    .keyboardType(.numberPad)
-                    .textFieldStyle(.roundedBorder)
-                    .multilineTextAlignment(.center)
-                    .frame(width: 96)
-                    .accessibilityLabel("Tempo entry")
+                HStack(spacing: 8) {
+                    TextField("BPM", text: $viewModel.bpmEntryDraft)
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.roundedBorder)
+                        .multilineTextAlignment(.center)
+                        .font(.title3.monospacedDigit())
+                        .frame(width: 82)
+                        .accessibilityLabel("Tempo entry")
 
-                Button {
-                    Task {
-                        await viewModel.commitBPMEntry()
+                    Button {
+                        Task {
+                            await viewModel.commitBPMEntry()
+                        }
+                    } label: {
+                        Label("Set", systemImage: "checkmark")
+                            .frame(minWidth: 66, minHeight: 40)
                     }
-                } label: {
-                    Label("Set", systemImage: "checkmark")
-                        .frame(minWidth: 72, minHeight: 44)
+                    .buttonStyle(.plain)
+                    .foregroundStyle(InstrumentTheme.accent)
+                    .background(InstrumentTheme.raisedSurface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(InstrumentTheme.hairline, lineWidth: 1)
+                    )
+                    .accessibilityLabel("Set tempo")
                 }
-                .buttonStyle(.bordered)
-                .accessibilityLabel("Set tempo")
-            }
 
-            if let message = viewModel.bpmEntryMessage {
-                Text(message)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .accessibilityLabel(message)
+                if let message = viewModel.bpmEntryMessage {
+                    Text(message)
+                        .font(.caption)
+                        .foregroundStyle(InstrumentTheme.secondaryText)
+                        .accessibilityLabel(message)
+                }
             }
         }
         .frame(maxWidth: .infinity)
     }
 
     private var transportControls: some View {
-        HStack(spacing: 16) {
+        HStack(alignment: .bottom, spacing: 10) {
             Button {
                 Task {
                     await viewModel.togglePlayback()
                 }
             } label: {
-                Label(viewModel.primaryTransportTitle, systemImage: viewModel.primaryTransportSystemImage)
-                    .frame(maxWidth: .infinity, minHeight: 64)
+                Image(systemName: viewModel.primaryTransportSystemImage)
+                    .font(.title.weight(.bold))
+                    .frame(maxWidth: .infinity, minHeight: 68)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .buttonStyle(InstrumentButtonStyle(
+                fill: viewModel.isPlaying || viewModel.isCountingIn ? InstrumentTheme.raisedSurface : InstrumentTheme.accent,
+                foreground: viewModel.isPlaying || viewModel.isCountingIn ? InstrumentTheme.accent : InstrumentTheme.background
+            ))
             .accessibilityLabel(viewModel.primaryTransportAccessibilityLabel)
 
             Button {
                 viewModel.registerTapTempo()
             } label: {
-                Label("Tap", systemImage: "hand.tap.fill")
-                    .frame(maxWidth: .infinity, minHeight: 64)
+                Image(systemName: "hand.tap.fill")
+                    .font(.title2.weight(.semibold))
+                    .frame(width: 116, height: 52)
             }
-            .buttonStyle(.bordered)
-            .controlSize(.large)
+            .buttonStyle(InstrumentButtonStyle(fill: InstrumentTheme.surface, foreground: InstrumentTheme.accent))
             .accessibilityLabel("Tap tempo")
             .accessibilityHint("Sets tempo from recent taps.")
         }
     }
 
     private var countInPanel: some View {
-        VStack(spacing: 10) {
-            HStack {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text("Count-in")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-
-                Spacer()
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(InstrumentTheme.secondaryText)
 
                 if let remaining = viewModel.countInRemainingBeats {
                     Text("\(remaining)")
                         .font(.title3.weight(.bold))
                         .monospacedDigit()
+                        .foregroundStyle(InstrumentTheme.primaryText)
                         .accessibilityLabel("\(remaining) count-in beats remaining")
+                } else {
+                    Text(viewModel.countInBars == 0 ? "Off" : "\(viewModel.countInBars) bar\(viewModel.countInBars == 1 ? "" : "s")")
+                        .font(.headline.monospacedDigit())
+                        .foregroundStyle(InstrumentTheme.primaryText)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Picker("Count-in", selection: Binding(
-                get: { viewModel.countInBars },
-                set: { viewModel.setCountInBars($0) }
-            )) {
-                Text("Off").tag(0)
-                Text("1 bar").tag(1)
-                Text("2 bars").tag(2)
+            HStack(spacing: 8) {
+                Button {
+                    viewModel.setCountInBars(max(0, viewModel.countInBars - 1))
+                } label: {
+                    Label("Decrease count-in", systemImage: "minus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(InstrumentButtonStyle(fill: InstrumentTheme.raisedSurface, foreground: InstrumentTheme.accent))
+                .disabled(viewModel.countInBars == 0 || viewModel.isPlaying || viewModel.isCountingIn)
+                .accessibilityLabel("Decrease count-in")
+
+                Button {
+                    viewModel.setCountInBars(min(2, viewModel.countInBars + 1))
+                } label: {
+                    Label("Increase count-in", systemImage: "plus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(InstrumentButtonStyle(fill: InstrumentTheme.raisedSurface, foreground: InstrumentTheme.accent))
+                .disabled(viewModel.countInBars == 2 || viewModel.isPlaying || viewModel.isCountingIn)
+                .accessibilityLabel("Increase count-in")
             }
-            .pickerStyle(.segmented)
-            .disabled(viewModel.isPlaying || viewModel.isCountingIn)
-            .accessibilityLabel("Count-in length")
         }
-        .padding(12)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .padding(.vertical, 8)
+        .overlay(alignment: .top) {
+            Rectangle()
+                .fill(InstrumentTheme.hairline)
+                .frame(height: 1)
+        }
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(InstrumentTheme.hairline)
+                .frame(height: 1)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Count-in length")
     }
 
     private var tempoControls: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+        Grid(horizontalSpacing: 10, verticalSpacing: 10) {
             GridRow {
                 tempoButton(label: "-5", delta: -5)
                 tempoButton(label: "-1", delta: -1)
@@ -555,13 +611,14 @@ struct MainMetronomeView: View {
             }
         }
         .font(.title3.weight(.semibold))
-        .frame(minWidth: 64, minHeight: 56)
-        .buttonStyle(.bordered)
+        .frame(minWidth: 56, minHeight: 44)
+        .foregroundStyle(InstrumentTheme.accent)
+        .buttonStyle(InstrumentButtonStyle(fill: InstrumentTheme.raisedSurface, foreground: InstrumentTheme.accent))
         .accessibilityLabel(delta > 0 ? "Increase tempo by \(delta)" : "Decrease tempo by \(abs(delta))")
     }
 
     private var patternSummary: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {
             summaryPill(title: "Meter", value: viewModel.pattern.meter.displayName)
             summaryPill(title: "Subdivision", value: viewModel.pattern.subdivisionSummary)
             summaryPill(title: "Saved", value: "\(viewModel.patterns.count)")
@@ -573,15 +630,20 @@ struct MainMetronomeView: View {
         VStack(spacing: 4) {
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(InstrumentTheme.secondaryText)
             Text(value)
-                .font(.headline)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(InstrumentTheme.primaryText)
                 .lineLimit(2)
                 .minimumScaleFactor(0.65)
                 .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity, minHeight: 64)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .frame(maxWidth: .infinity, minHeight: 54)
+        .background(InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .stroke(InstrumentTheme.hairline, lineWidth: 1)
+        )
         .accessibilityElement(children: .combine)
     }
 
@@ -634,14 +696,14 @@ struct MainMetronomeView: View {
     }
 
     private var practicePanel: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
+        VStack(spacing: 10) {
+            HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Practice")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     Text(viewModel.practiceTimer.formattedRemaining)
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .monospacedDigit()
                         .minimumScaleFactor(0.75)
                 }
@@ -654,7 +716,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label(viewModel.practiceTimer.isRunning ? "Pause" : "Start", systemImage: viewModel.practiceTimer.isRunning ? "pause.fill" : "play.fill")
                         .labelStyle(.iconOnly)
-                        .frame(width: 48, height: 48)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.borderedProminent)
                 .accessibilityLabel(viewModel.practiceTimer.isRunning ? "Pause practice timer" : "Start practice timer")
@@ -664,7 +726,7 @@ struct MainMetronomeView: View {
                 } label: {
                     Label("Reset", systemImage: "arrow.counterclockwise")
                         .labelStyle(.iconOnly)
-                        .frame(width: 48, height: 48)
+                        .frame(width: 44, height: 44)
                 }
                 .buttonStyle(.bordered)
                 .accessibilityLabel("Reset practice timer")
@@ -704,23 +766,25 @@ struct MainMetronomeView: View {
                     .accessibilityLabel(viewModel.tempoLadder.isEnabled ? "Stop tempo ladder" : "Start tempo ladder")
                 }
 
-                VStack(spacing: 8) {
-                    ladderStepper(title: "Target", value: "\(viewModel.tempoLadder.targetBPM)", decrementLabel: "Decrease target tempo", incrementLabel: "Increase target tempo") {
-                        viewModel.updateTempoLadderTarget(by: -5)
-                    } increment: {
-                        viewModel.updateTempoLadderTarget(by: 5)
-                    }
+                if viewModel.tempoLadder.isEnabled {
+                    HStack(spacing: 8) {
+                        compactLadderStepper(title: "Target", value: "\(viewModel.tempoLadder.targetBPM)", decrementLabel: "Decrease target tempo", incrementLabel: "Increase target tempo") {
+                            viewModel.updateTempoLadderTarget(by: -5)
+                        } increment: {
+                            viewModel.updateTempoLadderTarget(by: 5)
+                        }
 
-                    ladderStepper(title: "Step", value: "\(viewModel.tempoLadder.stepBPM)", decrementLabel: "Decrease ladder step", incrementLabel: "Increase ladder step") {
-                        viewModel.updateTempoLadderStep(by: -1)
-                    } increment: {
-                        viewModel.updateTempoLadderStep(by: 1)
-                    }
+                        compactLadderStepper(title: "Step", value: "\(viewModel.tempoLadder.stepBPM)", decrementLabel: "Decrease ladder step", incrementLabel: "Increase ladder step") {
+                            viewModel.updateTempoLadderStep(by: -1)
+                        } increment: {
+                            viewModel.updateTempoLadderStep(by: 1)
+                        }
 
-                    ladderStepper(title: "Bars", value: "\(viewModel.tempoLadder.barsPerStep)", decrementLabel: "Decrease ladder bars", incrementLabel: "Increase ladder bars") {
-                        viewModel.updateTempoLadderBars(by: -1)
-                    } increment: {
-                        viewModel.updateTempoLadderBars(by: 1)
+                        compactLadderStepper(title: "Bars", value: "\(viewModel.tempoLadder.barsPerStep)", decrementLabel: "Decrease ladder bars", incrementLabel: "Increase ladder bars") {
+                            viewModel.updateTempoLadderBars(by: -1)
+                        } increment: {
+                            viewModel.updateTempoLadderBars(by: 1)
+                        }
                     }
                 }
             }
@@ -806,7 +870,7 @@ struct MainMetronomeView: View {
             viewModel.setPracticeDuration(minutes: minutes)
         }
         .font(.subheadline.weight(.semibold))
-        .frame(maxWidth: .infinity, minHeight: 44)
+        .frame(maxWidth: .infinity, minHeight: 40)
         .buttonStyle(.bordered)
         .accessibilityLabel("Set practice timer to \(minutes) minutes")
     }
@@ -850,6 +914,53 @@ struct MainMetronomeView: View {
             .buttonStyle(.bordered)
             .accessibilityLabel(incrementLabel)
         }
+    }
+
+    private func compactLadderStepper(
+        title: String,
+        value: String,
+        decrementLabel: String,
+        incrementLabel: String,
+        decrement: @escaping () -> Void,
+        increment: @escaping () -> Void
+    ) -> some View {
+        VStack(spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+
+            HStack(spacing: 2) {
+                Button {
+                    decrement()
+                } label: {
+                    Label(decrementLabel, systemImage: "minus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 34, height: 38)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(decrementLabel)
+
+                Text(value)
+                    .font(.headline.monospacedDigit())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(maxWidth: .infinity, minHeight: 38)
+                    .accessibilityHidden(true)
+
+                Button {
+                    increment()
+                } label: {
+                    Label(incrementLabel, systemImage: "plus")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 34, height: 38)
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(incrementLabel)
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
 
     private var patternEditor: some View {
@@ -2392,6 +2503,28 @@ final class MainMetronomeViewModel: ObservableObject {
         Task {
             try? await audioEngine.prepare(pattern: pattern)
         }
+    }
+}
+
+private struct InstrumentButtonStyle: ButtonStyle {
+    let fill: Color
+    let foreground: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(foreground)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(fill)
+                    .shadow(color: .black.opacity(configuration.isPressed ? 0.25 : 0.55), radius: configuration.isPressed ? 2 : 7, x: 0, y: configuration.isPressed ? 1 : 5)
+                    .shadow(color: .white.opacity(configuration.isPressed ? 0.03 : 0.08), radius: 1, x: 0, y: configuration.isPressed ? 0 : -1)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color.white.opacity(configuration.isPressed ? 0.06 : 0.12), lineWidth: 1)
+            )
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
     }
 }
 
