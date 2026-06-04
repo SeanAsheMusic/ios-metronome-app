@@ -17,7 +17,7 @@
 | Clave/groove modes | Limited | Limited | Limited | Limited | Traditional, bell, odd-meter, and mixer template foundation | V1 |
 | Sound mixing | Presets | Strong | Strong | Basic | 13 synthesized presets plus role-level downbeat, beat, subdivision, and cue levels | V1 |
 | Gap/random silence | Limited | Coach | Assistant | Trainer | Fixed/random silent bars, random beat dropout, and guide-tone/dropout Rhythm Trainer modes | V1 |
-| MIDI/Link | No/varies | No/varies | No/varies | Link | Defer | Later |
+| MIDI/Link | No/varies | No/varies | No/varies | Link | MIDI foundation now, Link later | V1/Later |
 
 ## Complaint Opportunities
 

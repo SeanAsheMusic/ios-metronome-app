@@ -3,26 +3,58 @@ import AudioEngine
 import RhythmModel
 
 public struct MetronomeLibrary: Codable, Equatable, Sendable {
-    public static let currentSchemaVersion = 1
+    public static let currentSchemaVersion = 2
 
     public var schemaVersion: Int
     public var selectedPatternID: Pattern.ID
     public var patterns: [Pattern]
     public var setlists: [Setlist]
     public var audioSettings: MetronomeAudioSettings
+    public var userProfile: UserProfile
+    public var micCalibration: MicCalibration
+    public var midiSettings: MIDISettings
 
     public init(
         schemaVersion: Int = MetronomeLibrary.currentSchemaVersion,
         selectedPatternID: Pattern.ID,
         patterns: [Pattern],
         setlists: [Setlist],
-        audioSettings: MetronomeAudioSettings = MetronomeAudioSettings()
+        audioSettings: MetronomeAudioSettings = MetronomeAudioSettings(),
+        userProfile: UserProfile = UserProfile(),
+        micCalibration: MicCalibration = MicCalibration(),
+        midiSettings: MIDISettings = MIDISettings()
     ) {
         self.schemaVersion = schemaVersion
         self.selectedPatternID = selectedPatternID
         self.patterns = patterns
         self.setlists = setlists
         self.audioSettings = audioSettings
+        self.userProfile = userProfile
+        self.micCalibration = micCalibration
+        self.midiSettings = midiSettings
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion
+        case selectedPatternID
+        case patterns
+        case setlists
+        case audioSettings
+        case userProfile
+        case micCalibration
+        case midiSettings
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        schemaVersion = try container.decode(Int.self, forKey: .schemaVersion)
+        selectedPatternID = try container.decode(Pattern.ID.self, forKey: .selectedPatternID)
+        patterns = try container.decode([Pattern].self, forKey: .patterns)
+        setlists = try container.decode([Setlist].self, forKey: .setlists)
+        audioSettings = try container.decodeIfPresent(MetronomeAudioSettings.self, forKey: .audioSettings) ?? MetronomeAudioSettings()
+        userProfile = try container.decodeIfPresent(UserProfile.self, forKey: .userProfile) ?? UserProfile()
+        micCalibration = try container.decodeIfPresent(MicCalibration.self, forKey: .micCalibration) ?? MicCalibration()
+        midiSettings = try container.decodeIfPresent(MIDISettings.self, forKey: .midiSettings) ?? MIDISettings()
     }
 
     public var selectedPattern: Pattern {
@@ -115,6 +147,11 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
         try setlists[0].updateBarCount(for: id, barCount: barCount)
     }
 
+    public mutating func updateActiveSetlistItemMIDICues(id: SetlistItem.ID, cues: [MIDICue]) throws {
+        ensureActiveSetlist()
+        try setlists[0].updateMIDICues(for: id, cues: cues)
+    }
+
     public mutating func selectPatternFromActiveSetlist(itemID: SetlistItem.ID) {
         guard let item = activeSetlist.items.first(where: { $0.id == itemID }) else {
             return
@@ -124,6 +161,18 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
 
     public mutating func updateAudioSettings(_ settings: MetronomeAudioSettings) {
         audioSettings = settings
+    }
+
+    public mutating func updateUserProfile(_ profile: UserProfile) {
+        userProfile = profile
+    }
+
+    public mutating func updateMicCalibration(_ calibration: MicCalibration) {
+        micCalibration = calibration
+    }
+
+    public mutating func updateMIDISettings(_ settings: MIDISettings) {
+        midiSettings = settings
     }
 
     public static func defaultLibrary() -> MetronomeLibrary {
@@ -145,7 +194,10 @@ public struct MetronomeLibrary: Codable, Equatable, Sendable {
                 Pattern.polyrhythm(.fiveOverFour)
             ],
             setlists: [starterSetlist],
-            audioSettings: MetronomeAudioSettings()
+            audioSettings: MetronomeAudioSettings(),
+            userProfile: UserProfile(),
+            micCalibration: MicCalibration(),
+            midiSettings: MIDISettings()
         )
     }
 
@@ -167,7 +219,7 @@ public struct MetronomeLibraryExport: Codable, Equatable, Sendable {
     public init(
         formatVersion: Int = MetronomeLibraryExport.currentFormatVersion,
         exportedAt: Date = Date(),
-        appName: String = "Pulsecraft",
+        appName: String = "Click Track",
         library: MetronomeLibrary
     ) {
         self.formatVersion = formatVersion
@@ -228,8 +280,12 @@ public actor MetronomeLibraryStore {
         }
 
         let data = try Data(contentsOf: fileURL)
-        let library = try decoder.decode(MetronomeLibrary.self, from: data)
+        let decodedLibrary = try decoder.decode(MetronomeLibrary.self, from: data)
+        let library = try migrate(decodedLibrary)
         try validate(library)
+        if library != decodedLibrary {
+            try save(library)
+        }
         return library
     }
 
@@ -264,9 +320,9 @@ public actor MetronomeLibraryStore {
             guard export.formatVersion == MetronomeLibraryExport.currentFormatVersion else {
                 throw MetronomeLibraryStoreError.unsupportedExportVersion(export.formatVersion)
             }
-            library = export.library
+            library = try migrate(export.library)
         } else {
-            library = try decoder.decode(MetronomeLibrary.self, from: data)
+            library = try migrate(try decoder.decode(MetronomeLibrary.self, from: data))
         }
 
         try validate(library)
@@ -280,7 +336,7 @@ public actor MetronomeLibraryStore {
         }
 
         let data = try Data(contentsOf: latestSnapshotURL)
-        let library = try decoder.decode(MetronomeLibrary.self, from: data)
+        let library = try migrate(try decoder.decode(MetronomeLibrary.self, from: data))
         try validate(library)
         try save(library)
         return library
@@ -308,6 +364,25 @@ public actor MetronomeLibraryStore {
         }
         guard !library.patterns.isEmpty else {
             throw MetronomeLibraryStoreError.emptyPatternLibrary
+        }
+    }
+
+    private func migrate(_ library: MetronomeLibrary) throws -> MetronomeLibrary {
+        switch library.schemaVersion {
+        case MetronomeLibrary.currentSchemaVersion:
+            return library
+        case 1:
+            return MetronomeLibrary(
+                selectedPatternID: library.selectedPatternID,
+                patterns: library.patterns,
+                setlists: library.setlists,
+                audioSettings: library.audioSettings,
+                userProfile: library.userProfile,
+                micCalibration: library.micCalibration,
+                midiSettings: library.midiSettings
+            )
+        default:
+            throw MetronomeLibraryStoreError.unsupportedSchemaVersion(library.schemaVersion)
         }
     }
 

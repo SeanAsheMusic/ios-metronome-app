@@ -28,6 +28,11 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Ordered setlists with move support.
 - Song-form setlist sections with per-item bar counts and auto-advance.
 - Local persistence for selected pattern, pattern library, and setlists.
+- Local first-launch musician setup for instrument type, experience level, and guided/advanced feature visibility.
+- Advanced Mode that exposes the full app surface without progressive reveal.
+- Local Beat Coach foundation for microphone tempo detection, early/on/late feedback, and calibration storage.
+- MIDI connector foundation for master/follower clock messages, selected inputs/outputs, and local setlist cues.
+- Per-setlist-item MIDI cue storage for Start, Stop, Continue, Program Change, Control Change, and Note On/Off actions.
 - Bounded local snapshots before library overwrites and imports.
 - Latest local snapshot restore.
 - Versioned export/import storage support, Settings data controls, and Codable model support.
@@ -53,8 +58,7 @@ V1 should feel like a trustworthy hardware metronome with modern iOS ergonomics:
 - Subscriptions.
 - Ads.
 - Teacher/student sharing.
-- AI coaching.
-- MIDI.
+- Cloud AI coaching.
 - Ableton Link.
 - Advanced analytics.
 
@@ -64,4 +68,4 @@ No active source-level V1.1 candidates remain beyond device/accessibility valida
 
 ## Later Candidates
 
-- Independent audio faders for rhythm lanes, microphone accuracy checking, subdivision/lane-level pattern gestures, optional iCloud, external display, hardware pedals, MIDI, Ableton Link, and Apple Watch remote control.
+- Independent audio faders for rhythm lanes, hardware-validated microphone accuracy claims, subdivision/lane-level pattern gestures, optional iCloud, external display, hardware pedals, Ableton Link, and Apple Watch remote control.

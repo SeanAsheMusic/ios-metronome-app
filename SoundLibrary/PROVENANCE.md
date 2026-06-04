@@ -2,7 +2,7 @@
 
 ## Policy
 
-Pulsecraft does not ship copied DAW, system, hardware, sample-pack, or third-party click assets. The current click sounds are synthesized at runtime by `AVMetronomeAudioEngine` from source-controlled parameters in `Sources/AudioEngine/MetronomeAudioEngine.swift`.
+Click Track does not ship copied DAW, system, hardware, sample-pack, or third-party click assets. The current click sounds are synthesized at runtime by `AVMetronomeAudioEngine` from source-controlled parameters in `Sources/AudioEngine/MetronomeAudioEngine.swift`.
 
 ## Render Contract
 

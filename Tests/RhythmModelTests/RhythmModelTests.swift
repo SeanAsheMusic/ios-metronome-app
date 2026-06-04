@@ -342,6 +342,18 @@ final class RhythmModelTests: XCTestCase {
         XCTAssertEqual(setlist.items[0].resolvedBarCount, SetlistItem.maximumBarCount)
     }
 
+    func testSetlistItemStoresMIDICues() throws {
+        let pattern = Pattern.defaultFourFour()
+        var setlist = Setlist(name: "Show")
+        setlist.append(pattern: pattern)
+        let itemID = setlist.items[0].id
+        let cue = MIDICue(kind: .programChange, channel: 2, number: 12, sendsOnSelection: true)
+
+        try setlist.updateMIDICues(for: itemID, cues: [cue])
+
+        XCTAssertEqual(setlist.items[0].midiCues, [cue])
+    }
+
     func testSetlistRemoveNormalizesPositions() throws {
         let first = Pattern.defaultFourFour()
         let second = Pattern.defaultSixEight()

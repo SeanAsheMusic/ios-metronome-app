@@ -3,13 +3,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DESTINATION="${1:-platform=iOS Simulator,name=iPhone 17}"
-DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/PulsecraftLocalValidation}"
+DERIVED_DATA_ROOT="${DERIVED_DATA_ROOT:-/tmp/ClickTrackLocalValidation}"
 APP_DERIVED_DATA_PATH="$DERIVED_DATA_ROOT/Metronome"
 APP_BUNDLE_ID="com.seanashe.metronome"
 MIN_SCREENSHOT_BYTES=90000
 DISALLOWED_LOCAL_FIRST_PATTERN='URLSession|http://|https://|SKPayment|StoreKit|AdSupport|AppTrackingTransparency|Firebase|Analytics|CloudKit|CKContainer|subscription|subscribe|account|sign in|login|tracking|track'
 BUILD_LOG_ROOT="$DERIVED_DATA_ROOT/Logs"
-ARCHIVE_PATH="$DERIVED_DATA_ROOT/Pulsecraft.xcarchive"
+ARCHIVE_PATH="$DERIVED_DATA_ROOT/ClickTrack.xcarchive"
 
 cd "$ROOT_DIR"
 mkdir -p "$BUILD_LOG_ROOT"
@@ -128,12 +128,12 @@ run_xcode_and_reject_warnings "$BUILD_LOG_ROOT/Metronome-archive.log" \
   -derivedDataPath "$DERIVED_DATA_ROOT/MetronomeArchive" \
   -quiet
 
-if [[ ! -d "$ARCHIVE_PATH/Products/Applications/Pulsecraft.app" ]]; then
-  echo "Archive did not contain Pulsecraft.app." >&2
+if [[ ! -d "$ARCHIVE_PATH/Products/Applications/Click Track.app" ]]; then
+  echo "Archive did not contain Click Track.app." >&2
   exit 1
 fi
 
-archived_app_path="$ARCHIVE_PATH/Products/Applications/Pulsecraft.app"
+archived_app_path="$ARCHIVE_PATH/Products/Applications/Click Track.app"
 archived_info_plist="$archived_app_path/Info.plist"
 archived_privacy_manifest="$archived_app_path/PrivacyInfo.xcprivacy"
 
@@ -141,7 +141,7 @@ archived_privacy_manifest="$archived_app_path/PrivacyInfo.xcprivacy"
   info_plist = ARGV.fetch(0)
   info = JSON.parse(`plutil -convert json -o - "#{info_plist}"`)
   failures = []
-  failures << "CFBundleDisplayName must be Pulsecraft" unless info["CFBundleDisplayName"] == "Pulsecraft"
+  failures << "CFBundleDisplayName must be Click Track" unless info["CFBundleDisplayName"] == "Click Track"
   failures << "CFBundleIdentifier must be com.seanashe.metronome" unless info["CFBundleIdentifier"] == "com.seanashe.metronome"
   failures << "CFBundleShortVersionString must be 0.1.0" unless info["CFBundleShortVersionString"] == "0.1.0"
   failures << "CFBundleVersion must be 1" unless info["CFBundleVersion"] == "1"
@@ -204,7 +204,8 @@ if [[ -z "$simulator_udid" ]]; then
   exit 1
 fi
 
-app_path="$APP_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/Pulsecraft.app"
+app_path="$APP_DERIVED_DATA_PATH/Build/Products/Debug-iphonesimulator/Click Track.app"
+setup_screenshot="$APP_DERIVED_DATA_PATH/onboarding-smoke.png"
 launch_screenshot="$APP_DERIVED_DATA_PATH/launch-smoke.png"
 edit_screenshot="$APP_DERIVED_DATA_PATH/edit-rhythm-grid-smoke.png"
 patterns_screenshot="$APP_DERIVED_DATA_PATH/patterns-smoke.png"
@@ -237,14 +238,16 @@ capture_app_screenshot() {
 xcrun simctl boot "$simulator_udid" 2>/dev/null || true
 xcrun simctl bootstatus "$simulator_udid" -b
 xcrun simctl install "$simulator_udid" "$app_path"
-capture_app_screenshot "$launch_screenshot"
-capture_app_screenshot "$edit_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab edit
-capture_app_screenshot "$patterns_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab patterns
-capture_app_screenshot "$setlist_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab setlist
-capture_app_screenshot "$settings_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftInitialTab settings
-capture_app_screenshot "$stage_pulse_screenshot" -PulsecraftUITestingInMemoryLibrary -PulsecraftShowStagePulse
+capture_app_screenshot "$setup_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackShowSetup
+capture_app_screenshot "$launch_screenshot" -ClickTrackUITestingInMemoryLibrary
+capture_app_screenshot "$edit_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackInitialTab edit
+capture_app_screenshot "$patterns_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackInitialTab patterns
+capture_app_screenshot "$setlist_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackInitialTab setlist
+capture_app_screenshot "$settings_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackInitialTab settings
+capture_app_screenshot "$stage_pulse_screenshot" -ClickTrackUITestingInMemoryLibrary -ClickTrackShowStagePulse
 
 echo "Launch smoke screenshot: $launch_screenshot"
+echo "Onboarding smoke screenshot: $setup_screenshot"
 echo "Edit rhythm grid smoke screenshot: $edit_screenshot"
 echo "Patterns smoke screenshot: $patterns_screenshot"
 echo "Setlist smoke screenshot: $setlist_screenshot"

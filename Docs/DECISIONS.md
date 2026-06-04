@@ -19,3 +19,15 @@ DAW/system sounds are treated as references. V1 sound assets must be synthesized
 ## D005: Multi-Lane Rhythm Is The Long-Term Model
 
 The safe v1 layer starts with patterns and beats, but the architecture should not block independent lanes for pulse, subdivision, clave, count, trainer, haptics, visuals, and cues.
+
+## D006: Product Name Is Click Track
+
+The user-facing app, export metadata, app display name, and store copy should use Click Track. Internal `Metronome*` type names can remain while they are not user-facing.
+
+## D007: MIDI Is Local Show Control First
+
+MIDI starts with local Core MIDI-style master/follower clock contracts and setlist cue messages. Click Track stays the timing source when master; external clock can drive transport only in explicit MIDI Follow mode.
+
+## D008: Beat Coach Is Local And Conservative
+
+Beat Coach may use the microphone for local onset, tempo, and timing feedback, but it must not record, upload, or claim precision before real-device calibration and validation.

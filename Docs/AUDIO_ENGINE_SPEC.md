@@ -24,6 +24,16 @@ Initial click families include classic, hard click, wood, clave, rimshot, cowbel
 
 Count-in uses one-shot downbeat and cue roles before continuous playback starts.
 
+## MIDI Clock And Cues
+
+When Click Track is MIDI master, the audio engine remains the timing source of truth. MIDI Clock, Start, Stop, Continue, and setlist cue messages should be scheduled from the same transport timeline as the click, not from UI timers. MIDI Follow mode is explicit: only then may incoming MIDI Clock and transport messages drive tempo/transport state.
+
+Setlist MIDI cues are local show-control helpers, not cloud connectors. Program Change, Control Change, and Note On/Off cues can be stored per setlist item and fired on item selection/start/stop once Core MIDI device wiring is implemented and measured.
+
+## Beat Coach Input
+
+Beat Coach microphone analysis is a follower channel. It compares detected local onsets against scheduled audio timestamps and a saved calibration offset. It must not drive the metronome clock, record audio, upload audio, or claim timing precision before real-device microphone latency and false-positive behavior are measured.
+
 ## Jitter And Drift Risks
 
 - UI timers are not acceptable as the timing source.
@@ -59,4 +69,6 @@ Use `Docs/DEVICE_VALIDATION_RUNBOOK.md` to record device, route, timing summary,
 - Tempo-change transition tests.
 - Start-to-first-click latency tests.
 - Route-change tests for speaker, wired headphones, Bluetooth, and AirPlay if supported.
+- MIDI Clock master/follower timing tests with external hardware or a validated loopback.
+- Beat Coach onset and calibration tests with real device microphones and instruments.
 - CPU and thermal tests on oldest supported devices.

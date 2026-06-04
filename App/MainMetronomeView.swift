@@ -11,9 +11,12 @@ struct MainMetronomeView: View {
     @State private var isExportingLibrary = false
     @State private var isImportingLibrary = false
     @State private var isShowingStagePulse = false
+    @State private var isShowingSetup = false
     @State private var isConfirmingSnapshotRestore = false
     @State private var selectedRhythmGridAccent: AccentLevel = .normal
     @State private var shouldShowStagePulseOnLaunch: Bool
+    private let skipsSetupOnLaunch: Bool
+    private let forcesSetupOnLaunch: Bool
     private let bottomTabBarContentPadding: CGFloat = 78
 
     private enum InstrumentTab: String, CaseIterable, Identifiable {
@@ -68,21 +71,29 @@ struct MainMetronomeView: View {
 
     init(
         initialTab: String = InstrumentTab.play.rawValue,
-        showsStagePulseOnLaunch: Bool = false
+        showsStagePulseOnLaunch: Bool = false,
+        skipsSetupOnLaunch: Bool = false,
+        forcesSetupOnLaunch: Bool = false
     ) {
         _viewModel = StateObject(wrappedValue: MainMetronomeViewModel())
         _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
         _shouldShowStagePulseOnLaunch = State(initialValue: showsStagePulseOnLaunch)
+        self.skipsSetupOnLaunch = skipsSetupOnLaunch
+        self.forcesSetupOnLaunch = forcesSetupOnLaunch
     }
 
     init(
         viewModel: MainMetronomeViewModel,
         initialTab: String = InstrumentTab.play.rawValue,
-        showsStagePulseOnLaunch: Bool = false
+        showsStagePulseOnLaunch: Bool = false,
+        skipsSetupOnLaunch: Bool = false,
+        forcesSetupOnLaunch: Bool = false
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         _selectedTab = State(initialValue: InstrumentTab(rawValue: initialTab) ?? .play)
         _shouldShowStagePulseOnLaunch = State(initialValue: showsStagePulseOnLaunch)
+        self.skipsSetupOnLaunch = skipsSetupOnLaunch
+        self.forcesSetupOnLaunch = forcesSetupOnLaunch
     }
 
     var body: some View {
@@ -94,6 +105,7 @@ struct MainMetronomeView: View {
         .tint(InstrumentTheme.accent)
         .task {
             await viewModel.prepare()
+            isShowingSetup = forcesSetupOnLaunch || (!skipsSetupOnLaunch && viewModel.shouldShowSetup)
             if shouldShowStagePulseOnLaunch {
                 shouldShowStagePulseOnLaunch = false
                 isShowingStagePulse = true
@@ -103,9 +115,12 @@ struct MainMetronomeView: View {
             isPresented: $isExportingLibrary,
             document: exportDocument,
             contentType: .json,
-            defaultFilename: "Pulsecraft-Library.json"
+            defaultFilename: "Click-Track-Library.json"
         ) { result in
             viewModel.handleExportResult(result)
+        }
+        .sheet(isPresented: $isShowingSetup) {
+            SetupProfileView(viewModel: viewModel)
         }
         .fileImporter(
             isPresented: $isImportingLibrary,
@@ -118,6 +133,9 @@ struct MainMetronomeView: View {
         }
         .fullScreenCover(isPresented: $isShowingStagePulse) {
             StagePulseView(viewModel: viewModel)
+        }
+        .onChange(of: viewModel.shouldShowSetup) { _, shouldShowSetup in
+            isShowingSetup = !skipsSetupOnLaunch && shouldShowSetup
         }
         .alert("Restore Latest Snapshot", isPresented: $isConfirmingSnapshotRestore) {
             Button("Restore", role: .destructive) {
@@ -188,12 +206,14 @@ struct MainMetronomeView: View {
         ScrollView {
             VStack(spacing: 8) {
                 header
+                midiStatusStrip
                 bpmDisplay
                 transportControls
                 countInPanel
                 tempoControls
                 patternSummary
                 practicePanel
+                beatCoachPanel
             }
             .padding(.horizontal, 16)
             .padding(.top, 8)
@@ -247,6 +267,9 @@ struct MainMetronomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 header
+                profilePanel
+                midiConnectionsPanel
+                beatCoachPanel
 
                 VStack(alignment: .leading, spacing: 14) {
                     sectionLabel("Sound")
@@ -903,6 +926,176 @@ struct MainMetronomeView: View {
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(title) \(value)")
+    }
+
+    private var profilePanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionLabel("Setup")
+            HStack(spacing: 10) {
+                Image(systemName: "person.crop.square")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(InstrumentTheme.accent)
+                    .frame(width: 34, height: 34)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Musician Profile")
+                        .font(.headline)
+                        .foregroundStyle(InstrumentTheme.primaryText)
+                    Text(viewModel.profileSummary)
+                        .font(.caption)
+                        .foregroundStyle(InstrumentTheme.secondaryText)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Button {
+                    isShowingSetup = true
+                } label: {
+                    Label("Edit", systemImage: "slider.horizontal.3")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 44, height: 44)
+                }
+                .buttonStyle(InstrumentOutlineButtonStyle(foreground: InstrumentTheme.accent))
+                .accessibilityLabel("Edit musician setup")
+            }
+
+            Toggle("Advanced Mode", isOn: Binding(
+                get: { viewModel.userProfile.displayMode == .advanced },
+                set: { isEnabled in
+                    Task {
+                        await viewModel.setAdvancedMode(isEnabled)
+                    }
+                }
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(InstrumentTheme.primaryText)
+            .accessibilityLabel("Advanced mode")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var midiStatusStrip: some View {
+        Group {
+            if viewModel.midiSettings.isEnabled {
+                HStack(spacing: 8) {
+                    Image(systemName: "cable.connector")
+                        .font(.caption.weight(.bold))
+                    Text(viewModel.midiStatusMessage)
+                        .font(.caption.monospaced().weight(.semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.65)
+                }
+                .foregroundStyle(InstrumentTheme.accent)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("MIDI status \(viewModel.midiStatusMessage)")
+            }
+        }
+    }
+
+    private var midiConnectionsPanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            sectionLabel("MIDI Connections")
+
+            Text(viewModel.midiStatusMessage)
+                .font(.caption)
+                .foregroundStyle(InstrumentTheme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Toggle("Enable MIDI", isOn: Binding(
+                get: { viewModel.midiSettings.isEnabled },
+                set: { enabled in
+                    Task {
+                        await viewModel.updateMIDIEnabled(enabled)
+                    }
+                }
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(InstrumentTheme.primaryText)
+            .accessibilityLabel("Enable MIDI")
+
+            Toggle("Send MIDI Clock", isOn: Binding(
+                get: { viewModel.midiSettings.sendsClock },
+                set: { enabled in
+                    Task {
+                        await viewModel.updateMIDISendsClock(enabled)
+                    }
+                }
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(InstrumentTheme.primaryText)
+            .accessibilityLabel("Send MIDI clock")
+
+            Toggle("Follow Incoming Clock", isOn: Binding(
+                get: { viewModel.midiSettings.followsClock },
+                set: { enabled in
+                    Task {
+                        await viewModel.updateMIDIFollowsClock(enabled)
+                    }
+                }
+            ))
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(InstrumentTheme.primaryText)
+            .accessibilityLabel("Follow incoming MIDI clock")
+
+            Text("Core MIDI device discovery and hardware timing validation are required before using this on stage.")
+                .font(.caption2)
+                .foregroundStyle(InstrumentTheme.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var beatCoachPanel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            hairline()
+            HStack(spacing: 10) {
+                Image(systemName: "waveform.and.mic")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(InstrumentTheme.accent)
+                    .frame(width: 34, height: 34)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    sectionLabel("Beat Coach")
+                    Text(viewModel.beatCoachStatusMessage)
+                        .font(.caption)
+                        .foregroundStyle(InstrumentTheme.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            HStack(spacing: 10) {
+                timingMetric(title: "Mic Offset", value: "\(Int(viewModel.micCalibration.inputLatencyOffsetMilliseconds.rounded())) ms")
+                timingMetric(title: "Mode", value: viewModel.micCalibration.hasCompletedCalibration ? "Calibrated" : "Local")
+            }
+
+            HStack(spacing: 12) {
+                Button {
+                    Task {
+                        await viewModel.updateMicCalibrationOffset(viewModel.micCalibration.inputLatencyOffsetMilliseconds - 5)
+                    }
+                } label: {
+                    Label("Earlier", systemImage: "minus")
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(InstrumentTrimButtonStyle(foreground: InstrumentTheme.accent))
+                .accessibilityLabel("Decrease microphone calibration offset")
+
+                Button {
+                    Task {
+                        await viewModel.updateMicCalibrationOffset(viewModel.micCalibration.inputLatencyOffsetMilliseconds + 5)
+                    }
+                } label: {
+                    Label("Later", systemImage: "plus")
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                }
+                .buttonStyle(InstrumentTrimButtonStyle(foreground: InstrumentTheme.accent))
+                .accessibilityLabel("Increase microphone calibration offset")
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var practicePanel: some View {
@@ -1717,11 +1910,15 @@ struct MainMetronomeView: View {
                         .font(.caption2)
                         .foregroundStyle(InstrumentTheme.secondaryText)
                         .lineLimit(1)
+                    Text(viewModel.midiCueSummary(for: item))
+                        .font(.caption2.monospaced().weight(.semibold))
+                        .foregroundStyle(item.midiCues.isEmpty ? InstrumentTheme.secondaryText : InstrumentTheme.accent)
+                        .lineLimit(1)
                 }
-                .frame(width: 176, height: 66, alignment: .leading)
+                .frame(width: 176, height: 82, alignment: .leading)
             }
             .buttonStyle(.plain)
-            .accessibilityLabel("Setlist item \(offset + 1), \(item.title), \(item.resolvedBarCount) bars")
+            .accessibilityLabel("Setlist item \(offset + 1), \(item.title), \(item.resolvedBarCount) bars, \(viewModel.midiCueSummary(for: item))")
 
             HStack(spacing: 6) {
                 Button {
@@ -1795,6 +1992,21 @@ struct MainMetronomeView: View {
                 .tint(.red)
                 .accessibilityLabel("Remove \(item.title) from setlist")
             }
+
+            Button {
+                Task {
+                    await viewModel.toggleProgramChangeCue(for: item.id)
+                }
+            } label: {
+                Label(
+                    item.midiCues.contains(where: { $0.kind == .programChange }) ? "Remove Program Cue" : "Add Program Cue",
+                    systemImage: item.midiCues.contains(where: { $0.kind == .programChange }) ? "cable.connector.slash" : "cable.connector"
+                )
+                .font(.caption.weight(.semibold))
+                .frame(maxWidth: .infinity, minHeight: 40)
+            }
+            .buttonStyle(InstrumentOutlineButtonStyle(foreground: InstrumentTheme.accent))
+            .accessibilityLabel(item.midiCues.contains(where: { $0.kind == .programChange }) ? "Remove MIDI program change cue for \(item.title)" : "Add MIDI program change cue for \(item.title)")
         }
         .padding(10)
         .background(
@@ -1882,6 +2094,11 @@ final class MainMetronomeViewModel: ObservableObject {
     @Published var timingSummary = AudioTimingSummary(samples: [])
     @Published var bpmEntryDraft = "\(Pattern.defaultFourFour().bpm)"
     @Published var bpmEntryMessage: String?
+    @Published var userProfile = UserProfile()
+    @Published var micCalibration = MicCalibration()
+    @Published var midiSettings = MIDISettings()
+    @Published var beatCoachStatusMessage = "Beat Coach listens locally for tempo and early/on/late timing. Calibrate on real devices before trusting accuracy."
+    @Published var midiStatusMessage = "No MIDI device selected."
     @Published var countInBars = 0
     @Published var isCountingIn = false
     @Published var countInRemainingBeats: Int?
@@ -2114,6 +2331,10 @@ final class MainMetronomeViewModel: ObservableObject {
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             audioSettings = library.audioSettings
+            userProfile = library.userProfile
+            micCalibration = library.micCalibration
+            midiSettings = library.midiSettings
+            updateMIDIStatusMessage()
             return
         }
 
@@ -2126,6 +2347,9 @@ final class MainMetronomeViewModel: ObservableObject {
             patterns = loadedLibrary.patterns
             activeSetlist = loadedLibrary.activeSetlist
             audioSettings = loadedLibrary.audioSettings
+            userProfile = loadedLibrary.userProfile
+            micCalibration = loadedLibrary.micCalibration
+            midiSettings = loadedLibrary.midiSettings
         } catch {
             library = MetronomeLibrary.defaultLibrary()
             pattern = library.selectedPattern
@@ -2134,10 +2358,14 @@ final class MainMetronomeViewModel: ObservableObject {
             patterns = library.patterns
             activeSetlist = library.activeSetlist
             audioSettings = library.audioSettings
+            userProfile = library.userProfile
+            micCalibration = library.micCalibration
+            midiSettings = library.midiSettings
             try? await libraryStore.save(library)
         }
         try? await audioEngine.updateSettings(audioSettings)
         audioRouteStatus = await audioEngine.currentRouteStatus()
+        updateMIDIStatusMessage()
     }
 
     private func applyLibrary(_ library: MetronomeLibrary) async {
@@ -2149,10 +2377,14 @@ final class MainMetronomeViewModel: ObservableObject {
         patterns = library.patterns
         activeSetlist = library.activeSetlist
         audioSettings = library.audioSettings
+        userProfile = library.userProfile
+        micCalibration = library.micCalibration
+        midiSettings = library.midiSettings
         tapTimes.removeAll()
         try? await audioEngine.updateSettings(audioSettings)
         try? await audioEngine.prepare(pattern: pattern)
         audioRouteStatus = await audioEngine.currentRouteStatus()
+        updateMIDIStatusMessage()
     }
 
     private func saveSelectedPattern() {
@@ -2565,6 +2797,136 @@ final class MainMetronomeViewModel: ObservableObject {
         try? await audioEngine.updateSettings(settings)
         audioRouteStatus = await audioEngine.currentRouteStatus()
         await saveLibrarySnapshot()
+    }
+
+    var shouldShowSetup: Bool {
+        !userProfile.hasCompletedSetup
+    }
+
+    var profileSummary: String {
+        "\(userProfile.instrument.displayName) · \(userProfile.experience.displayName) · \(userProfile.displayMode.displayName)"
+    }
+
+    var isAdvancedMode: Bool {
+        userProfile.displayMode == .advanced || userProfile.experience == .advanced
+    }
+
+    func completeSetup(instrument: MusicianInstrument, experience: MusicianExperience) async {
+        let mode: DisplayMode = experience == .advanced ? .advanced : (experience == .firstTimer ? .guided : .standard)
+        await updateUserProfile(UserProfile(
+            instrument: instrument,
+            experience: experience,
+            displayMode: mode,
+            hasCompletedSetup: true
+        ))
+    }
+
+    func updateUserProfile(_ profile: UserProfile) async {
+        userProfile = profile
+        library.updateUserProfile(profile)
+        await saveLibrarySnapshot()
+    }
+
+    func setAdvancedMode(_ isEnabled: Bool) async {
+        var profile = userProfile
+        profile.displayMode = isEnabled ? .advanced : (profile.experience == .firstTimer ? .guided : .standard)
+        profile.hasCompletedSetup = true
+        await updateUserProfile(profile)
+    }
+
+    func resetSetup() async {
+        var profile = userProfile
+        profile.hasCompletedSetup = false
+        await updateUserProfile(profile)
+    }
+
+    func updateMicCalibrationOffset(_ offset: Double) async {
+        micCalibration = MicCalibration(
+            inputLatencyOffsetMilliseconds: min(250, max(-250, offset)),
+            hasCompletedCalibration: true
+        )
+        library.updateMicCalibration(micCalibration)
+        beatCoachStatusMessage = "Calibration saved locally. Validate against known-latency hardware before using timing feedback as a precision reference."
+        await saveLibrarySnapshot()
+    }
+
+    func updateMIDIEnabled(_ enabled: Bool) async {
+        midiSettings.isEnabled = enabled
+        if !enabled {
+            midiSettings.sendsClock = false
+            midiSettings.followsClock = false
+        }
+        library.updateMIDISettings(midiSettings)
+        updateMIDIStatusMessage()
+        await saveLibrarySnapshot()
+    }
+
+    func updateMIDISendsClock(_ sendsClock: Bool) async {
+        midiSettings.isEnabled = midiSettings.isEnabled || sendsClock
+        midiSettings.sendsClock = sendsClock
+        if sendsClock {
+            midiSettings.followsClock = false
+        }
+        library.updateMIDISettings(midiSettings)
+        updateMIDIStatusMessage()
+        await saveLibrarySnapshot()
+    }
+
+    func updateMIDIFollowsClock(_ followsClock: Bool) async {
+        midiSettings.isEnabled = midiSettings.isEnabled || followsClock
+        midiSettings.followsClock = followsClock
+        if followsClock {
+            midiSettings.sendsClock = false
+        }
+        library.updateMIDISettings(midiSettings)
+        updateMIDIStatusMessage()
+        await saveLibrarySnapshot()
+    }
+
+    func toggleProgramChangeCue(for itemID: SetlistItem.ID) async {
+        guard let item = activeSetlist.items.first(where: { $0.id == itemID }) else {
+            return
+        }
+
+        let updatedCues: [MIDICue]
+        if item.midiCues.contains(where: { $0.kind == .programChange }) {
+            updatedCues = item.midiCues.filter { $0.kind != .programChange }
+        } else {
+            updatedCues = item.midiCues + [MIDICue(
+                kind: .programChange,
+                channel: 1,
+                number: UInt8(min(127, item.position)),
+                sendsOnSelection: true,
+                sendsOnStart: true
+            )]
+        }
+
+        do {
+            try library.updateActiveSetlistItemMIDICues(id: itemID, cues: updatedCues)
+            activeSetlist = library.activeSetlist
+            midiStatusMessage = updatedCues.isEmpty ? "No MIDI cue assigned to this setlist item." : "Setlist cue saved locally. Connect a MIDI destination before show use."
+            await saveLibrarySnapshot()
+        } catch {
+        }
+    }
+
+    func midiCueSummary(for item: SetlistItem) -> String {
+        if item.midiCues.isEmpty {
+            return "No MIDI cues"
+        }
+        return "\(item.midiCues.count) MIDI cue\(item.midiCues.count == 1 ? "" : "s")"
+    }
+
+    private func updateMIDIStatusMessage() {
+        if !midiSettings.isEnabled {
+            midiStatusMessage = "MIDI is off."
+        } else if midiSettings.sendsClock {
+            midiStatusMessage = "MIDI master clock armed. Hardware timing still needs device validation."
+        } else if midiSettings.followsClock {
+            midiStatusMessage = "MIDI follow mode armed. Incoming clock becomes transport source when connected."
+        } else {
+            midiStatusMessage = "MIDI is enabled. Select an input or output before show use."
+        }
     }
 
     func refreshAudioRouteStatus() async {
@@ -3022,6 +3384,150 @@ private struct InstrumentTrimButtonStyle: ButtonStyle {
 
 #Preview {
     MainMetronomeView()
+}
+
+private struct SetupProfileView: View {
+    @ObservedObject var viewModel: MainMetronomeViewModel
+    @Environment(\.dismiss) private var dismiss
+    @State private var selectedInstrument: MusicianInstrument
+    @State private var selectedExperience: MusicianExperience
+
+    init(viewModel: MainMetronomeViewModel) {
+        self.viewModel = viewModel
+        _selectedInstrument = State(initialValue: viewModel.userProfile.instrument)
+        _selectedExperience = State(initialValue: viewModel.userProfile.experience)
+    }
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 22) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Click Track")
+                            .font(.largeTitle.weight(.bold))
+                            .foregroundStyle(MainMetronomeView.InstrumentTheme.primaryText)
+                        Text("Set up the app for how you practice and perform. Advanced Mode always keeps every tool available.")
+                            .font(.subheadline)
+                            .foregroundStyle(MainMetronomeView.InstrumentTheme.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Instrument")
+                            .font(.caption2.weight(.bold))
+                            .textCase(.uppercase)
+                            .kerning(1.2)
+                            .foregroundStyle(MainMetronomeView.InstrumentTheme.secondaryText)
+
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 132), spacing: 10)], spacing: 10) {
+                            ForEach(MusicianInstrument.allCases, id: \.self) { instrument in
+                                setupOptionButton(
+                                    title: instrument.displayName,
+                                    systemImage: systemImage(for: instrument),
+                                    isSelected: selectedInstrument == instrument,
+                                    accessibilityLabel: "Instrument \(instrument.displayName)"
+                                ) {
+                                    selectedInstrument = instrument
+                                }
+                            }
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Experience")
+                            .font(.caption2.weight(.bold))
+                            .textCase(.uppercase)
+                            .kerning(1.2)
+                            .foregroundStyle(MainMetronomeView.InstrumentTheme.secondaryText)
+
+                        ForEach(MusicianExperience.allCases, id: \.self) { experience in
+                            setupOptionButton(
+                                title: experience.displayName,
+                                systemImage: systemImage(for: experience),
+                                isSelected: selectedExperience == experience,
+                                accessibilityLabel: "Experience \(experience.displayName)"
+                            ) {
+                                selectedExperience = experience
+                            }
+                        }
+                    }
+
+                    Button {
+                        Task {
+                            await viewModel.completeSetup(instrument: selectedInstrument, experience: selectedExperience)
+                            dismiss()
+                        }
+                    } label: {
+                        Label("Start Using Click Track", systemImage: "checkmark.circle.fill")
+                            .frame(maxWidth: .infinity, minHeight: 54)
+                    }
+                    .buttonStyle(InstrumentOutlineButtonStyle(foreground: MainMetronomeView.InstrumentTheme.accent))
+                    .accessibilityLabel("Start using Click Track")
+                }
+                .padding(24)
+            }
+            .background(MainMetronomeView.InstrumentTheme.background)
+            .navigationTitle("Setup")
+            .navigationBarTitleDisplayMode(.inline)
+        }
+        .preferredColorScheme(.dark)
+    }
+
+    private func setupOptionButton(
+        title: String,
+        systemImage: String,
+        isSelected: Bool,
+        accessibilityLabel: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: systemImage)
+                    .font(.headline)
+                    .frame(width: 24, height: 24)
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Spacer(minLength: 0)
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(MainMetronomeView.InstrumentTheme.accent)
+                }
+            }
+            .foregroundStyle(MainMetronomeView.InstrumentTheme.primaryText)
+            .padding(.horizontal, 12)
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .background(MainMetronomeView.InstrumentTheme.surface, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(isSelected ? MainMetronomeView.InstrumentTheme.accent : MainMetronomeView.InstrumentTheme.hairline, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+    }
+
+    private func systemImage(for instrument: MusicianInstrument) -> String {
+        switch instrument {
+        case .drums: "circle.grid.cross"
+        case .guitarBass: "guitars"
+        case .keys: "pianokeys"
+        case .vocals: "mic"
+        case .teacher: "person.2"
+        case .producer: "slider.horizontal.3"
+        case .general: "music.note"
+        }
+    }
+
+    private func systemImage(for experience: MusicianExperience) -> String {
+        switch experience {
+        case .firstTimer: "sparkle"
+        case .developing: "chart.line.uptrend.xyaxis"
+        case .advanced: "dial.high"
+        }
+    }
 }
 
 struct StagePulseView: View {

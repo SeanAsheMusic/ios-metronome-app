@@ -1,6 +1,6 @@
-# Pulsecraft
+# Click Track
 
-A native SwiftUI metronome foundation for serious musicians, educators, drummers, guitarists, performers, and students.
+A native SwiftUI click-track, metronome, practice, playlist, and show-control foundation for serious musicians, educators, drummers, guitarists, performers, and students.
 
 The product promise for v1 is simple: launch into a reliable, stage-readable metronome immediately, while laying the model foundation for a deeper rhythm workstation. Core features stay local-first, account-free, ad-free, and subscription-free.
 
@@ -49,11 +49,12 @@ The product promise for v1 is simple: launch into a reliable, stage-readable met
 - Settings Data controls for library export/import and latest snapshot restore
 - XCTest coverage for model, practice ladder, and scheduler behavior
 - Accessibility-first UI and docs
-- Microphone accuracy checking is feasible but deferred until microphone permission, onset detection, and device latency calibration can be validated on hardware.
+- Local Beat Coach foundation for microphone tempo detection and timing feedback, with device calibration required before accuracy claims.
+- MIDI connector foundation for master/follower clock and setlist cue workflows.
 
 ## Deferred
 
-Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sharing, AI coaching, MIDI, Ableton Link, and advanced analytics are outside v1. Some are documented as future opportunities only.
+Tuner, Apple Watch, cloud sync, accounts, subscriptions, ads, teacher/student sharing, AI coaching, Ableton Link, and advanced analytics are outside v1. Some are documented as future opportunities only.
 
 ## Repository Shape
 

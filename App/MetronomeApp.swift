@@ -6,12 +6,18 @@ struct MetronomeApp: App {
     private let viewModel: MainMetronomeViewModel
     private let initialTab: String
     private let showsStagePulseOnLaunch: Bool
+    private let skipsSetupOnLaunch: Bool
+    private let forcesSetupOnLaunch: Bool
 
     init() {
         let arguments = ProcessInfo.processInfo.arguments
-        initialTab = Self.argumentValue(after: "-PulsecraftInitialTab", in: arguments) ?? "play"
-        showsStagePulseOnLaunch = arguments.contains("-PulsecraftShowStagePulse")
-        if arguments.contains("-PulsecraftUITestingInMemoryLibrary") {
+        initialTab = Self.argumentValue(after: "-ClickTrackInitialTab", in: arguments)
+            ?? Self.argumentValue(after: "-PulsecraftInitialTab", in: arguments)
+            ?? "play"
+        showsStagePulseOnLaunch = arguments.contains("-ClickTrackShowStagePulse") || arguments.contains("-PulsecraftShowStagePulse")
+        skipsSetupOnLaunch = arguments.contains("-ClickTrackUITestingInMemoryLibrary") || arguments.contains("-PulsecraftUITestingInMemoryLibrary") || arguments.contains("-ClickTrackSkipSetup")
+        forcesSetupOnLaunch = arguments.contains("-ClickTrackShowSetup")
+        if arguments.contains("-ClickTrackUITestingInMemoryLibrary") || arguments.contains("-PulsecraftUITestingInMemoryLibrary") {
             viewModel = MainMetronomeViewModel(audioEngine: AudioEngineStub(), libraryStore: nil)
         } else {
             viewModel = MainMetronomeViewModel()
@@ -23,7 +29,9 @@ struct MetronomeApp: App {
             MainMetronomeView(
                 viewModel: viewModel,
                 initialTab: initialTab,
-                showsStagePulseOnLaunch: showsStagePulseOnLaunch
+                showsStagePulseOnLaunch: showsStagePulseOnLaunch,
+                skipsSetupOnLaunch: skipsSetupOnLaunch,
+                forcesSetupOnLaunch: forcesSetupOnLaunch
             )
         }
     }

@@ -12,6 +12,9 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(library.selectedPattern.id, library.selectedPatternID)
         XCTAssertEqual(library.setlists.first?.items.first?.patternID, library.selectedPatternID)
         XCTAssertEqual(library.audioSettings, MetronomeAudioSettings())
+        XCTAssertEqual(library.userProfile, UserProfile())
+        XCTAssertEqual(library.micCalibration, MicCalibration())
+        XCTAssertEqual(library.midiSettings, MIDISettings())
     }
 
     func testLibraryUpdatesSelectedPatternInPlace() {
@@ -177,6 +180,21 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(library.audioSettings, settings)
     }
 
+    func testLibraryUpdatesProfileMicCalibrationAndMIDISettings() {
+        var library = MetronomeLibrary.defaultLibrary()
+        let profile = UserProfile(instrument: .drums, experience: .advanced, displayMode: .advanced, hasCompletedSetup: true)
+        let calibration = MicCalibration(inputLatencyOffsetMilliseconds: 18.5, hasCompletedCalibration: true)
+        let midiSettings = MIDISettings(isEnabled: true, sendsClock: true, followsClock: false, selectedInputID: nil, selectedOutputID: "usb-1")
+
+        library.updateUserProfile(profile)
+        library.updateMicCalibration(calibration)
+        library.updateMIDISettings(midiSettings)
+
+        XCTAssertEqual(library.userProfile, profile)
+        XCTAssertEqual(library.micCalibration, calibration)
+        XCTAssertEqual(library.midiSettings, midiSettings)
+    }
+
     func testStoreCreatesDefaultLibraryWhenFileIsMissing() async throws {
         let fileURL = temporaryFileURL()
         let store = MetronomeLibraryStore(fileURL: fileURL)
@@ -200,6 +218,34 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(loadedLibrary, library)
         XCTAssertEqual(loadedLibrary.selectedPattern.bpm, 88)
+    }
+
+    func testStoreMigratesVersionOneLibraryToCurrentSchema() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        let library = MetronomeLibrary.defaultLibrary()
+        let encoder = JSONEncoder()
+        let legacyPayload = """
+        {
+          "schemaVersion" : 1,
+          "selectedPatternID" : "\(library.selectedPatternID.uuidString)",
+          "patterns" : \(String(data: try encoder.encode(library.patterns), encoding: .utf8)!),
+          "setlists" : \(String(data: try encoder.encode(library.setlists), encoding: .utf8)!),
+          "audioSettings" : \(String(data: try encoder.encode(library.audioSettings), encoding: .utf8)!)
+        }
+        """
+        try FileManager.default.createDirectory(
+            at: fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try legacyPayload.data(using: .utf8)!.write(to: fileURL)
+
+        let migrated = try await store.load()
+
+        XCTAssertEqual(migrated.schemaVersion, MetronomeLibrary.currentSchemaVersion)
+        XCTAssertEqual(migrated.userProfile, UserProfile())
+        XCTAssertEqual(migrated.micCalibration, MicCalibration())
+        XCTAssertEqual(migrated.midiSettings, MIDISettings())
     }
 
     func testStoreCreatesSnapshotBeforeOverwritingExistingLibrary() async throws {
@@ -282,8 +328,25 @@ final class PersistenceTests: XCTestCase {
 
         XCTAssertEqual(exported.formatVersion, MetronomeLibraryExport.currentFormatVersion)
         XCTAssertEqual(exported.exportedAt, exportedAt)
-        XCTAssertEqual(exported.appName, "Pulsecraft")
+        XCTAssertEqual(exported.appName, "Click Track")
         XCTAssertEqual(exported.library.selectedPattern.name, "Default 4/4")
+    }
+
+    func testStoreExportsProfileMIDIAndCalibrationFields() async throws {
+        let fileURL = temporaryFileURL()
+        let store = MetronomeLibraryStore(fileURL: fileURL)
+        var library = MetronomeLibrary.defaultLibrary()
+        library.updateUserProfile(UserProfile(instrument: .teacher, experience: .advanced, displayMode: .advanced, hasCompletedSetup: true))
+        library.updateMicCalibration(MicCalibration(inputLatencyOffsetMilliseconds: 12, hasCompletedCalibration: true))
+        library.updateMIDISettings(MIDISettings(isEnabled: true, sendsClock: true, followsClock: true))
+        try await store.save(library)
+
+        let data = try await store.exportLibrary()
+        let exported = try JSONDecoder().decode(MetronomeLibraryExport.self, from: data)
+
+        XCTAssertEqual(exported.library.userProfile.instrument, .teacher)
+        XCTAssertTrue(exported.library.micCalibration.hasCompletedCalibration)
+        XCTAssertTrue(exported.library.midiSettings.isEnabled)
     }
 
     func testStoreImportsPortableLibraryDocument() async throws {

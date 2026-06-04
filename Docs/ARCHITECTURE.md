@@ -19,6 +19,8 @@
 | `PatternEditor` | Future beat/accent/grouping editing views. |
 | `Setlists` | Ordered setlist library, section bar counts, reorder workflows, and song-form auto-advance. |
 | `Persistence` | Local store, migration boundary, snapshots, latest snapshot restore, and export/import. |
+| `MIDIConnectivity` | Local MIDI endpoint, message, clock master/follower, and cue-generation contracts. |
+| `BeatCoach` | Local microphone onset detection, tempo estimation, timing feedback, and calibration contracts. |
 | `SoundLibrary` | Synthesized click preset notes and provenance manifest. |
 | `Practice` | Practice timers, tempo ladders, rhythm-trainer gap modes, and local-only analytics. |
 | `RhythmModel.GrooveTemplate` | Built-in 16-step son, rumba, and bossa clave templates. |
@@ -36,7 +38,9 @@ Pattern subdivision changes regenerate editable step grids in the domain model. 
 
 Rhythm Trainer, Human Feel, and role-level mixer controls live in audio settings so playback can mute bars, drop individual beat events, run guide-tone modes, nudge timing, or rebalance scheduled events without rewriting the user's saved pattern. Human Feel must remain at zero for measurement and precision claims.
 
-Microphone accuracy checking is architecturally possible with an input tap, onset detector, and scheduled-click comparison window, but it should not ship until the app has microphone permission text, input-latency calibration, false-positive handling, and device validation.
+Beat Coach is local-only. The first module can detect synthetic onsets, estimate a stable tempo, compare onsets against scheduled-click timestamps, and apply a saved calibration offset. It must not store recordings, upload audio, or claim hardware-grade accuracy until microphone permission, input-latency calibration, false-positive handling, and device validation are complete.
+
+MIDI connectivity is local-first through Apple platform MIDI services. Click Track can model outbound clock, Start, Stop, Continue, Program Change, Control Change, and Note On/Off cue messages, and can estimate follower tempo from incoming MIDI Clock streams. The audio engine remains the timing source when Click Track is master; incoming MIDI becomes the source only when MIDI Follow is explicitly enabled.
 
 Clave Mode currently renders mixer choices into a single playable pattern so the existing audio source of truth remains intact. Independent per-lane audio faders should be added only after the audio engine supports simultaneous lane events without compromising timing.
 
@@ -46,4 +50,4 @@ Song-form auto-advance uses setlist item bar counts and scheduled audio beat eve
 
 ## Persistence Direction
 
-Patterns, songs, profiles, setlists, attachments, practice sessions, and preferences should be stored locally with explicit schema versions. Latest snapshot restore and export/import should exist before optional iCloud so users always have account-free recovery.
+Patterns, songs, user profile, mic calibration, MIDI settings, setlist cues, practice sessions, and preferences should be stored locally with explicit schema versions. Latest snapshot restore and export/import should exist before optional iCloud so users always have account-free recovery.

@@ -134,6 +134,147 @@ public enum ClickSoundRole: String, CaseIterable, Codable, Hashable, Sendable {
     case muted
 }
 
+public enum MusicianInstrument: String, CaseIterable, Codable, Hashable, Sendable {
+    case drums
+    case guitarBass
+    case keys
+    case vocals
+    case teacher
+    case producer
+    case general
+
+    public var displayName: String {
+        switch self {
+        case .drums: "Drums"
+        case .guitarBass: "Guitar/Bass"
+        case .keys: "Keys"
+        case .vocals: "Vocals"
+        case .teacher: "Teacher"
+        case .producer: "Producer"
+        case .general: "General"
+        }
+    }
+}
+
+public enum MusicianExperience: String, CaseIterable, Codable, Hashable, Sendable {
+    case firstTimer
+    case developing
+    case advanced
+
+    public var displayName: String {
+        switch self {
+        case .firstTimer: "First Timer"
+        case .developing: "Developing"
+        case .advanced: "Advanced"
+        }
+    }
+}
+
+public enum DisplayMode: String, CaseIterable, Codable, Hashable, Sendable {
+    case guided
+    case standard
+    case advanced
+
+    public var displayName: String {
+        switch self {
+        case .guided: "Guided"
+        case .standard: "Standard"
+        case .advanced: "Advanced"
+        }
+    }
+}
+
+public struct UserProfile: Codable, Equatable, Hashable, Sendable {
+    public var instrument: MusicianInstrument
+    public var experience: MusicianExperience
+    public var displayMode: DisplayMode
+    public var hasCompletedSetup: Bool
+
+    public init(
+        instrument: MusicianInstrument = .general,
+        experience: MusicianExperience = .developing,
+        displayMode: DisplayMode = .standard,
+        hasCompletedSetup: Bool = false
+    ) {
+        self.instrument = instrument
+        self.experience = experience
+        self.displayMode = displayMode
+        self.hasCompletedSetup = hasCompletedSetup
+    }
+}
+
+public struct MicCalibration: Codable, Equatable, Hashable, Sendable {
+    public var inputLatencyOffsetMilliseconds: Double
+    public var hasCompletedCalibration: Bool
+
+    public init(
+        inputLatencyOffsetMilliseconds: Double = 0,
+        hasCompletedCalibration: Bool = false
+    ) {
+        self.inputLatencyOffsetMilliseconds = inputLatencyOffsetMilliseconds
+        self.hasCompletedCalibration = hasCompletedCalibration
+    }
+}
+
+public struct MIDISettings: Codable, Equatable, Hashable, Sendable {
+    public var isEnabled: Bool
+    public var sendsClock: Bool
+    public var followsClock: Bool
+    public var selectedInputID: String?
+    public var selectedOutputID: String?
+
+    public init(
+        isEnabled: Bool = false,
+        sendsClock: Bool = false,
+        followsClock: Bool = false,
+        selectedInputID: String? = nil,
+        selectedOutputID: String? = nil
+    ) {
+        self.isEnabled = isEnabled
+        self.sendsClock = sendsClock
+        self.followsClock = followsClock
+        self.selectedInputID = selectedInputID
+        self.selectedOutputID = selectedOutputID
+    }
+}
+
+public enum MIDICueKind: String, Codable, Hashable, Sendable {
+    case start
+    case stop
+    case continueTransport
+    case programChange
+    case controlChange
+    case note
+}
+
+public struct MIDICue: Identifiable, Codable, Equatable, Hashable, Sendable {
+    public let id: UUID
+    public var kind: MIDICueKind
+    public var channel: UInt8
+    public var number: UInt8
+    public var value: UInt8
+    public var sendsOnSelection: Bool
+    public var sendsOnStart: Bool
+
+    public init(
+        id: UUID = UUID(),
+        kind: MIDICueKind,
+        channel: UInt8 = 1,
+        number: UInt8 = 0,
+        value: UInt8 = 0,
+        sendsOnSelection: Bool = false,
+        sendsOnStart: Bool = true
+    ) {
+        self.id = id
+        self.kind = kind
+        self.channel = min(max(channel, 1), 16)
+        self.number = min(number, 127)
+        self.value = min(value, 127)
+        self.sendsOnSelection = sendsOnSelection
+        self.sendsOnStart = sendsOnStart
+    }
+}
+
 public enum GrooveTemplate: String, CaseIterable, Codable, Hashable, Sendable {
     case sonClave32
     case sonClave23
@@ -876,13 +1017,41 @@ public struct SetlistItem: Identifiable, Codable, Equatable, Sendable {
     public var title: String
     public var position: Int
     public var barCount: Int?
+    public var midiCues: [MIDICue]
 
-    public init(id: UUID = UUID(), patternID: Pattern.ID, title: String, position: Int, barCount: Int? = 4) {
+    public init(
+        id: UUID = UUID(),
+        patternID: Pattern.ID,
+        title: String,
+        position: Int,
+        barCount: Int? = 4,
+        midiCues: [MIDICue] = []
+    ) {
         self.id = id
         self.patternID = patternID
         self.title = title
         self.position = position
         self.barCount = barCount.map(Self.clampedBarCount)
+        self.midiCues = midiCues
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case patternID
+        case title
+        case position
+        case barCount
+        case midiCues
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        patternID = try container.decode(Pattern.ID.self, forKey: .patternID)
+        title = try container.decode(String.self, forKey: .title)
+        position = try container.decode(Int.self, forKey: .position)
+        barCount = try container.decodeIfPresent(Int.self, forKey: .barCount).map(Self.clampedBarCount)
+        midiCues = try container.decodeIfPresent([MIDICue].self, forKey: .midiCues) ?? []
     }
 
     public var resolvedBarCount: Int {
@@ -933,6 +1102,13 @@ public struct Setlist: Identifiable, Codable, Equatable, Sendable {
             throw MetronomeValidationError.invalidSetlistItem
         }
         items[index].setBarCount(barCount)
+    }
+
+    public mutating func updateMIDICues(for itemID: SetlistItem.ID, cues: [MIDICue]) throws {
+        guard let index = items.firstIndex(where: { $0.id == itemID }) else {
+            throw MetronomeValidationError.invalidSetlistItem
+        }
+        items[index].midiCues = cues
     }
 
     public mutating func move(from source: Int, to destination: Int) throws {

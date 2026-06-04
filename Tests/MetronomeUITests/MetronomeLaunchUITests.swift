@@ -56,6 +56,17 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertEqual(app.buttons["Play tab"].value as? String, "Selected")
     }
 
+    func testFirstLaunchSetupCompletesIntoPlaySurface() {
+        let app = launchApp(showSetup: true)
+
+        XCTAssertTrue(app.staticTexts["Click Track"].waitForExistence(timeout: 8), "First launch setup should introduce Click Track.")
+        XCTAssertTrue(app.buttons["Instrument General"].exists, "Setup should ask what kind of musician is using the app.")
+        XCTAssertTrue(app.buttons["Experience Developing"].exists, "Setup should ask experience level for progressive reveal.")
+
+        app.buttons["Start using Click Track"].tap()
+        XCTAssertTrue(app.buttons["Play metronome"].waitForExistence(timeout: 4), "Completing setup should enter the main Play surface.")
+    }
+
     func testEditRhythmGridPaintsStepAccent() {
         let app = launchApp(initialTab: "edit")
 
@@ -96,7 +107,7 @@ final class MetronomeLaunchUITests: XCTestCase {
         XCTAssertEqual(app.switches["Song form auto advance"].value as? String, "Off", "Song-form auto advance should default off.")
         XCTAssertTrue(app.buttons["Add current pattern to setlist"].exists, "Setlist should expose adding the current pattern.")
 
-        XCTAssertTrue(app.buttons["Setlist item 1, Default 4/4, 4 bars"].exists, "Setlist should expose the default item.")
+        XCTAssertTrue(app.buttons["Setlist item 1, Default 4/4, 4 bars, No MIDI cues"].exists, "Setlist should expose the default item and MIDI cue state.")
         XCTAssertTrue(app.buttons["Decrease bars for Default 4/4"].exists, "Setlist should expose bar-count editing.")
         XCTAssertTrue(app.buttons["Increase bars for Default 4/4"].exists)
         XCTAssertTrue(app.buttons["Move Default 4/4 earlier"].exists)
@@ -187,17 +198,19 @@ final class MetronomeLaunchUITests: XCTestCase {
     private func launchApp(
         contentSizeCategory: String? = nil,
         initialTab: String? = nil,
-        showStagePulse: Bool = false
+        showStagePulse: Bool = false,
+        showSetup: Bool = false
     ) -> XCUIApplication {
         let app = XCUIApplication()
         let contentSizeArguments = contentSizeCategory.map {
             ["-UIPreferredContentSizeCategoryName", $0]
         } ?? []
         let initialTabArguments = initialTab.map {
-            ["-PulsecraftInitialTab", $0]
+            ["-ClickTrackInitialTab", $0]
         } ?? []
-        let stagePulseArguments = showStagePulse ? ["-PulsecraftShowStagePulse"] : []
-        app.launchArguments = ["-PulsecraftUITestingInMemoryLibrary"] + contentSizeArguments + initialTabArguments + stagePulseArguments
+        let stagePulseArguments = showStagePulse ? ["-ClickTrackShowStagePulse"] : []
+        let setupArguments = showSetup ? ["-ClickTrackShowSetup"] : []
+        app.launchArguments = ["-ClickTrackUITestingInMemoryLibrary"] + contentSizeArguments + initialTabArguments + stagePulseArguments + setupArguments
         app.launch()
         return app
     }

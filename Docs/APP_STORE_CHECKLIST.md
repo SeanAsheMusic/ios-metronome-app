@@ -2,7 +2,7 @@
 
 ## Metadata
 
-- App name: `Pulsecraft`.
+- App name: `Click Track`.
 - Subtitle ideas: `Precision practice, no account`, `Stage-ready rhythm tools`, `A serious metronome for musicians`.
 - Category: Music.
 - Age rating: likely 4+ unless future user-generated sharing changes content risk.
